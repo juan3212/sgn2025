@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
     //
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $table = 'usuarios';
 
@@ -19,6 +22,23 @@ class Usuario extends Model
         'correo', 
         'password_hash'
     ];
+
+    protected $hidden = [
+        'password_hash',
+        'remember_token',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'password_hash' => 'hashed',
+        ];
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->password_hash;
+    }
 
     // Relación muchos-a-muchos con Roles
     public function roles() {
