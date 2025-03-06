@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class Usuario extends Authenticatable
 {
     //
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     protected $table = 'usuarios';
 
@@ -41,9 +42,9 @@ class Usuario extends Authenticatable
     }
 
     // Relación muchos-a-muchos con Roles
-    public function roles() {
+    /*public function roles() {
         return $this->belongsToMany(Rol::class, 'usuario_rol');
-    }
+    }*/
 
     // Relación muchos-a-muchos con Grados y Grupos (a través de usuario_grado)
     public function gradosGrupos() {

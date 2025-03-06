@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
+use App\Models\Usuario;
 
 class LoginForm extends Form
 {
@@ -30,7 +31,11 @@ class LoginForm extends Form
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only(['nuip', 'password']), $this->remember)) {
+        $usuario = Usuario::where('nuip', $this->nuip)
+        ->with('roles') // <<--- Carga ansiosa de la relación 'roles'
+        ->first();
+
+        if (!$usuario || ! Auth::attempt($this->only(['nuip', 'password']), $this->remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -39,6 +44,8 @@ class LoginForm extends Form
         }
 
         RateLimiter::clear($this->throttleKey());
+
+        Auth::login($usuario, $this->remember);
     }
 
     /**

@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('notas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('estudiante_id')->constrained('usuarios');
-            $table->foreignId('materia_id')->constrained('materias');
-            $table->foreignId('periodo_id')->constrained('periodos'); // Clave foránea
-            $table->bigInteger('competencia_id');
-            $table->foreignId('tipo_nota_id')->constrained('tipos_notas'); // Clave foránea
+            $table->foreignId('estudiante_id')->constrained('usuarios')->onDelete('cascade'); // Clave foránea
+            $table->foreignId('materia_id')->constrained('materias')->onDelete('cascade'); // Clave foránea
+            $table->foreignId('periodo_id')->constrained('periodos')->onDelete('cascade'); // Clave foránea
+            $table->foreignId('competencia_id')->constrained('competencias')->onDelete('cascade'); // Clave foránea
+            $table->foreignId('tipo_nota_id')->constrained('tipos_notas')->onDelete('cascade'); // Clave foránea
             $table->string('descripcion', 500);
             $table->float('valor');
             $table->timestamps();
@@ -26,6 +26,7 @@ return new class extends Migration
         Schema::table('notas', function (Blueprint $table) {
             $table->index('estudiante_id');
             $table->index('materia_id');
+            $table->index('periodo_id');
         });
     }
 

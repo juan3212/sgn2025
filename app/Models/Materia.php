@@ -13,16 +13,20 @@ class Materia extends Model
     protected $table = 'materias';
 
     protected $fillable = [
-        'nombre',
+        'materia_id',
         'grado_id',
         'grupo_id',
         'intensidad_horaria',
         'profesor_id'
     ];
 
+    public function materiaId() {
+        return $this->belongsTo(BaseMateria::class, 'materia_id');
+    }
+
     // Relación con Grado
     public function grado() {
-        return $this->belongsTo(Grado::class);
+        return $this->belongsTo(Grado::class, 'grado_id');
     }
 
     // Relación con Grupo
@@ -36,8 +40,10 @@ class Materia extends Model
     }
 
     // Relación con Competencias
-    public function competencias() {
-        return $this->hasMany(Competencia::class);
+    public function competencias()
+    {
+        return $this->belongsToMany(Competencia::class, 'materia_has_competencia', 'materia_id', 'competencia_id')
+                    ->withPivot('periodo_id');
     }
 
     // Relación con Notas

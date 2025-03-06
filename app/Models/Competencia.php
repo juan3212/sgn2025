@@ -12,15 +12,15 @@ class Competencia extends Model
 
     protected $table = 'competencias';
 
-    protected $fillable = ['nombre', 'descripcion', 'materia_id', 'periodo_id'];
+    protected $fillable = ['nombre', 'descripcion', 'periodo_id'];
 
     // Relación con Materia
-    public function materia() {
-        return $this->belongsTo(Materia::class);
+    public function materias()
+    {
+        return $this->belongsToMany(Materia::class, 'materia_has_competencia', 'competencia_id', 'materia_id')
+                    ->withPivot('periodo_id'); // Si necesitas acceder al campo periodo_id
     }
-
-    // Relación con Periodo
-    public function periodo() {
-        return $this->belongsTo(Periodo::class);
+    public function notas(){
+        return $this->belongsTo(Nota::class);
     }
 }

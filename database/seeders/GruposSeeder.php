@@ -13,15 +13,10 @@ class GruposSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        $grupos = [
-            ["grupo"=>"A"],
-            ["grupo"=>"B"],
-            ["grupo"=>"C"],
-            ["grupo"=>"D"]
-        ];
+        $grupos = ['A', 'B', 'C', 'D'];
+    
         foreach ($grupos as $grupo) {
-            Grupo::create($grupo);
+            Grupo::create(['grupo' => $grupo]);
         }
 
     }

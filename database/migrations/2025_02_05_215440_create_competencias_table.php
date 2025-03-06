@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre', 500);
             $table->string('descripcion', 500);
-            $table->foreignId('materia_id')->constrained('materias');
-            $table->foreignId('periodo_id')->constrained('periodos'); // Clave foránea
+            $table->foreignId('periodo_id')->constrained('periodos');
             $table->timestamps();
         });
     }

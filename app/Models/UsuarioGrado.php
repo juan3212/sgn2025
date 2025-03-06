@@ -10,6 +10,8 @@ class UsuarioGrado extends Model
     //
     use HasFactory;
 
+    protected $fillable = ['usuario_id', 'grado_id', 'grupo_id'];
+
     protected $table = 'usuario_grado';
 
     // Relación con Usuario

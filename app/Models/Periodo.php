@@ -18,6 +18,10 @@ class Periodo extends Model
     public function competencias() {
         return $this->hasMany(Competencia::class);
     }
+    // Relación con Materias
+    public function materias() {
+        return $this->hasMany(MateriaHasCompetencia::class);
+    }
 
     // Relación con Notas
     public function notas() {

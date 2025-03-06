@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             GruposSeeder::class,
             UsuarioSeeder::class,
             BaseMateriaSeeder::class,
+            PeriodoSeeder::class,
         ]);
     
     }

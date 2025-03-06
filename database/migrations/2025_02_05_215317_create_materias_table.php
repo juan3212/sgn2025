@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('materias', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 500);
-            $table->foreignId('grado_id')->constrained('grados');
-            $table->foreignId('grupo_id')->constrained('grupos');
+            $table->foreignId('materia_id')->constrained('base_materia')->onDelete('cascade');
+            $table->foreignId('grado_id')->constrained('grados')->onDelete('cascade');
+            $table->foreignId('grupo_id')->constrained('grupos')->onDelete('cascade');
             $table->integer('intensidad_horaria');
-            $table->foreignId('profesor_id')->constrained('usuarios');
+            $table->foreignId('profesor_id')->constrained('usuarios')->onDelete('cascade');
             $table->timestamps();
         });
     }

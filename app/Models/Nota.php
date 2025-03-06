@@ -32,6 +32,11 @@ class Nota extends Model
         return $this->belongsTo(Materia::class);
     }
 
+    // Relación con Competencia
+    public function competencia() {
+        return $this->belongsTo(Competencia::class);
+    }
+
     // Relación con Periodo
     public function periodo() {
         return $this->belongsTo(Periodo::class);

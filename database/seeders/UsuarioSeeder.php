@@ -6,7 +6,8 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
-use App\Models\UsuarioRol;
+use Spatie\Permission\Models\Role;
+
 
 class UsuarioSeeder extends Seeder
 {
@@ -27,10 +28,10 @@ class UsuarioSeeder extends Seeder
         
         Usuario::create($usuario);
 
-        UsuarioRol::create([
-            "usuario_id" => 1,
-            "rol_id" => 1
-        ]);
+        $usuario = Usuario::find(1); // Encuentra un usuario existente (por ejemplo, ID 1)
+        $rolAdministrador = Role::where('name', 'administrador')->first(); // Obtiene el rol 'administrador' de Spatie
+        
+        $usuario->assignRole($rolAdministrador);
        
     }
 }
