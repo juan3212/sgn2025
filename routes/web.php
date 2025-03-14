@@ -40,6 +40,13 @@ Route::get('competencias/data', [App\Http\Controllers\CompetenciasController::cl
     ->middleware(['auth'])
     ->name('competencias.data');
 
+#vistas tipo edit
+Route::get('/edit/competencias/{id}', function ($id)  {
+    return view('edit.competencias', ['id' => $id]);
+    }) 
+    ->middleware(['auth'])
+    ->name('competencias.edit');
+
 
 #mostrar formularios dinamicamente
 Route::get('create-user', function(){
@@ -76,8 +83,14 @@ Route::post('bulk-delete', [App\Http\Controllers\DeleteController::class, 'bulkD
     ->name('bulk-delete');
 
 #rutas Prueba
-Route::view('prueba', 'pruebas')
+Route::get('prueba/{id}', function ($id)  {
+    return view('pruebas', ['id' => $id]);
+    }) 
     ->middleware(['auth'])
     ->name('prueba');
+
+Route::get('tablaCompetenciasEdit/{id}', [App\Livewire\Pages\Edit\Competencias::class, 'createTable'])
+    ->name('tablaCompetenciasEdit');
+
 
 require __DIR__.'/auth.php';

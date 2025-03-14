@@ -4,6 +4,7 @@ namespace App\Livewire\Forms;
 use App\Models\Materia;
 use App\Models\Competencia;
 use App\Models\Periodo;
+use App\Http\Controllers\CompetenciasServiceController;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -17,24 +18,18 @@ class CompetenciasForm extends Component
     public $competenceDescription;
     public $selectedSubjects = [];
     public $paginationInfo = [];
+    protected $competenciaService;
+
+    public function boot(CompetenciasServiceController $competenciasServiceController)
+    {
+        $this->competenciaService = $competenciasServiceController;
+    }
 
     public function updatedSearch()
     {
-        $this->subjects = $this->getSubjects();
+        $this->subjects = $this->competenciaService->getSubjects($this->search);
     }
-    private function getSubjects()
-    {
-        return Materia::selectRaw('materias.id as id, CONCAT(nombre_materia, " - ", grado, " - ", grupo) as nombre')
-            ->join('base_materia', 'materias.materia_id', '=', 'base_materia.id')
-            ->join('grados', 'materias.grado_id', '=', 'grados.id')
-            ->join('grupos', 'materias.grupo_id', '=', 'grupos.id')
-            ->where('nombre_materia', 'like', '%' . $this->search . '%')
-            ->get(); // Filtrar por nombre 
-    }
-    private function getPeriodo()
-    {
-        return Periodo::all();
-    }
+
 
     public function submit(){
         $this->validate([
@@ -79,7 +74,8 @@ class CompetenciasForm extends Component
 
     public function render()
     {
-        $this->periodos = $this->getPeriodo();
+        
+        $this->periodos = $this->competenciaService->getPeriodo();
         return view('livewire.forms.competencias-form');
     }
 }

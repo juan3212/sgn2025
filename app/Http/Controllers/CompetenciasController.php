@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Competencia;
+use App\Models\Materia;
+use App\Models\Periodo;
+use Illuminate\Support\Facades\DB;
 
 class CompetenciasController extends Controller
 {
@@ -15,13 +18,14 @@ class CompetenciasController extends Controller
             return '<input type="checkbox" class="select-checkbox form-checkbox h-5 w-5 text-blue-600" data-id="' . $competencia->id . '">';
         })
         ->addColumn('actions', function($competencia){
-            $actions = '<button class="btn btn-xs btn-primary edit" data-id="'.$competencia->id.'">Edit</button>
+            $actions = '<a class="btn btn-xs btn-primary edit" href="/edit/competencias/'.$competencia->id.'">Edit</a>
                         <button class="btn btn-xs btn-danger delete" data-id="'.$competencia->id.'">Delete</button>';
             return $actions;
         })
         ->rawColumns(['checkbox','actions'])
         ->make(true); 
     }
+
 
     public function delete($id){
         try{
@@ -32,4 +36,5 @@ class CompetenciasController extends Controller
             return response()->json(['success' => false, 'message' => 'Error al eliminar la competencia']);
         }
     }
+
 }

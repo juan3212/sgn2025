@@ -20,7 +20,7 @@ class Materia extends Model
         'profesor_id'
     ];
 
-    public function materiaId() {
+    public function materias() {
         return $this->belongsTo(BaseMateria::class, 'materia_id');
     }
 
@@ -42,8 +42,8 @@ class Materia extends Model
     // Relación con Competencias
     public function competencias()
     {
-        return $this->belongsToMany(Competencia::class, 'materia_has_competencia', 'materia_id', 'competencia_id')
-                    ->withPivot('periodo_id');
+        return $this->belongsToMany(Competencia::class, 'materia_has_competencia', 'materia_id', 'competencia_id');
+                    
     }
 
     // Relación con Notas

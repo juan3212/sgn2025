@@ -51,16 +51,8 @@ export function deleteResource({
                 
                 // Recargar tabla si se especifica
                 if (reloadTable && tableId) {
-                    const table = document.getElementById(tableId);
-                    if (table && typeof table.refresh === 'function') {
-                        table.refresh(); // Para tablas con método refresh
-                    } else if (window.dataTable && window.dataTable[tableId]) {
-                        window.dataTable[tableId].ajax.reload(); // Para DataTables
-                    } else {
-                        // Alternativa: eliminar la fila de la tabla
-                        const row = document.querySelector(`tr[data-id="${resourceId}"]`);
-                        if (row) row.remove();
-                    }
+                    // Recargar la tabla DataTable
+                    $(`#${tableId}`).DataTable().ajax.reload();
                 }
                 
                 // Ejecutar callback de éxito

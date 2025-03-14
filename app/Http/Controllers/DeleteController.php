@@ -16,7 +16,7 @@ class DeleteController extends Controller
         $request->validate([
             'controller' => 'required|string|regex:/^[A-Za-z0-9]+$/',  // Solo permite caracteres alfanuméricos
             'functionName' => 'required|string|regex:/^[A-Za-z0-9]+$/',
-            'id' => 'required|integer|min:1',
+            'id' => 'required',
         ]);
         
         $controllerName = $request->controller;
@@ -25,7 +25,7 @@ class DeleteController extends Controller
         
         // Lista blanca de controladores permitidos para mayor seguridad
         $allowedControllers = [
-            'Materias', 'Grados', 'Usuarios', 'Competencias'
+            'Materias', 'Grados', 'Usuarios', 'Competencias', 'CompetenciasService'
             // Añade otros controladores permitidos
         ];
         

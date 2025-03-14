@@ -9,30 +9,45 @@
 
 </head>
 <body>
+    @livewire('pages.edit.competencias', ['competence'=>$id])
     
-<?php
-    use App\Models\Materia;
-    $materia = Materia::select('materias.id', 'base_materia.nombre_materia', 'materias.intensidad_horaria', 'usuarios.nombre', 'usuarios.apellido', 'grados.grado', 'grupos.grupo')
-    ->join('base_materia', 'materias.materia_id', '=', 'base_materia.id')
-    ->join('usuarios', 'materias.profesor_id', '=', 'usuarios.id')
-    ->join('grados', 'materias.grado_id', '=', 'grados.id')
-    ->join('grupos', 'materias.grupo_id', '=', 'grupos.id')
-    ->get();
+    <table id="tablaPrueba">
+    <thead>
+        <th>checkbox</th>
+        <th>Nombre</th>
+        <th>Grado</th>
+        <th>Grupo</th>
+        <th>Actions</th>
+    </thead>
+    <tfoot>
+        <th>checkbox</th>
+        <th>Nombre</th>
+        <th>Grado</th>
+        <th>Grupo</th>
+        <th>Actions</th>
+    </tfoot>
 
+</table>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+<script type="module">
 
-    $materias = $materia->map(function($materia){
-        return [
-            'id' => $materia->id,
-            'materia' => $materia->nombre_materia,
-            'intensidad_horaria' => $materia->intensidad_horaria,
-            'profesor' => $materia->nombre.' '.$materia->apellido,
-            'grado' => $materia->grado,
-            'grupo' => $materia->grupo
-        ];
+$(document).ready(function() {
+    $('#tablaPrueba').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{route('tablaPrueba', ['id'=>$id])}}",
+        columns: [
+            {data: 'checkbox', name: 'checkbox'},
+            {data: 'name', name: 'nombre'},
+            {data: 'grade', name: 'grado'},
+            {data: 'group', name: 'grupo'},
+            {data: 'actions', name:'actions'},
+        ]
     });
+});
+</script>
 
-    dd($materias);
-?>
     
 </body>
 </html>

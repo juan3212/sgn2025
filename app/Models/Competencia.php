@@ -17,8 +17,8 @@ class Competencia extends Model
     // Relación con Materia
     public function materias()
     {
-        return $this->belongsToMany(Materia::class, 'materia_has_competencia', 'competencia_id', 'materia_id')
-                    ->withPivot('periodo_id'); // Si necesitas acceder al campo periodo_id
+        return $this->belongsToMany(Materia::class, 'materia_has_competencia', 'competencia_id', 'materia_id');
+        
     }
     public function notas(){
         return $this->belongsTo(Nota::class);
