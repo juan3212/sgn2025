@@ -22,7 +22,7 @@ class MateriasController extends Controller
                 return '<input type="checkbox" class="select-checkbox form-checkbox h-5 w-5 text-blue-600" data-id="' . $materia->id . '">';
             })
             ->addColumn('action', function ($materia) {
-                return '<button class="btn btn-xs btn-primary edit" data-id="'.$materia->id.'">Edit</button>
+                return '<a class="btn btn-xs btn-primary edit" href="/edit/materias/'.$materia->id.'">Edit</a>
                         <button class="btn btn-xs btn-danger delete" data-id="'.$materia->id.'">Delete</button>';
             })
             ->rawColumns(['checkbox', 'action'])

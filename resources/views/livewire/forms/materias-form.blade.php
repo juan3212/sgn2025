@@ -15,14 +15,15 @@
                     {{ session('error') }}
                 </div>
             @endif
-
             <div>
                 <label for="subjectSelected" class="block text-sm font-medium text-gray-700">Nombre</label>
                 <select name="subjectSelected" id="subjectSelected" wire:model="subjectSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
-                    <option value="">Seleccione una materia</option>
-                    @foreach ($subjects as $subject)
-                        <option value="{{ $subject->id }}">{{ $subject->nombre_materia }}</option>
-                    @endforeach
+                    
+                @foreach ($subjects as $subject)
+                    <option value="{{ $subject->id }}" @selected($subjectSelected && $subject->id == $subjectSelected)>
+                        {{ $subject->nombre_materia }}
+                    </option>
+                @endforeach
                 </select>
             </div>
             <div>
@@ -32,7 +33,7 @@
             <div>
                 <label for="teacher" class="block text-sm font-medium text-gray-700">Docente</label>
                 <input type="hidden" name="teacher_id" id="teacher_id" wire:model="teacher_id">
-                <input type="text" id="teacher" wire:model.live="teacherSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
+                <input type="text" id="teacher" wire:model.live.debounce.250ms="teacherSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
                 @if (!empty($teachers))
                     <ul class="autocomplete-lista mt-2 border border-gray-300 rounded shadow-sm">
                         @foreach ($teachers as $usuario)
@@ -48,16 +49,20 @@
                 <select name="gradeSelected" id="gradeSelected" wire:model="gradeSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
                     <option value="">Seleccione un grado</option>
                     @foreach ($grades as $grade)
-                        <option value="{{ $grade->id }}">{{ $grade->grado }}</option>
+                        <option value="{{ $grade->id }}" @selected($gradeSelected && $grade->id == $gradeSelected)>
+                            {{ $grade->grado }}
+                        </option>
                     @endforeach
                 </select>
             </div>
             <div>
                 <label for="class" class="block text-sm font-medium text-gray-700">Clase</label>
-                <select name="class" id="class" wire:model="class" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
+                <select name="class" id="class" wire:model="classSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
                     <option value="">Seleccione una clase</option>
                     @foreach ($classes as $class)
-                        <option value="{{ $class->id }}">{{ $class->grupo }}</option>
+                        <option value="{{ $class->id }}" @selected($classSelected && $class->id == $classSelected)>
+                            {{ $class->grupo }}
+                        </option>
                     @endforeach
                 </select>
             </div>

@@ -40,11 +40,22 @@ Route::get('competencias/data', [App\Http\Controllers\CompetenciasController::cl
     ->middleware(['auth'])
     ->name('competencias.data');
 
+#edit competencias
+Route::get('tablaCompetenciasEdit/{id}', [App\Livewire\Pages\Edit\Competencias::class, 'createTable'])
+    ->name('tablaCompetenciasEdit');
+
+#edit materias
+Route::get('/edit/materias/{id}', function ($id)  {
+    return view('edit.materias', ['id' => $id]);
+    })
+    ->middleware(['auth', 'role:administrador'])
+    ->name('materias.edit');
+
 #vistas tipo edit
 Route::get('/edit/competencias/{id}', function ($id)  {
     return view('edit.competencias', ['id' => $id]);
     }) 
-    ->middleware(['auth'])
+    ->middleware(['auth', 'role:administrador'])
     ->name('competencias.edit');
 
 
@@ -89,8 +100,7 @@ Route::get('prueba/{id}', function ($id)  {
     ->middleware(['auth'])
     ->name('prueba');
 
-Route::get('tablaCompetenciasEdit/{id}', [App\Livewire\Pages\Edit\Competencias::class, 'createTable'])
-    ->name('tablaCompetenciasEdit');
+
 
 
 require __DIR__.'/auth.php';
