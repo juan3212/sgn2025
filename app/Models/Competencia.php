@@ -20,7 +20,9 @@ class Competencia extends Model
         return $this->belongsToMany(Materia::class, 'materia_has_competencia', 'competencia_id', 'materia_id');
         
     }
-    public function notas(){
-        return $this->belongsTo(Nota::class);
+    public function actividades()
+    {
+        return $this->hasMany(Actividad::class);
     }
+
 }

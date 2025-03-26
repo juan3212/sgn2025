@@ -9,7 +9,7 @@
 
 </head>
 <body>
-    @livewire('forms.materias-form', ['subjectId' => $id])
+    @livewire('pages.profesores.competencias', ['subjectId' => $id])
     
  
 

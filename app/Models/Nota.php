@@ -14,11 +14,7 @@ class Nota extends Model
 
     protected $fillable = [
         'estudiante_id',
-        'materia_id',
-        'periodo_id',
-        'competencia_id',
-        'tipo_nota_id',
-        'descripcion',
+        'actividad_id',
         'valor'
     ];
 
@@ -28,22 +24,7 @@ class Nota extends Model
     }
 
     // Relación con Materia
-    public function materia() {
-        return $this->belongsTo(Materia::class);
-    }
-
-    // Relación con Competencia
-    public function competencia() {
-        return $this->belongsTo(Competencia::class);
-    }
-
-    // Relación con Periodo
-    public function periodo() {
-        return $this->belongsTo(Periodo::class);
-    }
-
-    // Relación con TipoNota
-    public function tipoNota() {
-        return $this->belongsTo(TipoNota::class, 'tipo_nota_id');
+    public function actividades(){
+        return $this->belongsTo(Actividad::class, 'actividad_id');
     }
 }
