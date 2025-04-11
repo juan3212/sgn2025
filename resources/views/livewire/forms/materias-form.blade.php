@@ -18,7 +18,7 @@
             <div>
                 <label for="subjectSelected" class="block text-sm font-medium text-gray-700">Nombre</label>
                 <select name="subjectSelected" id="subjectSelected" wire:model="subjectSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
-                    
+                    <option value="">Seleccione una materia</option>
                 @foreach ($subjects as $subject)
                     <option value="{{ $subject->id }}" @selected($subjectSelected && $subject->id == $subjectSelected)>
                         {{ $subject->nombre_materia }}
@@ -32,7 +32,7 @@
             </div>
             <div>
                 <label for="teacher" class="block text-sm font-medium text-gray-700">Docente</label>
-                <input type="hidden" name="teacher_id" id="teacher_id" wire:model="teacher_id">
+                <input type="hidden" name="teacher_id" id="teacher_id" wire:model="teacher_id"> 
                 <input type="text" id="teacher" wire:model.live.debounce.250ms="teacherSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
                 @if (!empty($teachers))
                     <ul class="autocomplete-lista mt-2 border border-gray-300 rounded shadow-sm">

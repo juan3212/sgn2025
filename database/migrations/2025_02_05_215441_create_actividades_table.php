@@ -18,12 +18,12 @@ return new class extends Migration
             $table->unsignedBigInteger('tipo_nota');
             $table->unsignedBigInteger('materia_id');
             $table->unsignedBigInteger('competencia_id');
-            $table->unsignedBigInter('periodo_id');
+            $table->unsignedBigInteger('periodo_id');
             $table->timestamps();
-            $table->foreign('competencias_id')->references('id')->on('competencias')->onDelete('cascade');
+            $table->foreign('competencia_id')->references('id')->on('competencias')->onDelete('cascade');
             $table->foreign('periodo_id')->references('id')->on('periodos')->onDelete('cascade');
             $table->foreign('materia_id')->references('id')->on('materias')->onDelete('cascade');
-            $table->foreign('tipo_nota')->references('id')->on('tipo_notas')->onDelete('cascade');
+            $table->foreign('tipo_nota')->references('id')->on('tipos_notas')->onDelete('cascade');
         });
     }
 

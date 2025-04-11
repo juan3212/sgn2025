@@ -25,7 +25,7 @@ class DeleteController extends Controller
         
         // Lista blanca de controladores permitidos para mayor seguridad
         $allowedControllers = [
-            'Materias', 'Grados', 'Usuarios', 'Competencias', 'CompetenciasService'
+            'Materias', 'Grados', 'Usuarios', 'Competencias', 'CompetenciasService', 'Actividades'
             // Añade otros controladores permitidos
         ];
         
@@ -73,7 +73,7 @@ class DeleteController extends Controller
         $functionName = $request->functionName;
         $ids = $request->ids;
 
-        $allowedModels = ['Materia', 'Usuario', 'Competencia', 'Grado'];
+        $allowedModels = ['Materia', 'Usuario', 'Competencia', 'Grado', 'Actividad'];
         
         if (!in_array($modelName, $allowedModels)) {
             return response()->json(['error' => 'Modelo no autorizado'], 403);

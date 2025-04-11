@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+
 class Usuario extends Authenticatable
 {
     //
@@ -47,9 +48,12 @@ class Usuario extends Authenticatable
     }*/
 
     // Relación muchos-a-muchos con Grados y Grupos (a través de usuario_grado)
-    public function gradosGrupos() {
-        return $this->belongsToMany(Grado::class, 'usuario_grado')
-            ->withPivot('grupo_id');
+    public function grados() {
+        return $this->belongsToMany(Grado::class, 'usuario_grado');
+    }
+
+    public function grupos() {
+        return $this->belongsToMany(Grupo::class, 'usuario_grado');
     }
 
     // Relación con Notas (como estudiante)

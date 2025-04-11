@@ -15,7 +15,9 @@ class TipoNota extends Model
     protected $fillable = ['tipo'];
 
     // Relación con Notas
-    public function notas() {
-        return $this->hasMany(Nota::class);
+
+    public function actividades()
+    {
+        return $this->hasMany(Actividad::class);
     }
 }

@@ -17,6 +17,10 @@ class Actividad extends Model
         'periodo_id',
     ];
 
+    public function tipoNota()
+    {
+        return $this->belongsTo(TipoNota::class, 'tipo_nota');
+    }
     public function competencia()
     {
         return $this->belongsTo(Competencia::class);

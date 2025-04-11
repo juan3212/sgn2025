@@ -18,8 +18,10 @@ class CompetenciasController extends Controller
             return '<input type="checkbox" class="select-checkbox form-checkbox h-5 w-5 text-blue-600" data-id="' . $competencia->id . '">';
         })
         ->addColumn('actions', function($competencia){
-            $actions = '<a class="btn btn-xs btn-primary edit" href="/edit/competencias/'.$competencia->id.'">Edit</a>
-                        <button class="btn btn-xs btn-danger delete" data-id="'.$competencia->id.'">Delete</button>';
+            $actions = '<div class="flex flex-wrap gap-1">
+                            <a class="btn btn-xs btn-primary edit" href="/edit/competencias/'.$competencia->id.'">Edit</a>
+                            <button class="btn btn-xs btn-danger delete" data-id="'.$competencia->id.'">Delete</button>
+                        </div>';
             return $actions;
         })
         ->rawColumns(['checkbox','actions'])

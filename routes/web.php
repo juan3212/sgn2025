@@ -18,6 +18,12 @@ Route::view('competencias', 'competencias')
     ->middleware(['auth', 'verified', 'role:administrador'])
     ->name('competencias');
 
+Route::get('actividades/{materia}/{periodo}/{competencia}', function ($materia, $periodo, $competencia)  {
+    return view('actividades', ['materia' => $materia, 'periodo' => $periodo, 'competencia' => $competencia]);
+    }) 
+    ->middleware(['auth'])
+    ->name('actividades');
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
@@ -40,6 +46,11 @@ Route::get('competencias/data', [App\Http\Controllers\CompetenciasController::cl
     ->middleware(['auth'])
     ->name('competencias.data');
 
+#actividades
+Route::get('actividades/data', [App\Http\Controllers\ActividadesController::class, 'data'])
+    ->middleware(['auth'])
+    ->name('actividades.data');
+
 #edit competencias
 Route::get('tablaCompetenciasEdit/{id}', [App\Livewire\Pages\Edit\Competencias::class, 'createTable'])
     ->name('tablaCompetenciasEdit');
@@ -50,6 +61,13 @@ Route::get('/edit/materias/{id}', function ($id)  {
     })
     ->middleware(['auth', 'role:administrador'])
     ->name('materias.edit');
+
+#edit actividades
+Route::get('/edit/actividades/{id}', function ($id)  {
+    return view('edit.actividades', ['id' => $id]);
+    })
+    ->middleware(['auth', 'role:administrador'])
+    ->name('actividades.edit');
 
 #vistas tipo edit
 Route::get('/edit/competencias/{id}', function ($id)  {
@@ -84,6 +102,20 @@ Route::get('create-competencia', function(){
     })->middleware(['auth', 'role:administrador'])
         ->name('create-competencia');
 
+Route::get('create-actividad/{materia}/{periodo}/{competencia}', function ($materia, $periodo, $competencia)  {
+    return view('form-template', [
+        'formComponent'=> 'forms.actividades-form',
+        'formTitle' => 'Agregar actividades',
+        'params'=> [
+            'materia' => $materia,
+            'periodo' => $periodo,
+            'competencia' => $competencia,
+        ],
+    ]);
+    })
+    ->middleware(['auth', 'role:administrador'])
+    ->name('create-actividad');
+
 #Rutas tipo DELETE
 Route::post('generic-delete', [App\Http\Controllers\DeleteController::class, 'delete'])
     ->middleware(['auth', 'role:administrador'])
@@ -94,13 +126,15 @@ Route::post('bulk-delete', [App\Http\Controllers\DeleteController::class, 'bulkD
     ->name('bulk-delete');
 
 #rutas Prueba
-Route::get('prueba/{id}', function ($id)  {
-    return view('pruebas', ['id' => $id]);
-    }) 
+Route::view('prueba', 'pruebas') 
     ->middleware(['auth'])
     ->name('prueba');
 
+Route::get('tabla-prueba/{materia}/{periodo}/{competencia}', [App\Http\Controllers\ActividadesController::class, 'data'])
+    ->middleware(['auth'])
+    ->name('tabla-prueba');
 
-
+    Route::get('tabla-notas', [App\Http\Controllers\NotasController::class, 'table'])
+    ->name('tabla-notas');
 
 require __DIR__.'/auth.php';
