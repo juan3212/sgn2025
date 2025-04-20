@@ -7,10 +7,7 @@
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
             <link  href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
 
-            <div>
-                <a href="{{ route('create-user') }}"><button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Agregar Usuario</button></a> <!-- Fixed button label -->
-                <button id="delete-selected" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed hidden">Eliminar seleccionados</button>
-            </div>
+           <x-botones-header :createRoute="'create-user'"/>
             
         </div>
        
@@ -18,7 +15,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="container">
                 <h3>Usuarios</h3>
                 <table id="users-table" class="display">
@@ -62,6 +59,8 @@
             $('#users-table').DataTable({
                 processing: true, // Muestra un indicador de "Procesando..." mientras se cargan los datos
                 serverSide: true, // Habilita el procesamiento del lado del servidor
+                responsive: true,
+                scrollX: true, // Habilita la responsividad de la tabla
                 ajax: "{{ route('user.data') }}", // URL de la ruta que devuelve los datos JSON
                 columns: [ // Define las columnas de la tabla, deben coincidir con las columnas seleccionadas en el controlador
                     {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},

@@ -7,17 +7,14 @@
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
             <link  href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
 
-            <div>
-                <a href="{{ route('create-competencia') }}"><button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Agregar Competencia</button></a> <!-- Fixed button label -->
-                <button id="delete-selected" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed hidden">Eliminar seleccionados</button>
-            </div>
+            <x-botones-header :createRoute="'create-competencia'"/>
             
         </div>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="container">
                 <h3>Competencias</h3>
                 <table id="competencias-table" class="display">
@@ -58,6 +55,8 @@
             $('#competencias-table').DataTable({
                 processing:true,
                 serverSide:true,
+                responsive:true,
+                scrollX:true,
                 ajax: "{{ route('competencias.data') }}",
                 columns:[
                     {data:'checkbox', name: 'checkbox', orderable:false, searchable:false},

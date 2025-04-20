@@ -50,7 +50,12 @@ Route::get('competencias/data', [App\Http\Controllers\CompetenciasController::cl
 Route::get('actividades/data', [App\Http\Controllers\ActividadesController::class, 'data'])
     ->middleware(['auth'])
     ->name('actividades.data');
-
+#notas
+Route::get('notas/data/{actividad}', function ($actividad)  {
+    return view('notas', ['actividad' => $actividad]);
+    })
+    ->middleware(['auth'])
+    ->name('notas.data');
 #edit competencias
 Route::get('tablaCompetenciasEdit/{id}', [App\Livewire\Pages\Edit\Competencias::class, 'createTable'])
     ->name('tablaCompetenciasEdit');

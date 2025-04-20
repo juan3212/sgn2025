@@ -52,6 +52,7 @@
         $('#notas-table').DataTable({
             processing: true,
             serverSide: true,
+            responsive: true,
             ajax: "{{ route('tabla-notas') }}",
             columns: [
                 { data: 'nuip', name: 'nuip' },

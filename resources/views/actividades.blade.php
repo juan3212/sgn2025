@@ -5,16 +5,13 @@
                 {{ __('Actividades') }}
             </h2>
 
-            <div>
-                <a href="{{ route('create-actividad', ['materia'=>$materia, 'periodo'=>$periodo, 'competencia'=>$competencia]) }}"><button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Agregar Actividad</button></a> <!-- Fixed button label -->
-                <button id="delete-selected" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed hidden">Eliminar seleccionados</button>
-            </div>
+            <x-botones-header :createRoute="route('create-actividad', ['materia'=>$materia, 'periodo'=>$periodo, 'competencia'=>$competencia])"/>
         </div>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="container">
                     <h3>Actividades</h3>
                     <table id="actividades-table" class="display">
@@ -61,6 +58,8 @@
         $('#actividades-table').DataTable({
             processing: true,
             serverSide: true,
+            responsive:true,
+            scrollX: true,
             ajax: "{{ route('tabla-prueba', ['materia' => $materia, 'periodo' => $periodo, 'competencia' => $competencia]) }}",
             columns: [
                 { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
@@ -82,7 +81,7 @@
                 }
             });
         })
-      
+        
     </script>
 
 </x-app-layout>
