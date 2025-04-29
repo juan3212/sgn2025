@@ -4,8 +4,11 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Notas') }}
             </h2>
-            <link href="URL_ADDRESS.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+            
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
             <link  href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
+            <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+            <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
         </div>
 
         <style>
@@ -15,6 +18,7 @@
                 height: 100%;
                 padding: 5px;
                 box-sizing: border-box;
+                border: 1px solid #ccc;
             }
 
             table.dataTable td {
@@ -41,13 +45,13 @@
                     <table id="notas-table" class="display">
                         <thead>
                             <tr>
-                                <th>NUIP</th>
                                 <th>Nombre</th>
                                 <th>Apellido</th>
+                                <th>NUIP</th>
                                 <th>Notas</th>
                             </tr>
-                            <tbody></tbody>
                         </thead>
+                        <tbody></tbody>
                     </table>
                     <div class="grid m-2 p-2">
                         <button class="btn btn-primary" id="guardarButton">Guardar</button>
@@ -57,13 +61,8 @@
         </div>
     </div>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link  href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-    <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
-
     <script type="module">
-
+        import sweetalert2 from 'https://cdn.jsdelivr.net/npm/sweetalert2@11.19.1/+esm';
         import {deleteResource} from '/js/delete-resource.js';
         import {Delete} from '/js/bulk-delete.js';
 
@@ -74,10 +73,10 @@
             responsive: true,
             ajax: "{{ route('tabla-notas') }}",
             columns: [
-                { data: 'nuip', name: 'nuip' },
                 { data: 'nombre', name: 'nombre' },
                 { data: 'apellido', name: 'apellido'},
-                { data: 'rates', name:'notas'},
+                { data: 'nuip', name: 'nuip' },
+                { data: 'rates', name:'notas', orderable: false, searchable: false},
             ]
         });
 
@@ -145,6 +144,53 @@
         table.on('draw.dt order.dt search.dt page.dt xhr.dt', function () {
             updateCellsWithStoredValues();
         });
+
+        function saveNotas() {
+
+            fetch('/notas/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(notas)
+                })
+                .then(response => response.json())
+                .then(data => {
+
+                    if (data.success) {
+                        notas = [];
+                        updateCellsWithStoredValues();
+
+                        Swal.fire({
+                            title: 'Éxito',
+                            text: data.message,
+                            icon: 'success',
+                        })
+                    }
+                    else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: data.message,
+                            icon: 'error',
+                            //footer: data.error_details
+                        })
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        //footer: data.error_details
+                    })
+                });
+        }
+        
+
+        document.getElementById('guardarButton').addEventListener('click', saveNotas);
     </script>
  
     <script src="/js/notas.js"></script>

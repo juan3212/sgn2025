@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Materia;
+use App\Models\Usuario;
 
 Route::view('/', 'welcome');
 
@@ -56,6 +57,10 @@ Route::get('notas/data/{actividad}', function ($actividad)  {
     })
     ->middleware(['auth'])
     ->name('notas.data');
+
+#guardar notas
+Route::post('notas/save', [App\Http\Controllers\NotasController::class, 'save'])
+    ->middleware(['auth']);
 #edit competencias
 Route::get('tablaCompetenciasEdit/{id}', [App\Livewire\Pages\Edit\Competencias::class, 'createTable'])
     ->name('tablaCompetenciasEdit');
@@ -139,7 +144,34 @@ Route::get('tabla-prueba/{materia}/{periodo}/{competencia}', [App\Http\Controlle
     ->middleware(['auth'])
     ->name('tabla-prueba');
 
-    Route::get('tabla-notas', [App\Http\Controllers\NotasController::class, 'table'])
+Route::get('tabla-notas', [App\Http\Controllers\NotasController::class, 'table'])
     ->name('tabla-notas');
 
 require __DIR__.'/auth.php';
+
+Route::get('pruebasql', function () {
+
+        $students = Usuario::leftJoin('usuario_grado', function ($join) {
+            $join->on('usuarios.id', '=', 'usuario_grado.usuario_id');
+        })
+        ->leftJoin('notas', function ($join) {
+            $join->on('usuarios.id', '=', 'notas.estudiante_id');
+        })
+        ->where(function ($query) {
+            $query->where('usuario_grado.grado_id', 7);
+        })
+        ->where(function ($query) {
+            $query->where('usuario_grado.grupo_id', 1);
+        })
+        ->where(function ($query) {
+            $query->where('notas.actividad_id', 4)
+                  ->orWhereNull('notas.actividad_id'); // Para mantener el LEFT JOIN
+        })
+        ->select('usuarios.id', 'usuarios.nombre', 'usuarios.apellido', 'usuarios.nuip', 'notas.valor') // Selecciona solo los campos de la tabla usuarios
+        ->distinct() // Evita duplicados si hay múltiples coincidencias en las tablas relacionadas
+        ->get();
+        return $students;
+}
+)
+->middleware(['auth'])
+->name('actividades');
