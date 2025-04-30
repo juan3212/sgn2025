@@ -12,14 +12,16 @@ class NotasController extends Controller
 {
     use ValidatesRequests;
     //
-    public $grado_id = 7;
-    public $grupo_id = 1;
-    public $actividad_id = 4;
-    public $nota;
-    public $usuario_id;
 
-    public function getStudents()
+    public $actividad_id;
+    public $grupo_id;
+    public $grado_id;
+
+    public function getStudents(Request $request)
     {
+        $this->grupo_id = $request->grupo_id;
+        $this->grado_id = $request->grado_id;
+        $this->actividad_id = $request->actividad_id;
 
         $students = Usuario::leftJoin('usuario_grado', function ($join) {
             $join->on('usuarios.id', '=', 'usuario_grado.usuario_id');
@@ -40,13 +42,15 @@ class NotasController extends Controller
         ->select('usuarios.id', 'usuarios.nombre', 'usuarios.apellido', 'usuarios.nuip', 'notas.valor') // Selecciona solo los campos de la tabla usuarios
         ->distinct() // Evita duplicados si hay múltiples coincidencias en las tablas relacionadas
         ->get();
+
         return $students;
 
     }
 
-    public function table()
+
+    public function table(Request $request)
     {
-        $students = $this->getStudents();
+        $students = $this->getStudents($request);
         return DataTables()->of($students)
             ->addColumn('rates', function ($student) {
                 return '<span contenteditable="true" class="editable-cell" data-id="'.$student->id.'">' . $student->valor.'</span>';
@@ -58,7 +62,7 @@ class NotasController extends Controller
     public function save(Request $request)
     {
         try {
-            if (!$request->has('notasData')) {
+            if (!$request->has('notas') || !$request->has('actividad_id')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No se proporcionaron datos de notas',
@@ -66,7 +70,9 @@ class NotasController extends Controller
                 ], 400);
             }
 
-            $notasData = $request->all();
+
+            $this->actividad_id = $request->actividad_id;
+            $notasData = $request->notas;
             
             // Validación de todas las notas antes de procesar
             foreach ($notasData as $nota) {
@@ -128,6 +134,12 @@ class NotasController extends Controller
                 'error_details' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function render ($grado_id, $grupo_id, $actividad_id)
+    {
+        return view('notas', ['grado_id'=>$grado_id, 'grupo_id'=>$grupo_id, 'actividad_id'=>$actividad_id]);
+        
     }
 }
 

@@ -67,11 +67,19 @@
         import {Delete} from '/js/bulk-delete.js';
 
 //si scrollX esta activado, no funcionan moveToCell
+       
         const table = $('#notas-table').DataTable({
             processing: true,
             serverSide: true,
             responsive: true,
-            ajax: "{{ route('tabla-notas') }}",
+            ajax: {
+                url: "{{ route('tabla-notas') }}",
+                data: function(d) {
+                    d.grado_id = {{ $grado_id }};
+                    d.grupo_id = {{ $grupo_id }};
+                    d.actividad_id = {{ $actividad_id }};
+                }
+            },
             columns: [
                 { data: 'nombre', name: 'nombre' },
                 { data: 'apellido', name: 'apellido'},
@@ -103,6 +111,12 @@
 
 
                 if (valor > 10) {
+                    e.target.classList.add('outRange');
+                    messageContent.textContent = 'La nota debe ser un valor entre 0 y 10';
+                    return;
+                }
+
+                if (!valor) {
                     e.target.classList.add('outRange');
                     messageContent.textContent = 'La nota debe ser un valor entre 0 y 10';
                     return;
@@ -154,7 +168,10 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify(notas)
+                    body: JSON.stringify({
+                        'actividad_id': {{ $actividad_id }},
+                        'notas': notas
+                    })
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -174,7 +191,7 @@
                             title: 'Error',
                             text: data.message,
                             icon: 'error',
-                            //footer: data.error_details
+                            footer: data.error_details
                         })
                     }
                 })
@@ -184,7 +201,7 @@
                         title: 'Error',
                         text: data.message,
                         icon: 'error',
-                        //footer: data.error_details
+                        footer: data.error_details
                     })
                 });
         }
