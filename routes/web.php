@@ -83,21 +83,21 @@ Route::get('tablaCompetenciasEdit/{id}', [App\Livewire\Pages\Edit\Competencias::
 Route::get('/edit/materias/{id}', function ($id)  {
     return view('edit.materias', ['id' => $id]);
     })
-    ->middleware(['auth', 'role:administrador'])
+    ->middleware(['auth', 'permission:administrar materias'])
     ->name('materias.edit');
 
 #edit actividades
 Route::get('/edit/actividades/{id}', function ($id)  {
     return view('edit.actividades', ['id' => $id]);
     })
-    ->middleware(['auth', 'role:administrador'])
+    ->middleware(['auth', 'permission:administrar actividades'])
     ->name('actividades.edit');
 
 #vistas tipo edit
 Route::get('/edit/competencias/{id}', function ($id)  {
     return view('edit.competencias', ['id' => $id]);
     }) 
-    ->middleware(['auth', 'role:administrador'])
+    ->middleware(['auth', 'permission:administrar competencias'])
     ->name('competencias.edit');
 
 
@@ -107,7 +107,7 @@ Route::get('create-user', function(){
         'formComponent'=> 'forms.usuario-form',
         'formTitle' => 'Agregar usuarios',
     ]);
-    })->middleware(['auth', 'role:administrador'])
+    })->middleware(['auth', 'permission:administrar usuarios'])
         ->name('create-user');
 
 Route::get('create-materia', function(){
@@ -142,11 +142,11 @@ Route::get('create-actividad/{materia}/{periodo}/{competencia}', function ($mate
 
 #Rutas tipo DELETE
 Route::post('generic-delete', [App\Http\Controllers\DeleteController::class, 'delete'])
-    ->middleware(['auth', 'role:administrador'])
+    ->middleware(['auth', 'permission:administrar materias'])
     ->name('generic-delete');
 
 Route::post('bulk-delete', [App\Http\Controllers\DeleteController::class, 'bulkDelete'])
-    ->middleware(['auth', 'role:administrador'])
+    ->middleware(['auth', 'permission:administrar materias'])
     ->name('bulk-delete');
 
 #rutas Prueba
