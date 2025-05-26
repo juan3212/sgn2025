@@ -4,20 +4,29 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Materia;
 use App\Models\Usuario;
+use App\Http\Controllers\Estudiantes\calcularNotasController;
+
 
 Route::view('/', 'welcome');
 
 Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified', 'role:administrador'])
+    ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::view('materias', 'materias')
-    ->middleware(['auth'])
-    ->name('materias');
+Route::view('usuarios', 'usuarios')
+    ->middleware(['auth', 'permission:administrar usuarios'])
+    ->name('usuarios');
 
 Route::view('competencias', 'competencias')
-    ->middleware(['auth', 'verified', 'role:administrador'])
+    ->middleware(['auth', 'verified', 'permission:administrar competencias'])
     ->name('competencias');
+
+    #competencias de materias
+Route::get('materia/{materia}', function ($materia)  {
+    return view('materias-competencias', ['materia' => $materia]);
+    })
+    ->middleware(['auth'])
+    ->name('materia');
 
 Route::get('actividades/{materia}/{periodo}/{competencia}', function ($materia, $periodo, $competencia)  {
     return view('actividades', ['materia' => $materia, 'periodo' => $periodo, 'competencia' => $competencia]);
@@ -33,7 +42,7 @@ Route::view('profile', 'profile')
 #rutas para mostrar datatables
 
 #usuarios
-Route::get('usuarios', [App\Http\Controllers\UsuariosController::class, 'userData'])
+Route::get('usuarios/data', [App\Http\Controllers\UsuariosController::class, 'userData'])
     ->middleware(['auth'])
     ->name('user.data');
 
@@ -47,22 +56,27 @@ Route::get('competencias/data', [App\Http\Controllers\CompetenciasController::cl
     ->middleware(['auth'])
     ->name('competencias.data');
 
+#competencias de materia
+Route::get('competenciasMateria', [App\Http\Controllers\MateriasCompetenciasController::class, 'data'])
+    ->middleware(['auth'])
+    ->name('competenciasMateria');
+
 #actividades
 Route::get('actividades/data', [App\Http\Controllers\ActividadesController::class, 'data'])
     ->middleware(['auth'])
     ->name('actividades.data');
 #notas
-Route::get('notas/data/{actividad}', function ($actividad)  {
-    return view('notas', ['actividad' => $actividad]);
-    })
+Route::get('notas/{actividad_id}', [App\Http\Controllers\NotasController::class, 'render'])
     ->middleware(['auth'])
     ->name('notas.data');
+
 
 #guardar notas
 Route::post('notas/save', [App\Http\Controllers\NotasController::class, 'save'])
     ->middleware(['auth']);
 #edit competencias
 Route::get('tablaCompetenciasEdit/{id}', [App\Livewire\Pages\Edit\Competencias::class, 'createTable'])
+    ->middleware(['auth', 'permission:administrar competencias'])
     ->name('tablaCompetenciasEdit');
 
 #edit materias
@@ -101,7 +115,7 @@ Route::get('create-materia', function(){
         'formComponent'=> 'forms.materias-form',
         'formTitle' => 'Agregar materias',
     ]);
-    })->middleware(['auth', 'role:administrador'])
+    })->middleware(['auth', 'permission:administrar materias'])
         ->name('create-materia');
 
 Route::get('create-competencia', function(){
@@ -109,7 +123,7 @@ Route::get('create-competencia', function(){
         'formComponent'=> 'forms.competencias-form',
         'formTitle' => 'Agregar competencias',
     ]);
-    })->middleware(['auth', 'role:administrador'])
+    })->middleware(['auth', 'permission:administrar competencias'])
         ->name('create-competencia');
 
 Route::get('create-actividad/{materia}/{periodo}/{competencia}', function ($materia, $periodo, $competencia)  {
@@ -123,7 +137,7 @@ Route::get('create-actividad/{materia}/{periodo}/{competencia}', function ($mate
         ],
     ]);
     })
-    ->middleware(['auth', 'role:administrador'])
+    ->middleware(['auth', 'permission:administrar actividades'])
     ->name('create-actividad');
 
 #Rutas tipo DELETE
@@ -136,7 +150,11 @@ Route::post('bulk-delete', [App\Http\Controllers\DeleteController::class, 'bulkD
     ->name('bulk-delete');
 
 #rutas Prueba
-Route::view('prueba', 'pruebas') 
+Route::get('prueba', function(calcularNotasController $calcularNotasController){
+    $notas = $calcularNotasController->notasActividad(['actividad' => 4, 'estudiante' => 2]);
+    dd($notas);
+
+})
     ->middleware(['auth'])
     ->name('prueba');
 
@@ -145,33 +163,8 @@ Route::get('tabla-prueba/{materia}/{periodo}/{competencia}', [App\Http\Controlle
     ->name('tabla-prueba');
 
 Route::get('tabla-notas', [App\Http\Controllers\NotasController::class, 'table'])
+    ->middleware(['auth'])
     ->name('tabla-notas');
 
 require __DIR__.'/auth.php';
 
-Route::get('pruebasql', function () {
-
-        $students = Usuario::leftJoin('usuario_grado', function ($join) {
-            $join->on('usuarios.id', '=', 'usuario_grado.usuario_id');
-        })
-        ->leftJoin('notas', function ($join) {
-            $join->on('usuarios.id', '=', 'notas.estudiante_id');
-        })
-        ->where(function ($query) {
-            $query->where('usuario_grado.grado_id', 7);
-        })
-        ->where(function ($query) {
-            $query->where('usuario_grado.grupo_id', 1);
-        })
-        ->where(function ($query) {
-            $query->where('notas.actividad_id', 4)
-                  ->orWhereNull('notas.actividad_id'); // Para mantener el LEFT JOIN
-        })
-        ->select('usuarios.id', 'usuarios.nombre', 'usuarios.apellido', 'usuarios.nuip', 'notas.valor') // Selecciona solo los campos de la tabla usuarios
-        ->distinct() // Evita duplicados si hay múltiples coincidencias en las tablas relacionadas
-        ->get();
-        return $students;
-}
-)
-->middleware(['auth'])
-->name('actividades');

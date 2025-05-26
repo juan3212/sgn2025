@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('nombre', 500);
             $table->string('descripcion', 500);
+            $table->float('porcentaje');
+            $table->foreignId('profesor_id')->constrained('usuarios');
             $table->foreignId('periodo_id')->constrained('periodos');
             $table->timestamps();
         });

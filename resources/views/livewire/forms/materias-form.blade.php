@@ -30,20 +30,14 @@
                 <label for="ih" class="block text-sm font-medium text-gray-700">Intensidad Horaria</label>
                 <input type="text" id="ih" wire:model="ih" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
             </div>
-            <div>
-                <label for="teacher" class="block text-sm font-medium text-gray-700">Docente</label>
-                <input type="hidden" name="teacher_id" id="teacher_id" wire:model="teacher_id"> 
-                <input type="text" id="teacher" wire:model.live.debounce.250ms="teacherSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
-                @if (!empty($teachers))
-                    <ul class="autocomplete-lista mt-2 border border-gray-300 rounded shadow-sm">
-                        @foreach ($teachers as $usuario)
-                        <li class="autocomplete-item px-3 py-2 cursor-pointer hover:bg-gray-200" x-on:click="$wire.teacherSelected = '{{ $usuario->nombre }} {{ $usuario->apellido }}'; $wire.teacher_id = '{{ $usuario->id }}'; $wire.teachers = null">
-                                {{ $usuario->nombre }} {{ $usuario->apellido }}
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
-            </div>
+            @livewire('components.select-users',
+            [
+                'role'=>'profesor', 
+                'title'=>'Profesor',
+                'usuarioSelected'=>$teacherSelected,
+                'usuario_id'=>$teacher_id,
+                'wire:model'=>'teacher_id'],
+            )
             <div>
                 <label for="gradeSelected" class="block text-sm font-medium text-gray-700">Grado</label>
                 <select name="gradeSelected" id="gradeSelected" wire:model="gradeSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">

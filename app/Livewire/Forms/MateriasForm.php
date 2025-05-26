@@ -24,7 +24,7 @@ class MateriasForm extends Component
     public $grades;
     public $classSelected;
     public $classes;
-    
+
     public function mount($subjectId = null)
     {
         $this->subjectId = $subjectId;
@@ -44,50 +44,41 @@ class MateriasForm extends Component
         $this->ih = $materia->intensidad_horaria;
     }
 
-    public function updatedTeacherSelected()
-    {
-        $this->teachers = Usuario::where(function($query) {
-                $query->where('nombre', 'like', '%'.$this->teacherSelected.'%')
-                      ->orWhere('apellido', 'like', '%'.$this->teacherSelected.'%');
-            })->get();
-
-    }
-
     public function submit()
-{
-    try {
-        $this->validate([
-            'subjectSelected' => 'required',
-            'ih' => 'required',
-            'teacher_id' => 'required',
-            'gradeSelected' => 'required',
-            'classSelected' => 'required',
-        ]);
+    {
+        try {
+            $this->validate([
+                'subjectSelected' => 'required',
+                'ih' => 'required',
+                'teacher_id' => 'required',
+                'gradeSelected' => 'required',
+                'classSelected' => 'required',
+            ]);
 
-        // Lógica updateOrCreate
-        $materia = Materia::updateOrCreate(
-            ['id' => $this->subjectId], // Condición para buscar (si existe, actualiza)
-            [
-                'materia_id' => $this->subjectSelected,
-                'intensidad_horaria' => $this->ih,
-                'profesor_id' => $this->teacher_id,
-                'grado_id' => $this->gradeSelected,
-                'grupo_id' => $this->classSelected,
-            ]
-        );
+            // Lógica updateOrCreate
+            $materia = Materia::updateOrCreate(
+                ['id' => $this->subjectId], // Condición para buscar (si existe, actualiza)
+                [
+                    'materia_id' => $this->subjectSelected,
+                    'intensidad_horaria' => $this->ih,
+                    'profesor_id' => $this->teacher_id,
+                    'grado_id' => $this->gradeSelected,
+                    'grupo_id' => $this->classSelected,
+                ]
+            );
 
-        session()->flash('message', 'Materia guardada exitosamente.');
-        $this->reset(['subjectSelected', 'ih', 'teacher_id', 'gradeSelected', 'classSelected']);
-        
-        // Si es una actualización, mantener el ID para futuras ediciones
-        if ($this->subjectId) {
-            $this->subjectId = $materia->id;
+            session()->flash('message', 'Materia guardada exitosamente.');
+            $this->reset(['subjectSelected', 'ih', 'teacher_id', 'gradeSelected', 'classSelected']);
+            
+            // Si es una actualización, mantener el ID para futuras ediciones
+            if ($this->subjectId) {
+                $this->subjectId = $materia->id;
+            }
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error: ' . $e->getMessage());
         }
-
-    } catch (\Exception $e) {
-        session()->flash('error', 'Error: ' . $e->getMessage());
     }
-}
 
     public function render()
     {

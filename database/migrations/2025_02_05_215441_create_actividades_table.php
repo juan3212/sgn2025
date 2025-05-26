@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('materia_id');
             $table->unsignedBigInteger('competencia_id');
             $table->unsignedBigInteger('periodo_id');
+            $table->float('porcentaje')->nullable();
             $table->timestamps();
             $table->foreign('competencia_id')->references('id')->on('competencias')->onDelete('cascade');
             $table->foreign('periodo_id')->references('id')->on('periodos')->onDelete('cascade');

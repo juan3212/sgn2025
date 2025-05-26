@@ -20,6 +20,7 @@ class Competencias extends Component
     public $competenceDescription;    // Almacena la descripción de la competencia
     public $periodoSelected;         // Período actualmente seleccionado
     public $periodos;    
+    public $porcentaje;
     public $subjectsAdded=[];            // Lista de períodos disponibles
     public $subjectsSelected=[];   // Array de materias seleccionadas
     public $subjects;                // Lista de materias disponibles
@@ -74,6 +75,7 @@ class Competencias extends Component
             'competenceName' => $competence->nombre,
             'competenceDescription' => $competence->descripcion,
             'periodo' => $competence->periodo_id,
+            'porcentaje' => $competence->porcentaje,
             'subjects' => $this->mapSubjects($competence->materias),
         ];
     }
@@ -101,6 +103,7 @@ class Competencias extends Component
         $this->subjectsSelected = $competenceData['subjects'];
         $this->competenceName = $competenceData['competenceName'];
         $this->competenceDescription = $competenceData['competenceDescription'];
+        $this->porcentaje = $competenceData['porcentaje'];
         $this->periodoSelected = $competenceData['periodo'];
     }
 

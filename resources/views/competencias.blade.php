@@ -16,7 +16,8 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="container">
-                <h3>Competencias</h3>
+                <div class="flex flex-row">        
+                </div>
                 <table id="competencias-table" class="display">
                     <thead>
                         <tr>
@@ -25,6 +26,7 @@
                             <th>Nombre</th>
                             <th>Descripcion</th>
                             <th>Periodo</th>
+                            <th>Porcentaje</th>
                             <th>Acciones</th> {{-- Columna opcional para acciones --}}
                         </tr>
                     </thead>
@@ -35,6 +37,7 @@
                             <th>Nombre</th>
                             <th>Descripcion</th>
                             <th>Periodo</th>
+                            <th>Porcentaje</th>
                             <th>Acciones</th> {{-- Columna opcional para acciones --}}
                         </tr>
                     </tfoot>
@@ -64,6 +67,7 @@
                     {data:'nombre', name:'nombre'},
                     {data:'descripcion', name:'descripcion'},
                     {data:'periodo_id', name:'periodo_id'},
+                    {data: 'porcentaje', name:'porcentaje'},
                     {data:'actions', name:'actions', orderable:false, searchable:false}, 
                 ]
             })

@@ -12,7 +12,7 @@ class Competencia extends Model
 
     protected $table = 'competencias';
 
-    protected $fillable = ['nombre', 'descripcion', 'periodo_id'];
+    protected $fillable = ['nombre', 'descripcion', 'porcentaje', 'periodo_id', 'profesor_id'];
 
     // Relación con Materia
     public function materias()
@@ -23,6 +23,11 @@ class Competencia extends Model
     public function actividades()
     {
         return $this->hasMany(Actividad::class);
+    }
+
+    public function profesor()
+    {
+        return $this->belongsTo(Usuario::class);
     }
 
 }

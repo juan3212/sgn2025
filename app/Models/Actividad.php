@@ -15,6 +15,7 @@ class Actividad extends Model
         'materia_id',
         'competencia_id',
         'periodo_id',
+        'porcentaje',
     ];
 
     public function tipoNota()

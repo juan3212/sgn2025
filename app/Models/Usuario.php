@@ -49,11 +49,11 @@ class Usuario extends Authenticatable
 
     // Relación muchos-a-muchos con Grados y Grupos (a través de usuario_grado)
     public function grados() {
-        return $this->belongsToMany(Grado::class, 'usuario_grado');
+        return $this->belongsToMany(Grado::class, 'usuario_grado', 'usuario_id');
     }
 
     public function grupos() {
-        return $this->belongsToMany(Grupo::class, 'usuario_grado');
+        return $this->belongsToMany(Grupo::class, 'usuario_grado', 'usuario_id');
     }
 
     // Relación con Notas (como estudiante)
@@ -64,5 +64,10 @@ class Usuario extends Authenticatable
     // Relación con Materias (como profesor)
     public function materiasComoProfesor() {
         return $this->hasMany(Materia::class, 'profesor_id');
+    }
+
+    public function childs()
+    {
+        return $this->hasMany(Usuario::class, 'parent_id');
     }
 }

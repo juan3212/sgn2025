@@ -13,27 +13,35 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="container">
-                    <h3>Actividades</h3>
+                <div class="flex flex-row"></div>
                     <table id="actividades-table" class="display">
                         <thead>
                             <tr>
+                                @can('administrar actividades')
                                 <th><input type="checkbox" id="select-all"></th>
+                                @endcan
                                 <th>Nombre</th>
                                 <th>Descripcion</th>
                                 <th>Tipo de nota</th>
-                                <th>Acciones</th>
                                 <th>Notas</th>
+                                @can('administrar notas')
+                                <th>Acciones</th>
+                                @endcan
                             </tr>
                         </thead> 
                         <tbody></tbody>
                         <tfoot>
                             <tr>
+                                @can('administrar actividades')
                                 <th></th>
+                                @endcan
                                 <th>Nombre</th>
                                 <th>Descripcion</th>
                                 <th>Tipo de nota</th>
-                                <th>Acciones</th>
                                 <th>Notas</th>
+                                @can('administrar notas')
+                                <th>Acciones</th>
+                                @endcan
                             </tr>
                         </tfoot>
                     </table>
@@ -62,12 +70,17 @@
             scrollX: true,
             ajax: "{{ route('tabla-prueba', ['materia' => $materia, 'periodo' => $periodo, 'competencia' => $competencia]) }}",
             columns: [
+                @can('administrar actividades')
                 { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
+                @endcan
                 { data: 'nombre', name: 'nombre' },
                 { data: 'descripcion', name: 'descripcion' },
                 { data: 'tipo_nota.tipo', name: 'tipo_nota' },
+                { data: 'notas', name: 'notas'},
+                @can('administrar actividades')
                 { data: 'action', name: 'acciones', orderable: false, searchable: false},
-                {data: 'rates', name:'notas', orderable: false, searchable: false},
+                @endcan
+                //{data: 'rates', name:'notas', orderable: false, searchable: false},
             ]
         });
         const bulk = new Delete('actividades-table', 'Actividad');
@@ -81,7 +94,21 @@
                 }
             });
         })
-        
+
+
+
+        @can('administrar notas')
+        $('#actividades-table').on('click', 'tr', function() {
+                // Evitar la redirección si se hizo clic en un checkbox o en un botón dentro de la fila
+                if ($(event.target).is('input:checkbox') || $(event.target).is('button') || $(event.target).closest('button').length) {
+                    return;
+                }
+                var data = $('#actividades-table').DataTable().row(this).data();
+                if (data && data.id) {
+                    window.location.href = '/notas/' + data.id;
+                }
+            });
+        @endcan
     </script>
 
 </x-app-layout>

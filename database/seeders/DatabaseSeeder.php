@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             UsuarioSeeder::class,
             BaseMateriaSeeder::class,
             PeriodoSeeder::class,
+            TipoNotasSeeder::class,
         ]);
     
     }

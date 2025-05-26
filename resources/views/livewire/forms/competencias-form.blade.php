@@ -41,6 +41,28 @@
                     @endforeach
                 </select>
             </div>
+            
+            @if (!$isTeacher)
+                @livewire('components.select-users',
+                [
+                    'role'=>'profesor', 
+                    'title'=>'Profesor',
+                    'usuarioSelected'=>$teacherSelected,
+                    'usuario_id'=>$teacher_id,
+                    'wire:model'=>'teacher_id'],
+                )
+            @endif
+
+
+            <div class="space-y-2">
+                <label for="porcentaje" class="block text-sm font-medium text-gray-700">Porcentaje</label>
+                <input type="number" 
+                    id="porcentaje" 
+                    name="porcentaje" 
+                    wire:model="porcentaje" 
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+            </div>
             <div class="space-y-4">
             <div class="space-y-4">
     <!-- Campo de búsqueda -->

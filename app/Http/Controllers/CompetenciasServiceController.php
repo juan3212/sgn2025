@@ -12,14 +12,18 @@ use Illuminate\Support\Facades\Validator;
 class CompetenciasServiceController extends Controller
 {
     //
-    public function getSubjects($search)
+    public function getSubjects($search, $teacher_id)
     {
-        return Materia::selectRaw('materias.id as id, CONCAT(nombre_materia, " - ", grado, " - ", grupo) as nombre')
+        $query = Materia::selectRaw('materias.id as id, CONCAT(nombre_materia, " - ", grado, " - ", grupo) as nombre')
             ->join('base_materia', 'materias.materia_id', '=', 'base_materia.id')
             ->join('grados', 'materias.grado_id', '=', 'grados.id')
-            ->join('grupos', 'materias.grupo_id', '=', 'grupos.id')
-            ->where('nombre_materia', 'like', '%' . $search . '%')
-            ->get(); // Filtrar por nombre 
+            ->join('grupos', 'materias.grupo_id', '=', 'grupos.id');
+            if($teacher_id) {
+                $query->where('materias.profesor_id', $teacher_id);
+            }
+            $query = $query->where('nombre_materia', 'like', '%' . $search . '%')
+            ->get();
+            return $query;
     }
     public function getPeriodo()
     {

@@ -75,8 +75,6 @@
             ajax: {
                 url: "{{ route('tabla-notas') }}",
                 data: function(d) {
-                    d.grado_id = {{ $grado_id }};
-                    d.grupo_id = {{ $grupo_id }};
                     d.actividad_id = {{ $actividad_id }};
                 }
             },
@@ -161,7 +159,7 @@
 
         function saveNotas() {
 
-            fetch('/notas/save', {
+            fetch('/notas/save', { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -191,7 +189,7 @@
                             title: 'Error',
                             text: data.message,
                             icon: 'error',
-                            footer: data.error_details
+                            //footer: data.error_details
                         })
                     }
                 })
@@ -201,7 +199,7 @@
                         title: 'Error',
                         text: data.message,
                         icon: 'error',
-                        footer: data.error_details
+                        //footer: data.error_details
                     })
                 });
         }

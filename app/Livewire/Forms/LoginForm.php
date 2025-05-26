@@ -32,7 +32,7 @@ class LoginForm extends Form
         $this->ensureIsNotRateLimited();
 
         $usuario = Usuario::where('nuip', $this->nuip)
-        ->with('roles') // <<--- Carga ansiosa de la relación 'roles'
+        ->with('roles')
         ->first();
 
         if (!$usuario || ! Auth::attempt($this->only(['nuip', 'password']), $this->remember)) {

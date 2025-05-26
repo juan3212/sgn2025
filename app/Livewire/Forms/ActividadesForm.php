@@ -42,6 +42,9 @@ class ActividadesForm extends Component
     {
         $this->tipo = TipoNota::all();
     }
+    public function previousPage(){
+        return $this->redirect('/actividades/'.$this->materia.'/'.$this->periodo.'/'.$this->competencia, navigate: true);
+    }
     public function submit()
     {
         try {
@@ -68,6 +71,7 @@ class ActividadesForm extends Component
             else{
                 $this->reset('nombre', 'descripcion', 'tipoSelected'); // Limpia también el ID
                 session()->flash('message', 'Actividad guardada exitosamente.');
+                return $this->previousPage(); // Redirige a la página anterior después de guardar el forma
             }
     
         } catch (\Exception $e) {

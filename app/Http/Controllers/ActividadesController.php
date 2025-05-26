@@ -4,10 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Actividad;
+use App\Http\Controllers\Estudiantes\calcularNotasController;
+use Illuminate\Support\Facades\Auth;
 
 class ActividadesController extends Controller
 {
     //
+    public $calcularNotasController;
+    public $user;
+    public $isAdmin;
+    public $isTeacher;
+
+    public function __construct(calcularNotasController $calcularNotasController)
+    {
+        $this->calcularNotasController = $calcularNotasController;
+        $this->getUserData();
+    }
+
+    public function  getUserData()
+    {
+        $user = Auth::user();
+        $this->user = $user; // Almacenar el objeto usuario para usos potenciales
+        $this->isAdmin = $user->hasRole('Super-Admin');
+        $this->isTeacher = $user->hasRole('profesor');
+    }
+
+
     public function data($materia, $periodo, $competencia)
     {
         // Validación de parámetros (opcional pero recomendado)
@@ -33,13 +55,13 @@ class ActividadesController extends Controller
                             </div>';
                 return $actions;
             })
-            ->addColumn('rates', function ($actividad) {
-                $rates = '<div class="flex flex-wrap gap-1">
-                                <a href="#" class="btn btn-info btn-xs">Notas</a>
-                            </div>';
-                return $rates;
+            ->addColumn('notas', function ($actividad) {
+                $nota = $this->calcularNotasController->notasActividad(['actividad' => $actividad->id, 'estudiante' => $this->user->id]);
+                $nota = number_format($nota, 1, '.');
+                return ''.$nota.' / 10';
+                
             })
-            ->rawColumns(['checkbox', 'action', 'rates']) // Indica que estas columnas contienen HTML
+            ->rawColumns(['checkbox', 'action']) // Indica que estas columnas contienen HTML
             ->make(true);
     }
 

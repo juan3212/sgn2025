@@ -8,8 +8,9 @@
         </h2>
     </x-slot>
     <div class="py-12">
-    @livewire('pages.profesores.materias-competencias', ['materia'=>1])
+    @livewire('pages.profesores.materias-competencias', ['materia'=>$materia])
     </div>
 </x-app-layout>
 
  
+

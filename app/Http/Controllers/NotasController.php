@@ -17,28 +17,37 @@ class NotasController extends Controller
     public $grupo_id;
     public $grado_id;
 
+    public function getDataWithActivities($actividad_id)
+    {
+       $data = DB::table("actividades")
+       ->join('materias', 'actividades.materia_id', '=', 'materias.id')
+       ->select('actividades.id as actividad_id','actividades.descripcion', 'materias.grado_id', 'materias.grupo_id')
+       ->where('actividades.id', $actividad_id)
+       ->first();
+        
+        return $data;
+    }
+
     public function getStudents(Request $request)
     {
-        $this->grupo_id = $request->grupo_id;
-        $this->grado_id = $request->grado_id;
-        $this->actividad_id = $request->actividad_id;
+        $data = $this->getDataWithActivities($request->actividad_id);
+        $this->grupo_id = $data->grupo_id;
+        $this->grado_id = $data->grado_id;
+        $this->actividad_id = $data->actividad_id;
 
         $students = Usuario::leftJoin('usuario_grado', function ($join) {
             $join->on('usuarios.id', '=', 'usuario_grado.usuario_id');
         })
         ->leftJoin('notas', function ($join) {
-            $join->on('usuarios.id', '=', 'notas.estudiante_id');
+            $join->on('usuarios.id', '=', 'notas.estudiante_id')
+            ->where('notas.actividad_id', '=', $this->actividad_id);
         })
         ->where(function ($query) {
             $query->where('usuario_grado.grado_id', $this->grado_id);
         })
         ->where(function ($query) {
             $query->where('usuario_grado.grupo_id', $this->grupo_id);
-        })
-        ->where(function ($query) {
-            $query->where('notas.actividad_id', $this->actividad_id)
-                  ->orWhereNull('notas.actividad_id'); // Para mantener el LEFT JOIN
-        })
+        })  
         ->select('usuarios.id', 'usuarios.nombre', 'usuarios.apellido', 'usuarios.nuip', 'notas.valor') // Selecciona solo los campos de la tabla usuarios
         ->distinct() // Evita duplicados si hay múltiples coincidencias en las tablas relacionadas
         ->get();
@@ -61,6 +70,8 @@ class NotasController extends Controller
 
     public function save(Request $request)
     {
+
+        
         try {
             if (!$request->has('notas') || !$request->has('actividad_id')) {
                 return response()->json([
@@ -76,7 +87,7 @@ class NotasController extends Controller
             
             // Validación de todas las notas antes de procesar
             foreach ($notasData as $nota) {
-                $validator = Validator::make(['nota' => $nota], [
+                $validator = Validator::make(['nota' => $nota], rules: [
                     'nota.id' => 'required',
                     'nota.valor' => 'required|numeric|between:0,10',
                 ]);
@@ -95,14 +106,12 @@ class NotasController extends Controller
             DB::beginTransaction();
             try {
                 foreach ($notasData as $nota) {
-                    DB::table('notas')->upsert(
+                    DB::table('notas')->updateOrInsert(
                         [
                             'estudiante_id' => $nota['id'],
-                            'actividad_id' => $this->actividad_id,
-                            'valor' => $nota['valor']
+                            'actividad_id' => $this->actividad_id
                         ],
-                        ['estudiante_id', 'actividad_id'],
-                        ['valor']
+                        ['valor' => $nota['valor']]
                     );
                 }
                 DB::commit();
@@ -136,9 +145,10 @@ class NotasController extends Controller
         }
     }
 
-    public function render ($grado_id, $grupo_id, $actividad_id)
+    public function render ($actividad_id)
     {
-        return view('notas', ['grado_id'=>$grado_id, 'grupo_id'=>$grupo_id, 'actividad_id'=>$actividad_id]);
+       // dd($this->getDataWithActivities($actividad_id));
+        return view('notas', ['actividad_id'=>$actividad_id]);
         
     }
 }

@@ -1,0 +1,4 @@
+-el endpoint para mostrar las tablas de actividades recibe 3 valores, el primero la materia, el segundo el periodo, y el tercero la competencia
+ejemplo: /actividades/{materia}/{periodo}/{competencia}.
+
+-

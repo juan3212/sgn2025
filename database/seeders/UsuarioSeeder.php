@@ -26,12 +26,8 @@ class UsuarioSeeder extends Seeder
                 "password_hash" => Hash::make("jp@231103")
         ];
         
-        Usuario::create($usuario);
-
-        $usuario = Usuario::find(1); // Encuentra un usuario existente (por ejemplo, ID 1)
-        $rolAdministrador = Role::where('name', 'administrador')->first(); // Obtiene el rol 'administrador' de Spatie
-        
-        $usuario->assignRole($rolAdministrador);
+        $admin = Usuario::create($usuario);
+        $admin->assignRole('Super-Admin');
        
     }
 }
