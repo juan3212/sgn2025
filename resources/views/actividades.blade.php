@@ -5,7 +5,9 @@
                 {{ __('Actividades') }}
             </h2>
 
+            @can('administrar actividades')
             <x-botones-header :createRoute="route('create-actividad', ['materia'=>$materia, 'periodo'=>$periodo, 'competencia'=>$competencia])"/>
+            @endcan
         </div>
     </x-slot>
 
@@ -23,7 +25,9 @@
                                 <th>Nombre</th>
                                 <th>Descripcion</th>
                                 <th>Tipo de nota</th>
+                                @can('ver notas')
                                 <th>Notas</th>
+                                @endcan
                                 @can('administrar notas')
                                 <th>Acciones</th>
                                 @endcan
@@ -38,7 +42,9 @@
                                 <th>Nombre</th>
                                 <th>Descripcion</th>
                                 <th>Tipo de nota</th>
+                                @can('ver notas')
                                 <th>Notas</th>
+                                @endcan
                                 @can('administrar notas')
                                 <th>Acciones</th>
                                 @endcan
@@ -76,11 +82,12 @@
                 { data: 'nombre', name: 'nombre' },
                 { data: 'descripcion', name: 'descripcion' },
                 { data: 'tipo_nota.tipo', name: 'tipo_nota' },
+                @can('ver notas')
                 { data: 'notas', name: 'notas'},
+                @endcan
                 @can('administrar actividades')
                 { data: 'action', name: 'acciones', orderable: false, searchable: false},
                 @endcan
-                //{data: 'rates', name:'notas', orderable: false, searchable: false},
             ]
         });
         const bulk = new Delete('actividades-table', 'Actividad');

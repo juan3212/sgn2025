@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Actividad;
 use App\Http\Controllers\Estudiantes\calcularNotasController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
+use App\View\Components\progressBar;
 
 class ActividadesController extends Controller
 {
@@ -58,10 +60,12 @@ class ActividadesController extends Controller
             ->addColumn('notas', function ($actividad) {
                 $nota = $this->calcularNotasController->notasActividad(['actividad' => $actividad->id, 'estudiante' => $this->user->id]);
                 $nota = number_format($nota, 1, '.');
-                return ''.$nota.' / 10';
+                $progressBar = new progressBar($nota, 10);
+
+                return Blade::renderComponent($progressBar);
                 
             })
-            ->rawColumns(['checkbox', 'action']) // Indica que estas columnas contienen HTML
+            ->rawColumns(['checkbox', 'action', 'notas']) // Indica que estas columnas contienen HTML
             ->make(true);
     }
 

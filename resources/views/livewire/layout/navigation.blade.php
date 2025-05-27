@@ -128,9 +128,7 @@ new class extends Component
                     </x-responsive-nav-link>
                 </button>
             </div>
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->nombre.' '.Auth::user()->apellido }}</div>
-            </div>
+
         </div>
     </div>
 </nav>

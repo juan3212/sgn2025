@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\View\Components\progressBar;
 use Illuminate\Http\Request;
 use App\Models\Materia;
 use App\Http\Controllers\Estudiantes\calcularNotasController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
 
 class MateriasCompetenciasController extends Controller
 {
@@ -59,9 +61,10 @@ class MateriasCompetenciasController extends Controller
             ->addColumn('notas', function($competencia){
                 $notas = $this->calcularNotasController->calcularNotasCompetencia(['estudiante' => $this->user->id, 'competencia' => $competencia->id, 'materia' => $this->materia]);
                 $notas = number_format($notas, 1, '.');
-                return ''.$notas.' / 10';
+                $progressBar = new progressBar($notas, 10);
+                return Blade::renderComponent($progressBar);
             })
-            ->rawColumns(['checkbox', 'actions'])
+            ->rawColumns(['checkbox', 'actions', 'notas'])
             ->make(true);
 
     }

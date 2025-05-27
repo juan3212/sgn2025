@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Materia;
 use App\Models\Usuario;
 use App\Http\Controllers\Estudiantes\calcularNotasController;
+use App\View\Components\progressBar;
+use Illuminate\Support\Facades\Blade;
 
 class MateriasController extends Controller
 {
@@ -87,30 +89,9 @@ class MateriasController extends Controller
             })
             ->addColumn('notas', function ($materia) {
                 $notas =  $this->calcularNotasController->calcularNotasMateria(['materia' => $materia->id, 'estudiante' => $this->user->id]);
-                $notas = number_format($notas, 1, '.');
-                $color = '';
-                switch ($notas) {
-                    case $notas < 6:
-                        $color = 'red';
-                        break;
-                    case $notas >= 6 && $notas <= 7.5:
-                        $color = 'yellow';
-                        break;
-                    case $notas > 7.5:
-                        $color = 'green';
-                        break;
-                }
-                $progress = '<div class="progress-container grid grid-cols-1">
-                                <div>
-                                    <span class="note-value" style="display: block; text-align: center; margin-top: 5px;">'.$notas.' / 10</span>
-                                </div>
-                                <div class="progress-bar-container" style="background-color: #f0f0f0; border-radius: 5px; height: 10px; width: 100%; overflow: hidden;">
-                                    <div id="progress-bar" class="progress-bar" style="background-color: '.$color.'; height: 10px; width: '.($notas*10).'%; border-radius: 5px;"></div>
-                                </div>
-
-                            </div>
-                            ';
-                return $progress;
+                
+                $graficoNotasComponent = new progressBar(nota: $notas, notaMaxima: 10.0); // Asume nota máxima de 10
+                return Blade::renderComponent($graficoNotasComponent);
             })
             ->rawColumns(['checkbox', 'action', 'notas'])
             ->make(true);

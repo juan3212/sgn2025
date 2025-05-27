@@ -7,7 +7,9 @@
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
             <link  href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
 
+            @can('administrar_materias')
             <x-botones-header :createRoute="'create-materia'"/>
+            @endcan
         </div>
     </x-slot>
 
@@ -32,6 +34,7 @@
                     </div>
                 @endif
 
+                
                 <table id="materias-table" class="display">
                     <thead>
                         <tr>
@@ -109,7 +112,7 @@
                         {data: 'nombre', name: 'profesor'},
                         @endcan
                         @can('ver notas')
-                        {data: 'notas', name: 'notas'},
+                        {data: 'notas', name: 'notas'}
                         @endcan
                         @can('administrar_materias')
                         {data: 'intensidad_horaria', name: 'intensidad_horaria'},
