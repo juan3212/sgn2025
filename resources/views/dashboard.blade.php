@@ -7,7 +7,7 @@
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
             <link  href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
 
-            @can('administrar_materias')
+            @can('administrar materias')
             <x-botones-header :createRoute="'create-materia'"/>
             @endcan
         </div>
@@ -38,20 +38,20 @@
                 <table id="materias-table" class="display">
                     <thead>
                         <tr>
-                            @can('administrar_materias')
+                            @can('administrar materias')
                             <th><input type="checkbox" id="select-all" class="form-checkbox h-5 w-5 text-blue-600"></th>
                             <th>ID</th>
                             @endcan
                             <th>Materia</th>
                             <th>Grado</th>
                             <th>Curso</th>
-                            @can('administrar_materias')
+                            @can('administrar materias')
                             <th>Profesor</th>
                             @endcan
                             @can('ver notas')
                             <th>Notas</th>
                             @endcan
-                            @can('administrar_materias')
+                            @can('administrar materias')
                             <th>Intensidad horaria</th>
                             <th>Acciones</th> {{-- Columna opcional para acciones --}}
                             @endcan
@@ -59,20 +59,20 @@
                     </thead>
                     <tfoot>
                         <tr>
-                            @can('administrar_materias')
+                            @can('administrar materias')
                             <th></th>
                             <th>ID</th>
                             @endcan
                             <th>Materia</th>
                             <th>Grado</th>
                             <th>Curso</th>
-                            @can('administrar_materias')
+                            @can('administrar materias')
                             <th>Profesor</th>
                             @endcan
                             @can('ver notas')
                             <th>Notas</th>
                             @endcan
-                            @can('administrar_materias')
+                            @can('administrar materias')
                             <th>Intensidad horaria</th>
                             <th>Acciones</th> {{-- Columna opcional para acciones --}}
                             @endcan
@@ -101,20 +101,20 @@
                     scrollX: true,
                     ajax: "{{ route('materias.data') }}",
                     columns: [
-                        @can('administrar_materias')
+                        @can('administrar materias')
                         {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
                         {data: 'id', name: 'id'},
                         @endcan
                         {data: 'nombre_materia', name: 'materia'},
                         {data: 'grado', name: 'grado'},
                         {data: 'grupo', name: 'curso'},
-                        @can('administrar_materias')
+                        @can('administrar materias')
                         {data: 'nombre', name: 'profesor'},
                         @endcan
                         @can('ver notas')
-                        {data: 'notas', name: 'notas'}
+                        {data: 'notas', name: 'notas'},
                         @endcan
-                        @can('administrar_materias')
+                        @can('administrar materias')
                         {data: 'intensidad_horaria', name: 'intensidad_horaria'},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
                         @endcan

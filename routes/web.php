@@ -150,11 +150,7 @@ Route::post('bulk-delete', [App\Http\Controllers\DeleteController::class, 'bulkD
     ->name('bulk-delete');
 
 #rutas Prueba
-Route::get('prueba', function(calcularNotasController $calcularNotasController){
-    $notas = $calcularNotasController->notasActividad(['actividad' => 4, 'estudiante' => 2]);
-    dd($notas);
-
-})
+Route::view('prueba', 'pruebas')
     ->middleware(['auth'])
     ->name('prueba');
 

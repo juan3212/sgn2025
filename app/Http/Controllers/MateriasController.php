@@ -88,7 +88,7 @@ class MateriasController extends Controller
                         <button class="btn btn-xs btn-danger delete" data-id="'.$materia->id.'">Delete</button>';
             })
             ->addColumn('notas', function ($materia) {
-                $notas =  $this->calcularNotasController->calcularNotasMateria(['materia' => $materia->id, 'estudiante' => $this->user->id]);
+               $notas =  $this->calcularNotasController->calcularNotasMateria(['materia' => $materia->id, 'estudiante' => $this->user->id]);
                 
                 $graficoNotasComponent = new progressBar(nota: $notas, notaMaxima: 10.0); // Asume nota máxima de 10
                 return Blade::renderComponent($graficoNotasComponent);
