@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Materia;
 use App\Models\Usuario;
-use App\Http\Controllers\Estudiantes\calcularNotasController;
 use App\View\Components\progressBar;
 use Illuminate\Support\Facades\Blade;
+use App\Services\MostrarNotasService;
 
 class MateriasController extends Controller
 {
@@ -19,14 +19,14 @@ class MateriasController extends Controller
     public $isTeacher;
     public $grado;
     public $grupo;
-    public $calcularNotasController;
+    public $mostrarNotasService;
 
     public $d;
     
 
-    public function __construct(calcularNotasController $calcularNotasController)
+    public function __construct()
     {
-        $this->calcularNotasController = $calcularNotasController;
+        $this->mostrarNotasService = new MostrarNotasService();
         $this->getUserData();
     }
 
@@ -88,9 +88,9 @@ class MateriasController extends Controller
                         <button class="btn btn-xs btn-danger delete" data-id="'.$materia->id.'">Delete</button>';
             })
             ->addColumn('notas', function ($materia) {
-               $notas =  $this->calcularNotasController->calcularNotasMateria(['materia' => $materia->id, 'estudiante' => $this->user->id]);
-                
-                $graficoNotasComponent = new progressBar(nota: $notas, notaMaxima: 10.0); // Asume nota máxima de 10
+               $notas =  $this->mostrarNotasService->mostrarNotasMateria($this->user->id, $materia->id);
+               $notas = number_format($notas, 2, '.');
+                $graficoNotasComponent = new progressBar(grade: $notas, maxGrade: 10.0);
                 return Blade::renderComponent($graficoNotasComponent);
             })
             ->rawColumns(['checkbox', 'action', 'notas'])

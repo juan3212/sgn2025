@@ -4,22 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Actividad;
-use App\Http\Controllers\Estudiantes\calcularNotasController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use App\View\Components\progressBar;
+use App\Services\CalcularNotasService;
 
 class ActividadesController extends Controller
 {
     //
-    public $calcularNotasController;
+    public $calcularNotasService;
     public $user;
     public $isAdmin;
     public $isTeacher;
 
-    public function __construct(calcularNotasController $calcularNotasController)
+    public function __construct()
     {
-        $this->calcularNotasController = $calcularNotasController;
+        $this->calcularNotasService = new CalcularNotasService();
         $this->getUserData();
     }
 
@@ -34,12 +34,11 @@ class ActividadesController extends Controller
 
     public function data($materia, $periodo, $competencia)
     {
-        // Validación de parámetros (opcional pero recomendado)
         if (!$materia || !$periodo || !$competencia) {
             return response()->json(['error' => 'Los parámetros materia_id, competencia_id y periodo_id son obligatorios'], 400);
         }
     
-        // Consulta inicial (sin ejecutarla)
+        // Consulta inicial
         $query = Actividad::with('tipoNota')
                             ->where('materia_id', $materia)
                             ->where('periodo_id', $periodo)
@@ -58,7 +57,7 @@ class ActividadesController extends Controller
                 return $actions;
             })
             ->addColumn('notas', function ($actividad) {
-                $nota = $this->calcularNotasController->notasActividad(['actividad' => $actividad->id, 'estudiante' => $this->user->id]);
+                $nota = $this->calcularNotasService->notasActividad(['actividad' => $actividad->id, 'estudiante' => $this->user->id]);
                 $nota = number_format($nota, 1, '.');
                 $progressBar = new progressBar($nota, 10);
 

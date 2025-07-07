@@ -5,23 +5,23 @@ namespace App\Http\Controllers;
 use App\View\Components\progressBar;
 use Illuminate\Http\Request;
 use App\Models\Materia;
-use App\Http\Controllers\Estudiantes\calcularNotasController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
+use App\Services\MostrarNotasService;
 
 class MateriasCompetenciasController extends Controller
 {
     //
     public $materia;
     public $periodo;
-    public $calcularNotasController;
+    public $mostrarNotasService;
     public $isAdmin;
     public $isTeacher;
     public $user;
 
-    public function __construct(calcularNotasController $calcularNotasController)
+    public function __construct()
     {
-        $this->calcularNotasController = $calcularNotasController;
+        $this->mostrarNotasService = new MostrarNotasService();
         $this->getUserData();
     }
     
@@ -59,7 +59,7 @@ class MateriasCompetenciasController extends Controller
                         <button class="btn btn-xs btn-danger delete" data-id="'.$competence->id.'">Delete</button>';
             })
             ->addColumn('notas', function($competencia){
-                $notas = $this->calcularNotasController->calcularNotasCompetencia(['estudiante' => $this->user->id, 'competencia' => $competencia->id, 'materia' => $this->materia]);
+                $notas = $this->mostrarNotasService->mostrarNotasCompetencia($this->user->id, $competencia->id, $this->materia);
                 $notas = number_format($notas, 1, '.');
                 $progressBar = new progressBar($notas, 10);
                 return Blade::renderComponent($progressBar);

@@ -7,6 +7,7 @@ use App\Models\Usuario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Support\Facades\Validator;
+use App\Services\NotaFinalService;
 
 class NotasController extends Controller
 {
@@ -16,7 +17,7 @@ class NotasController extends Controller
     public $actividad_id;
     public $grupo_id;
     public $grado_id;
-
+    
     public function getDataWithActivities($actividad_id)
     {
        $data = DB::table("actividades")
@@ -106,13 +107,16 @@ class NotasController extends Controller
             DB::beginTransaction();
             try {
                 foreach ($notasData as $nota) {
-                    DB::table('notas')->updateOrInsert(
-                        [
+                
+                        DB::table('notas')->updateOrInsert([
                             'estudiante_id' => $nota['id'],
-                            'actividad_id' => $this->actividad_id
-                        ],
-                        ['valor' => $nota['valor']]
-                    );
+                            'actividad_id' => $this->actividad_id,
+                            'valor' => $nota['valor'],
+                        ]);
+                
+                        new NotaFinalService($nota['valor'], $this->actividad_id, $nota['id'])
+                        ->updateNotaFinal();
+                    
                 }
                 DB::commit();
 
@@ -147,7 +151,6 @@ class NotasController extends Controller
 
     public function render ($actividad_id)
     {
-       // dd($this->getDataWithActivities($actividad_id));
         return view('notas', ['actividad_id'=>$actividad_id]);
         
     }

@@ -1,18 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Estudiantes;
-
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+namespace App\Services;
 use App\Models\Nota;
 use App\Models\Competencia;
 use App\Models\Materia;
-use PhpParser\Node\Expr\Cast\Array_;
+use Illuminate\Support\Facades\DB;
 
-class calcularNotasController extends Controller
+class CalcularNotasService
 {
-    //
-
     public function promedioNotas(Array $notas)
     {
         $notasSuma = array_sum($notas);
@@ -58,7 +53,7 @@ class calcularNotasController extends Controller
         return $promedio;
     }
 
-    public function calcularNotasMateria(Array $data)
+    public function calcularNotasMateria(Array $data): float|int
     {
         $materia = $data['materia'];
         $estudiante = $data['estudiante'];
@@ -76,8 +71,26 @@ class calcularNotasController extends Controller
             $nota = $this->calcularNotasCompetencia(['competencia' => $competencia['id'], 'estudiante' => $estudiante, 'materia' => $materia]);
             $notas[] = $nota * ($competencia['porcentaje']/100);
         }
-
+        dd($notas);
         $promedio = $this->promedioNotas($notas);
         return $promedio;
+    }
+
+    public function calcularNotasMateriaPeriodo(Array $data): float|int
+    {
+        $materia = $data['materia'];
+        $estudiante = $data['estudiante'];
+        $periodo = $data['periodo'];
+        $notas = DB::table('notas_finales_competencias')
+        ->select('nota_final', 'competencias.periodo_id')
+        ->join('competencias', 'notas_finales_competencias.competencia_id', '=', 'competencias.id')
+        ->where('materia_id', $materia)
+        ->where('estudiante_id', $estudiante)
+        ->where('competencias.periodo_id', $periodo)
+        ->get()
+        ->toArray();
+        $notas = array_column($notas, 'nota_final');
+        $notaFinal = array_sum($notas);
+        return $notaFinal;
     }
 }

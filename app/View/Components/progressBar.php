@@ -8,38 +8,62 @@ use Illuminate\View\Component;
 
 class progressBar extends Component
 {
-    public float $nota; // La nota cruda que se pasa
-    public string $color;
-    public float $porcentajeNota;
-    public string $notaFormateada; // Para mostrar "2.1 / 10"
-
+    public float $grade;
+    public float $maxGrade;
+    public float $percentage;
+    public string $colorClass;
+    public string $description;
+    public string $size;
+    public bool $showDetails;
+    public bool $animated;
+    
     /**
      * Create a new component instance.
-     *
-     * @param float $nota La nota numérica (ej: 2.1)
-     * @param float $notaMaxima La nota máxima posible (ej: 10)
      */
-    public function __construct(float $nota, float $notaMaxima)
-    {
-        $this->nota = $nota;
-        $this->porcentajeNota = round($nota * 10);
-        $this->notaFormateada = number_format($nota, 1) . ' / ' . number_format($notaMaxima, 1);
-        $this->changeColor($nota);
+    public function __construct(
+        float $grade = 0,
+        float $maxGrade = 10,
+        string $size = 'medium',
+        bool $showDetails = true,
+        bool $animated = true
+    ) {
+        $this->grade = $grade;
+        $this->maxGrade = $maxGrade;
+        $this->percentage = $maxGrade > 0 ? round(($grade / $maxGrade) * 100, 1) : 0;
+        $this->colorClass = $this->getColorClass($this->percentage);
+        $this->description = $this->getDescription($this->percentage);
+        $this->size = $size;
+        $this->showDetails = $showDetails;
+        $this->animated = $animated;
     }
 
-    public function changeColor($nota)
+    /**
+     * Get the color class based on percentage
+     */
+    private function getColorClass(float $percentage): string
     {
-        switch ($nota) {
-            case $nota < 6:
-                $this->color ='red';
-                break;
-            case $nota >= 6 && $nota <= 7.5:
-                $this->color = 'yellow';
-                break;
-            case $nota > 7.5:
-                $this->color = 'green';
-                break;
-        }
+        return match (true) {
+            $percentage >= 90 => 'grade-excellent',
+            $percentage >= 80 => 'grade-good',
+            $percentage >= 70 => 'grade-average',
+            $percentage >= 60 => 'grade-poor',
+            default => 'grade-fail'
+        };
+    }
+
+    /**
+     * Get description based on percentage
+     */
+    private function getDescription(float $percentage): string
+    {
+        return match (true) {
+            $percentage >= 90 => 'Excelente',
+            $percentage >= 80 => 'Muy bueno',
+            $percentage >= 70 => 'Bueno',
+            $percentage >= 60 => 'Aceptable',
+            $percentage > 0 => 'Necesita mejorar',
+            default => 'Sin calificar'
+        };
     }
 
     /**

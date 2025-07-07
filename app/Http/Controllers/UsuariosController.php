@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Yajra\DataTables\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\UsersImport;
 
 
 
@@ -31,6 +33,22 @@ class UsuariosController extends Controller
         $usuario = Usuario::find($id);
         $usuario->delete();
         return redirect()->route('dashboard');
+    }
+
+    public function importForm()
+    {
+        return view('usuarios.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv'
+        ]);
+
+        Excel::import(new UsersImport, $request->file('file'));
+
+        return redirect()->route('usuarios')->with('success', 'Usuarios importados correctamente.');
     }
 
 }

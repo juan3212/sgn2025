@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Materia;
 use App\Models\Usuario;
 use App\Http\Controllers\Estudiantes\calcularNotasController;
-
+use App\Services\getUserDataService;
 
 Route::view('/', 'welcome');
 
@@ -20,6 +20,13 @@ Route::view('usuarios', 'usuarios')
 Route::view('competencias', 'competencias')
     ->middleware(['auth', 'verified', 'permission:administrar competencias'])
     ->name('competencias');
+
+Route::get('boletin', function(){
+    $user = new getUserDataService;
+    return $user->getUserDataFromID(2);
+})
+    ->middleware(['auth'])
+    ->name('boletin'); // Ahora apunta al controlador
 
     #competencias de materias
 Route::get('materia/{materia}', function ($materia)  {
@@ -154,6 +161,12 @@ Route::view('prueba', 'pruebas')
     ->middleware(['auth'])
     ->name('prueba');
 
+Route::view('landing', 'landing')
+    ->name('landing');
+
+Route::view('fotos', 'fotos')
+    ->name('fotos');
+
 Route::get('tabla-prueba/{materia}/{periodo}/{competencia}', [App\Http\Controllers\ActividadesController::class, 'data'])
     ->middleware(['auth'])
     ->name('tabla-prueba');
@@ -161,6 +174,11 @@ Route::get('tabla-prueba/{materia}/{periodo}/{competencia}', [App\Http\Controlle
 Route::get('tabla-notas', [App\Http\Controllers\NotasController::class, 'table'])
     ->middleware(['auth'])
     ->name('tabla-notas');
+
+
+# rutas para importacion de usuarios
+Route::get('usuarios/import', [App\Http\Controllers\UsuariosController::class, 'importForm'])->middleware(['auth', 'permission:administrar usuarios'])->name('users.import.form');
+Route::post('usuarios/import', [App\Http\Controllers\UsuariosController::class, 'import'])->middleware(['auth', 'permission:administrar usuarios'])->name('users.import');
 
 require __DIR__.'/auth.php';
 
