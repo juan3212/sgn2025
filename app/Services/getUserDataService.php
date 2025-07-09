@@ -21,7 +21,11 @@ class getUserDataService
         $this->isAdmin = $user->hasRole('Super-Admin');
         $this->isTeacher = $user->hasRole('profesor');
 
-        return $this->user;
+        $usuario = [
+            'isAdmin' => $this->isAdmin,
+            'isTeacher' => $this->isTeacher,
+        ];
+        return $usuario;
     }
 
     public function getUserDataFromID($userID)

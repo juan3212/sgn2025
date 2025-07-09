@@ -110,12 +110,14 @@ class NotasController extends Controller
                 
                         DB::table('notas')->updateOrInsert([
                             'estudiante_id' => $nota['id'],
-                            'actividad_id' => $this->actividad_id,
-                            'valor' => $nota['valor'],
-                        ]);
+                            'actividad_id' => $this->actividad_id],
+                            [
+                                'valor' => $nota['valor'],
+                            ]
+                        );
                 
-                        new NotaFinalService($nota['valor'], $this->actividad_id, $nota['id'])
-                        ->updateNotaFinal();
+                        $save = new NotaFinalService($nota['valor'], $this->actividad_id, $nota['id']);
+                        $save->updateNotaFinal();
                     
                 }
                 DB::commit();
