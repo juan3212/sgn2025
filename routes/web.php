@@ -21,13 +21,17 @@ Route::view('competencias', 'competencias')
     ->middleware(['auth', 'verified', 'permission:administrar competencias'])
     ->name('competencias');
 
-Route::get('boletin', function(){
-    $user = new getUserDataService;
-    return $user->getUserDataFromID(2);
-})
+Route::get('boletin/{estudianteID}', [App\Http\Controllers\estudiantes\boletinesController::class, 'render'])
     ->middleware(['auth'])
-    ->name('boletin'); // Ahora apunta al controlador
-
+    ->name('boletin');
+Route::get('pruebaBoletin/{estudianteID}', function ($estudianteID)  {
+    $user = new getUserDataService;
+    $user = $user->getUserDataFromID($estudianteID);
+    
+    return $user;
+    })
+    ->middleware(['auth'])
+    ->name('pruebaBoletin');
     #competencias de materias
 Route::get('materia/{materia}', function ($materia)  {
     return view('materias-competencias', ['materia' => $materia]);

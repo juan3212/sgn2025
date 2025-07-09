@@ -17,7 +17,7 @@ class getUserDataService
     public function  getUserDataFromAuth()
     {
         $user = Auth::user();
-        $this->user = $user; // Almacenar el objeto usuario para usos potenciales
+        $this->user = $user; 
         $this->isAdmin = $user->hasRole('Super-Admin');
         $this->isTeacher = $user->hasRole('profesor');
 
@@ -27,10 +27,25 @@ class getUserDataService
     public function getUserDataFromID($userID)
     {
         $user = Auth::user()->find($userID);
-        $this->user = $user; // Almacenar el objeto usuario para usos potenciales
+        $this->user = $user;
         $this->isAdmin = $user->hasRole('Super-Admin');
         $this->isTeacher = $user->hasRole('profesor');
-
-        return $this->user;
+        $grados = null;
+        $grupos = null;
+        if(!$this->isTeacher){
+            $grados =  $this->user->grados()->get()->first()->grado;
+            $grupos = $this->user->grupos()->get()->first()->grupo;
+        }
+        
+        
+        $userData = [
+            'nombre' => $this->user->nombre,
+            'apellido' => $this->user->apellido,
+            'nuip' => $this->user->nuip,
+            'correo' => $this->user->correo,
+            'grados' => $grados,
+            'grupos' => $grupos
+        ];
+        return $userData;
     }
 }

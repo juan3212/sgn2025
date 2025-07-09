@@ -17,12 +17,7 @@ class CompetenciasController extends Controller
     public $isAdmin;
     public $isTeacher;
     public $user;
-    public $calcularNotasController;
 
-    public function __construct(calcularNotasController $calcularNotasController)
-    {
-        $this->calcularNotasController = $calcularNotasController;
-    }
 
     public function  getUserData()
     {

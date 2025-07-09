@@ -245,7 +245,6 @@
   </head>
   <body>
     <button id="btnCrearPdf"><img src="../images/icons/bx-download.svg" alt="" srcset=""></button>
-      <!-- <a href="./pdf.php"><button>PDF</button></a> -->
     <div class="reportcard" id="reportcard">
   
       <img class="membrete" src="../images/Membrete1-2.avif" alt="">
@@ -253,19 +252,19 @@
       <h1>Student Report Card</h1>
   
       <div id="header2" class="header2">
-          <h2 id="currentDate">19th JULY <span id="currentYear"></span></h2>
+          <h2 id="currentDate">{{ $day .' '. $month}} <span id="currentYear">{{ $year }}</span></h2>
           <h2 id="currenPeriod">TERM <span id="period"></span></h2>
       </div>
   
       <div class="header3">
           <table class="info">
               <tr>
-                  <td>Nombre:</td> {{-- Ahora los datos vienen del controlador --}}
-                  <td>{{ $student['name'] }}</td>
+                  <td>Nombre:</td> 
+                  <td>{{ $user['nombre'] . ' ' . $user['apellido'] }}</td>
                   <td>ID:</td>
-                  <td>{{ $student['nuip'] }}</td>
+                  <td>{{ $user['nuip'] }}</td>
                   <td>Grado:</td>
-                  <td>{{ $student['grade'] }}</td>
+                  <td>{{ $user['grados'].' '.$user['grupos']}}</td>
               </tr>
           </table>  
       </div>
@@ -274,44 +273,13 @@
         <table>
             <tr>
               <td>Term average</td>
-              <td>{{ $student['termAverage'] }}</td>
+              <td></td>
               <td>Final average</td>
-              <td>{{ $student['finalAverage'] }}</td>
+              <td></td>
             </tr>
         </table>
       </div>
 
-      <div id="tabla"> {{-- El contenedor para las tablas de materias --}}
-        @foreach ($subjects as $subject)
-            <x-report-card-module 
-                :materia="$subject['materia']"
-                :c1="$subject['c1']"
-                :c2="$subject['c2']" 
-                :c3="$subject['c3']" 
-                :c4="$subject['c4']" 
-                :c5="$subject['c5']" 
-                :c6="$subject['c6']" 
-                :e="$subject['e']" 
-                :n1="$subject['n1']" 
-                :n2="$subject['n2']" 
-                :n3="$subject['n3']" 
-                :n4="$subject['n4']" 
-                :n5="$subject['n5']" 
-                :n6="$subject['n6']" 
-                :ne="$subject['ne']" 
-                :F1="$subject['F1']" 
-                :R1="$subject['R1']" 
-                :F2="$subject['F2']" 
-                :R2="$subject['R2']" 
-                :F3="$subject['F3']" 
-                :R3="$subject['R3']" 
-                :F4="$subject['F4']" 
-                :R4="$subject['R4']" 
-                :Ft="$subject['Ft']" 
-                :ih="$subject['ih']"
-            />
-        @endforeach
-      </div>
 
       <div class="footer">
         <table>
@@ -345,7 +313,7 @@
             <table>
               <tr class="observation" id="observation">
                 <td>Observación:</td>
-                <td class="observationText" id="observationText">{{ $student['observationText'] }}</td>
+                <td class="observationText" id="observationText"></td>
               </tr>
                 <tr>
                   <td ><img class="firma"  src="../images/firma_teacher.avif"></td>
