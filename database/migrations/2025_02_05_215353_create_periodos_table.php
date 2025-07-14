@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('periodos', function (Blueprint $table) {
             $table->id();
             $table->string('periodo', 500)->unique();
-            $table->date('fecha_inicio')->nullable();
-            $table->date('fecha_fin')->nullable();
+            $table->date('fecha_inicio')->default(now());
+            $table->date('fecha_fin')->default(now()->addMonths(1));
             $table->timestamps();
         });
     }
