@@ -30,6 +30,7 @@
                 <label for="ih" class="block text-sm font-medium text-gray-700">Intensidad Horaria</label>
                 <input type="text" id="ih" wire:model="ih" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
             </div>
+            @if (!$isTeacher)
             @livewire('components.select-users',
             [
                 'role'=>'profesor', 
@@ -38,6 +39,7 @@
                 'usuario_id'=>$teacher_id,
                 'wire:model'=>'teacher_id'],
             )
+            @endif
             <div>
                 <label for="gradeSelected" class="block text-sm font-medium text-gray-700">Grado</label>
                 <select name="gradeSelected" id="gradeSelected" wire:model="gradeSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">

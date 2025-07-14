@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class CompetenciasServiceController extends Controller
 {
     //
-    public function getSubjects($search, $teacher_id)
+    public function getSubjects($search, $teacher_id= null)
     {
         $query = Materia::selectRaw('materias.id as id, CONCAT(nombre_materia, " - ", grado, " - ", grupo) as nombre')
             ->join('base_materia', 'materias.materia_id', '=', 'base_materia.id')
@@ -66,6 +66,7 @@ class CompetenciasServiceController extends Controller
                 'id' => 'required|integer',
                 'nombre' => 'required|string',
                 'descripcion' => 'required|string',
+                'porcentaje' => 'required|numeric',
                 'periodo_id' => 'required|integer',
                 'materias' => 'nullable|array',
             ]);
@@ -84,6 +85,7 @@ class CompetenciasServiceController extends Controller
             $competencia = Competencia::findOrFail($requestData['id']);
             $competencia->nombre = $requestData['nombre'];
             $competencia->descripcion = $requestData['descripcion'];
+            $competencia->porcentaje = $requestData['porcentaje'];
             $competencia->periodo_id = $requestData['periodo_id'];
             $competencia->save();
     

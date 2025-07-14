@@ -53,6 +53,8 @@ class NotaFinalService
         return $nuevaNota * $this->porcentaje;
     }
 
+
+
     public function calcularNotaFinalMateria()
     {
         $calcularNotas = new CalcularNotasService();

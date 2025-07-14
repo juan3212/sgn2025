@@ -24,6 +24,7 @@ class getUserDataService
         $usuario = [
             'isAdmin' => $this->isAdmin,
             'isTeacher' => $this->isTeacher,
+            'id' => $user->id,
         ];
         return $usuario;
     }

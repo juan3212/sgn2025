@@ -8,10 +8,10 @@ use App\Models\Usuario;
 use App\Models\Grado;
 use App\Models\Grupo;
 use App\Models\Materia;
+use Illuminate\Support\Facades\Auth;
 
 class MateriasForm extends Component
 {
-
     public $subjectId;
     public $subjects;
     public $subjectSelected;
@@ -19,12 +19,21 @@ class MateriasForm extends Component
     public $teacherSelected;
     public $teachers;
     public $teacher_id;
+    public $isTeacher;
 
     public $gradeSelected;
     public $grades;
     public $classSelected;
     public $classes;
 
+    public function boot()
+    {
+        $user = Auth::user();
+        $this->isTeacher = $user->hasRole('profesor');
+        if ($this->isTeacher) {
+            $this->teacher_id = $user->id;
+        }
+    }
     public function mount($subjectId = null)
     {
         $this->subjectId = $subjectId;
@@ -50,7 +59,6 @@ class MateriasForm extends Component
             $this->validate([
                 'subjectSelected' => 'required',
                 'ih' => 'required',
-                'teacher_id' => 'required',
                 'gradeSelected' => 'required',
                 'classSelected' => 'required',
             ]);

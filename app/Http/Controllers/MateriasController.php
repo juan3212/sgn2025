@@ -9,6 +9,7 @@ use App\Models\Usuario;
 use App\View\Components\progressBar;
 use Illuminate\Support\Facades\Blade;
 use App\Services\MostrarNotasService;
+use App\Models\Periodo;
 
 class MateriasController extends Controller
 {
@@ -101,5 +102,17 @@ class MateriasController extends Controller
         $materia = Materia::find($id);
         $materia->delete();
         return response()->json(['success' => 'Materia eliminada exitosamente.']);
+    }
+
+    public function getPeriodo(){
+        $periodo = Periodo::where('fecha_inicio', '<=', date('Y-m-d'))
+        ->where('fecha_fin', '>=', date('Y-m-d'))
+        ->first();
+        return $periodo->id;
+    }
+
+    public function render(){
+        $periodo = $this->getPeriodo();
+        return view('dashboard', compact('periodo'));
     }
 }

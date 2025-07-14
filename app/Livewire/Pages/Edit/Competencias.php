@@ -5,6 +5,8 @@ namespace App\Livewire\Pages\Edit;
 use App\Http\Controllers\CompetenciasServiceController;
 use Livewire\Component;
 use App\Models\Competencia;
+use App\Models\NotaFinalMateria;
+use App\Services\CambiarCompetenciaPorcentajeService;
 use Yajra\DataTables\DataTables;
 
 /**
@@ -27,6 +29,7 @@ class Competencias extends Component
     public $search;                  // Término de búsqueda para filtrar materias
     public $errorMessage;
     public $successMessage;
+    public $actualizarNotas = false;
 
     /**
      * Método boot - Inicializa el componente con los servicios requeridos
@@ -42,7 +45,7 @@ class Competencias extends Component
 
     /**
      * Maneja las actualizaciones de búsqueda obteniendo materias filtradas
-     */
+     */ 
     public function updatedSearch()
     {
         $this->subjects = $this->competenceService->getSubjects($this->search);
@@ -79,6 +82,11 @@ class Competencias extends Component
             'subjects' => $this->mapSubjects($competence->materias),
         ];
     }
+
+    public function updatedPorcentaje(){
+        $this->actualizarNotas = true;
+    }
+
 
     /**
      * Mapea las relaciones de materias a una estructura de array simplificada
@@ -147,6 +155,29 @@ class Competencias extends Component
             );
         };
     }
+    public function actualizarNota()
+    {
+        $competencia = Competencia::with('materias')
+        ->where('id', $this->competenceId)
+        ->first()
+        ->toArray();
+        $materias = $competencia['materias'];
+        $materiasArray = [];
+        foreach ($materias as $materia) {
+            $materiasArray[] = $materia;
+        }
+        foreach ($materiasArray as $materia) {
+            $notaMateria = NotaFinalMateria::where('materia_id', $materia['id'])
+            ->where('periodo_id', $this->periodoSelected)
+            ->get()
+            ->toArray();
+            if($notaMateria){
+                $cambiarCompetenciaPorcentajeService = new CambiarCompetenciaPorcentajeService();
+                $cambiarCompetenciaPorcentajeService->changeCompetenciaPorcentaje($this->competenceId, $this->porcentaje, $notaMateria);
+            }
+        }
+        return $competencia;
+    }
 
     public function save()
     {
@@ -162,12 +193,18 @@ class Competencias extends Component
             'id' => $this->competenceId,
             'nombre' => $this->competenceName,
             'descripcion' => $this->competenceDescription,
+            'porcentaje' => $this->porcentaje,
             'periodo_id' => $this->periodoSelected,
             'materias' => $this->subjectsAdded,
         ];
 
+        if($this->actualizarNotas){
+            $this->actualizarNota();
+         }
         $response = $this->competenceService->update($request);
         $responseData = $response->getData(true); // Extraer datos como array
+
+       
 
         // Reiniciar campos
         $this->reset('search', 'subjectsAdded');

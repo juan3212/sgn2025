@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\NotaFinalCompetencia;
 use App\Models\NotaFinalMateria;
+use App\Models\Periodo;
 use App\Services\getUserDataService;
 
 class MostrarNotasService
@@ -19,19 +20,13 @@ class MostrarNotasService
         $this->isTeacher = $userData['isTeacher'];
     }
 
+
     public function calcularPeriodo()
     {
-        $fecha = date('m.d');
-        switch (true) {
-            case $fecha >= '01.01' && $fecha <= '04.30':
-                return 1;
-            case $fecha >= '05.01' && $fecha <= '06.30':
-                return 1;
-            case $fecha >= '07.01' && $fecha <= '09.30':
-                return 1;
-            default:
-                return 4;
-        }
+      $periodo = Periodo::where('fecha_inicio', '<=', date('Y-m-d'))
+      ->where('fecha_fin', '>=', date('Y-m-d'))
+      ->first();
+      return $periodo->id;
     }
     
     public function mostrarNotasCompetencia($estudianteId, $competenciaId, $materiaId)
@@ -44,10 +39,12 @@ class MostrarNotasService
         ->where('competencia_id', $competenciaId)
         ->where('estudiante_id', $estudianteId)
         ->where('materia_id', $materiaId)
-        ->first()
-        ->toArray();
-        $nota =  $nota['nota_final'] / $nota['porcentaje'] * 100;
-        return $nota ?? 0;
+        ->first();
+        if (!$nota) {
+            return 0;
+        }
+        $nota =  $nota->nota_final / $nota->porcentaje * 100;
+        return $nota;
     }
 
     public function mostrarNotasMateria($estudianteId, $materiaId)

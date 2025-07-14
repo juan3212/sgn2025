@@ -1,9 +1,11 @@
 <div>
+    @can('administrar usuarios')
     <a href="{{ route('users.import.form') }}">
         <button class="w-full sm:w-auto bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
             Importar Usuarios
         </button>
     </a>
+    @endcan
     <a href="{{ $createRoute }}">
         <button class="w-full sm:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Agregar

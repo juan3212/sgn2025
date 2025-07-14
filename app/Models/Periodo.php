@@ -12,7 +12,7 @@ class Periodo extends Model
 
     protected $table = 'periodos';
 
-    protected $fillable = ['periodo'];
+    protected $fillable = ['periodo', 'fecha_inicio', 'fecha_fin'];
 
     // Relación con Competencias
     public function competencias() {

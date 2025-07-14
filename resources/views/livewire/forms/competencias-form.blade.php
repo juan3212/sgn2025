@@ -42,7 +42,7 @@
                 </select>
             </div>
             
-            @if (!$isTeacher)
+            @if (!$isTeacher) 
                 @livewire('components.select-users',
                 [
                     'role'=>'profesor', 

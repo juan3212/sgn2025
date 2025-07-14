@@ -9,7 +9,7 @@ use App\Services\getUserDataService;
 
 Route::view('/', 'welcome');
 
-Route::view('dashboard', 'dashboard')
+Route::get('dashboard', [App\Http\Controllers\MateriasController::class, 'render'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -49,6 +49,10 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
+    #periodos
+Route::view('periodos', 'periodos')
+    ->middleware(['auth', 'permission:administrar periodos'])
+    ->name('periodos');
 
 #rutas para mostrar datatables
 
@@ -80,6 +84,11 @@ Route::get('actividades/data', [App\Http\Controllers\ActividadesController::clas
 Route::get('notas/{actividad_id}', [App\Http\Controllers\NotasController::class, 'render'])
     ->middleware(['auth'])
     ->name('notas.data');
+
+#periodos
+Route::get('periodos/data', [App\Http\Controllers\PeriodosController::class, 'getPeriodos'])
+    ->middleware(['auth', 'permission:administrar usuarios'])
+    ->name('periodos.data');
 
 
 #guardar notas
@@ -136,6 +145,17 @@ Route::get('create-competencia', function(){
     ]);
     })->middleware(['auth', 'permission:administrar competencias'])
         ->name('create-competencia');
+
+Route::get('create-periodo/{id}', function ($id){
+    return view('form-template', [
+        'formComponent'=> 'forms.periodos-form',
+        'formTitle' => 'Agregar periodos',
+        'params'=> [
+            'id' => $id,
+        ],
+    ]);
+    })->middleware(['auth', 'permission:administrar periodos'])
+    ->name('create-periodo');
 
 Route::get('create-actividad/{materia}/{periodo}/{competencia}', function ($materia, $periodo, $competencia)  {
     return view('form-template', [

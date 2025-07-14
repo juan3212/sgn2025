@@ -71,7 +71,6 @@ class CalcularNotasService
             $nota = $this->calcularNotasCompetencia(['competencia' => $competencia['id'], 'estudiante' => $estudiante, 'materia' => $materia]);
             $notas[] = $nota * ($competencia['porcentaje']/100);
         }
-        dd($notas);
         $promedio = $this->promedioNotas($notas);
         return $promedio;
     }

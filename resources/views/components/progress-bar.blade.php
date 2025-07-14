@@ -73,7 +73,7 @@
     /* Colores para diferentes rangos de notas */
     .grade-excellent { 
         stroke: #10b981; /* green-500 */
-    }
+    } 
     
     .grade-good { 
         stroke: #06b6d4; /* cyan-500 */

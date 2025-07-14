@@ -3,9 +3,14 @@
     <div class="flex flex-wrap justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Materias') }}
+                @can('ver notas')
+                <span class="text-gray-600">- PERIODO {{ $periodo }}</span>
+                @endcan
             </h2>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link  href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
+           
+            <link rel="stylesheet" href="/js/Datatables/datatables.css">
+            
 
             @can('administrar materias')
             <x-botones-header :createRoute="'create-materia'"/>
@@ -83,8 +88,7 @@
             </div>
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-        <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+        <script src="/js/Datatables/datatables.js"></script>
 
         
         <script type="module">

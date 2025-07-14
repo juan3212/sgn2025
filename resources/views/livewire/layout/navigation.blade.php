@@ -43,6 +43,11 @@ new class extends Component
                         {{ __('Competencias') }}
                     </x-nav-link>
                     @endcan
+                    @can('administrar periodos')
+                    <x-nav-link :href="route('periodos')" :active="request()->routeIs('periodos')" wire:navigate>
+                        {{ __('Periodos') }}
+                    </x-nav-link>
+                    @endcan
                     </div>
 
             </div>
@@ -69,9 +74,11 @@ new class extends Component
                     </x-slot>
 
                     <x-slot name="content">
+                        @can('administrar usuarios')
                         <x-dropdown-link :href="route('profile')" wire:navigate>
                             {{ __('Profile') }}
                         </x-dropdown-link>
+                        @endcan
 
                         <!-- Authentication -->
                         <button wire:click="logout" class="w-full text-start">
@@ -111,15 +118,22 @@ new class extends Component
                 {{ __('Competencias') }}
             </x-responsive-nav-link>
             @endcan
+            @can('administrar periodos')
+            <x-responsive-nav-link :href="route('periodos')" :active="request()->routeIs('periodos')" wire:navigate>
+                {{ __('Periodos') }}
+            </x-responsive-nav-link>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
         
             <div class="mt-3 space-y-1">
+                @can('administrar usuarios')
                 <x-responsive-nav-link :href="route('profile')" wire:navigate>
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+                @endcan
 
                 <!-- Authentication -->
                 <button wire:click="logout" class="w-full text-start">

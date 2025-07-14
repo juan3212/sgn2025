@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('estudiante_id');
             $table->unsignedBigInteger('materia_id');
             $table->unsignedBigInteger('competencia_id');
-            $table->double('nota_final')->default(0);
+            $table->decimal('nota_final', 8, 2)->default(0);
             $table->timestamps();
 
             $table->foreign('estudiante_id')->references('id')->on('usuarios')->onDelete('cascade');
