@@ -11,7 +11,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg">
-                <div class="container">
+                <div class="container m-2 p-2">
                         <table id="periodos-table" class="display">
                         <thead>
                             <tr>

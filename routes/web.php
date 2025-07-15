@@ -7,7 +7,9 @@ use App\Models\Usuario;
 use App\Http\Controllers\Estudiantes\calcularNotasController;
 use App\Services\getUserDataService;
 
-Route::view('/', 'welcome');
+Route::get('/', [App\Http\Controllers\MateriasController::class, 'render'])
+->middleware(['auth', 'verified'])
+->name('home');
 
 Route::get('dashboard', [App\Http\Controllers\MateriasController::class, 'render'])
     ->middleware(['auth', 'verified'])
