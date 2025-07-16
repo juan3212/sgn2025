@@ -220,7 +220,7 @@
                         {data: 'id', name: 'id'},
                         @endcan
                         {data: 'nombre', name: 'nombre'},
-                        {
+                        { 
                             data: 'descripcion',
                             name: 'descripcion',
                             render: function(data, type, row) {

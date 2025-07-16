@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class MateriasForm extends Component
 {
+    public $isNewSubject;
     public $subjectId;
     public $subjects;
     public $subjectSelected;
@@ -39,6 +40,9 @@ class MateriasForm extends Component
         $this->subjectId = $subjectId;
         if($subjectId){
             $this->getCurrentData($subjectId);
+            $this->isNewSubject = false;
+        }else{
+            $this->isNewSubject = true;
         }
     }
 
@@ -53,9 +57,29 @@ class MateriasForm extends Component
         $this->ih = $materia->intensidad_horaria;
     }
 
+    public function subjectAlreadyExist()
+    {
+        $materia = Materia::where('materia_id', $this->subjectSelected)
+            ->where('grado_id', $this->gradeSelected)
+            ->where('grupo_id', $this->classSelected)
+            ->first();
+        if($materia){
+            return true;
+        }
+        return false;
+    }
+
     public function submit()
     {
         try {
+            if($this->isNewSubject){
+                $exist = $this->subjectAlreadyExist();
+                if($exist){
+                    session()->flash('error', 'La materia ya existe.');
+                    return;
+                }
+            }
+            
             $this->validate([
                 'subjectSelected' => 'required',
                 'ih' => 'required',
