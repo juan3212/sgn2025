@@ -41,7 +41,6 @@ class ActividadesController extends Controller
         // Consulta inicial
         $query = Actividad::with('tipoNota')
                             ->where('materia_id', $materia)
-                            ->where('periodo_id', $periodo)
                             ->where('competencia_id', $competencia);
     
         // Procesamiento con DataTables

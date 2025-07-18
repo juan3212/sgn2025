@@ -60,6 +60,7 @@
                             {{ $class->grupo }}
                         </option>
                     @endforeach
+                        <option value="todos">Todos</option>
                 </select>
             </div>
             <button type="submit" class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline">Guardar</button>

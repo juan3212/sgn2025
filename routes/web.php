@@ -2,10 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Materia;
-use App\Models\Usuario;
-use App\Http\Controllers\Estudiantes\calcularNotasController;
 use App\Services\getUserDataService;
+use App\Models\NotaFinalMateria;
+
 
 Route::get('/', [App\Http\Controllers\MateriasController::class, 'render'])
 ->middleware(['auth', 'verified'])
@@ -200,6 +199,14 @@ Route::get('tabla-prueba/{materia}/{periodo}/{competencia}', [App\Http\Controlle
 Route::get('tabla-notas', [App\Http\Controllers\NotasController::class, 'table'])
     ->middleware(['auth'])
     ->name('tabla-notas');
+
+Route::get('pruebaNotas/{materiaId}/{estudianteId}', function($materiaId, $estudianteId){
+    $notas = NotaFinalMateria::select('nota_final', 'periodo_id')
+    ->where('materia_id', $materiaId)
+    ->where('estudiante_id', $estudianteId)
+    ->get();
+    return $notas;
+});
 
 
 # rutas para importacion de usuarios

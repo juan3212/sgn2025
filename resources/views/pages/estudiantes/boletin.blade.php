@@ -252,7 +252,7 @@
       <h1>Student Report Card</h1>
   
       <div id="header2" class="header2">
-          <h2 id="currentDate">{{ $day .' '. $month}} <span id="currentYear">{{ $year }}</span></h2>
+          <h2 id="currentDate">{{ $date }}</h2>
           <h2 id="currenPeriod">TERM <span id="period"></span></h2>
       </div>
   
@@ -280,6 +280,9 @@
         </table>
       </div>
 
+    <div>
+        @livewire('pages.estudiantes.boletin', ['user' => $user])
+    </div>
 
       <div class="footer">
         <table>

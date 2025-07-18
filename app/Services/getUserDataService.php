@@ -39,17 +39,22 @@ class getUserDataService
         $grupos = null;
         if(!$this->isTeacher){
             $grados =  $this->user->grados()->get()->first()->grado;
+            $gradoID =  $this->user->grados()->get()->first()->id;
             $grupos = $this->user->grupos()->get()->first()->grupo;
+            $grupoID = $this->user->grupos()->get()->first()->id;
         }
         
         
         $userData = [
+            'id' => $this->user->id,
             'nombre' => $this->user->nombre,
             'apellido' => $this->user->apellido,
             'nuip' => $this->user->nuip,
             'correo' => $this->user->correo,
             'grados' => $grados,
-            'grupos' => $grupos
+            'grupos' => $grupos,
+            'gradoID' => $gradoID,
+            'grupoID' => $grupoID
         ];
         return $userData;
     }

@@ -9,6 +9,7 @@ use App\Models\Grado;
 use App\Models\Grupo;
 use App\Models\Materia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MateriasForm extends Component
 {
@@ -57,11 +58,12 @@ class MateriasForm extends Component
         $this->ih = $materia->intensidad_horaria;
     }
 
-    public function subjectAlreadyExist()
+    public function subjectAlreadyExist($class)
     {
-        $materia = Materia::where('materia_id', $this->subjectSelected)
+        $materia = Materia::select('id')
+            ->where('materia_id', $this->subjectSelected)
             ->where('grado_id', $this->gradeSelected)
-            ->where('grupo_id', $this->classSelected)
+            ->where('grupo_id', $class)
             ->first();
         if($materia){
             return true;
@@ -69,14 +71,13 @@ class MateriasForm extends Component
         return false;
     }
 
-    public function submit()
+    public function saveSubject($class)
     {
         try {
             if($this->isNewSubject){
-                $exist = $this->subjectAlreadyExist();
+                $exist = $this->subjectAlreadyExist($class);
                 if($exist){
-                    session()->flash('error', 'La materia ya existe.');
-                    return;
+                    throw new \Exception('La materia ya existe.');
                 }
             }
             
@@ -95,18 +96,44 @@ class MateriasForm extends Component
                     'intensidad_horaria' => $this->ih,
                     'profesor_id' => $this->teacher_id,
                     'grado_id' => $this->gradeSelected,
-                    'grupo_id' => $this->classSelected,
+                    'grupo_id' => $class,
                 ]
             );
 
-            session()->flash('message', 'Materia guardada exitosamente.');
-            $this->reset(['subjectSelected', 'ih', 'teacher_id', 'gradeSelected', 'classSelected']);
-            
+            return  $materia->id;
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    public function submit()
+    {
+        try {
+            $materiaId = null;
+            if($this->classSelected == 'todos'){
+                try {
+                    DB::beginTransaction();
+                    foreach ($this->classes as $class) {
+                        $materiaId = $this->saveSubject($class->id);
+                    }
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    session()->flash('error', 'Error: ' . $e->getMessage());
+                }
+            }else{
+                $materiaId = $this->saveSubject($this->classSelected);
+            }
+            if($materiaId){
+                session()->flash('message', 'Materia guardada exitosamente.');
+                $this->reset(['subjectSelected', 'ih', 'teacher_id', 'gradeSelected', 'classSelected']);
+            }
             // Si es una actualización, mantener el ID para futuras ediciones
             if ($this->subjectId) {
-                $this->subjectId = $materia->id;
+                $this->subjectId = $materiaId;
             }
-
+            
         } catch (\Exception $e) {
             session()->flash('error', 'Error: ' . $e->getMessage());
         }
