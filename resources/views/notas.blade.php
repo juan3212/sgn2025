@@ -72,6 +72,7 @@
             processing: true,
             serverSide: true,
             responsive: true,
+            pageLength: 30,
             ajax: {
                 url: "{{ route('tabla-notas') }}",
                 data: function(d) {
@@ -97,6 +98,32 @@
             };
         }
 
+        function parseFloatCell(cell) {
+            const valor = parseFloat(cell.textContent.replace(',', '.'));
+            return valor;
+        }
+
+        function updateNota(id, valor){
+            let notaExistente = notas.find((nota) => nota.id === id);
+            if (notaExistente) {
+                notaExistente.valor = valor;
+            } else {
+                notas.push({ id, valor });
+            }
+        }
+
+        function save(){
+            let notasCell = document.querySelectorAll('.editable-cell');
+            notasCell.forEach(cell => {
+                const id = cell.dataset.id;
+                const valor = parseFloatCell(cell);
+                if (valor) {
+                    updateNota(id, valor);
+                }
+            });
+            console.log(notas);
+        }
+
         function handleInput(e) {
             messageContent.textContent = '';
             if (e.target.classList.contains('outRange')) {
@@ -105,7 +132,7 @@
 
             if (e.target.classList.contains('editable-cell')) {
                 const id = e.target.dataset.id;
-                const valor = parseFloat(e.target.textContent);
+                const valor = parseFloatCell(e.target);
 
 
                 if (valor > 10) {
@@ -120,13 +147,7 @@
                     return;
                 }
 
-                const notaExistente = notas.find((nota) => nota.id === id);
-
-                if (notaExistente) {
-                    notaExistente.valor = valor;
-                } else {
-                    notas.push({ id, valor });
-                }
+                updateNota(id, valor);
 
                 console.log(notas);
             }
@@ -139,12 +160,12 @@
         function updateCellsWithStoredValues() {
 
             table.rows({ page: 'current' }).every(function () {
-                const row = this.node(); 
-                const cells = row.querySelectorAll('.editable-cell'); 
+                const row = this.node();
+                const cells = row.querySelectorAll('.editable-cell');
 
                 cells.forEach((cell) => {
-                    const id = cell.dataset.id; 
-                    const notaExistente = notas.find((nota) => nota.id === id); 
+                    const id = cell.dataset.id;
+                    const notaExistente = notas.find((nota) => nota.id === id);
 
                     if (notaExistente) {
                         cell.textContent = notaExistente.valor;
@@ -152,12 +173,17 @@
                 });
             });
         }
+
+        document.addEventListener('paste', save);
+
+  
         //escuchar eventos de actualizacion de la tabla
         table.on('draw.dt order.dt search.dt page.dt xhr.dt', function () {
             updateCellsWithStoredValues();
         });
 
         function saveNotas() {
+            save();
 
             fetch('/notas/save', { 
                     method: 'POST',
