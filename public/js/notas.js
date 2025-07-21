@@ -80,8 +80,9 @@ function handlePaste() {
         const targetCell = event.target.closest('td');
         if (!targetCell) return;
 
-        const startRowIndex = Array.from(targetCell.parentNode.parentNode.rows).indexOf(targetCell.parentNode);
-        const startColIndex = Array.from(targetCell.parentNode.cells).indexOf(targetCell);
+        const startRowIndex = targetCell.parentNode.rowIndex;
+        const startColIndex = targetCell.cellIndex;
+
 
         for (let i = 0; i < cells.length; i++) {
             for (let j = 0; j < cells[i].length; j++) {

@@ -234,6 +234,6 @@
         document.getElementById('guardarButton').addEventListener('click', saveNotas);
     </script>
  
-    <script src="/js/notas.js"></script>
+    <script src="/js/notas.js?1"></script>
 
 </x-app-layout>
