@@ -4,6 +4,12 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Notas') }}
             </h2>
+
+            <div class="flex items-center gap-2">
+                <label for="nota" class="block text-md font-medium text-gray-700">Agregar una nota a todos los estudiantes:</label>
+                <input type="number" id="notaForAll" value="null" class="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300">
+                <button class="btn btn-primary btn-md" disabled id="agregarNotaButton">Guardar</button>
+            </div>
             
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
             <link  href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
@@ -112,12 +118,15 @@
             }
         }
 
-        function save(){
+        function save(valorForAll){
             let notasCell = document.querySelectorAll('.editable-cell');
             notasCell.forEach(cell => {
                 const id = cell.dataset.id;
                 const valor = parseFloatCell(cell);
-                if (valor) {
+                if (valorForAll && typeof(valorForAll) === 'number') {
+                    updateNota(id, valorForAll);
+                }
+                else if (valor) {
                     updateNota(id, valor);
                 }
             });
@@ -176,14 +185,39 @@
 
         document.addEventListener('paste', save);
 
+        //agregar misma nota a todos los estudiantes
+        document.getElementById('notaForAll').addEventListener('input', function() {
+            let notaForAllButton = document.getElementById('agregarNotaButton');
+            notaForAllButton.disabled = false;
+            notaForAllButton.addEventListener('click', notasForAll);
+        });
+
+        function notasForAll() {
+        const notaValue = document.getElementById('notaForAll').value;
+        Swal.fire({
+            title: "Seguro que desea guardar todas las notas?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Guardar",
+            denyButtonText: `Cancelar`
+          }).then((result) => {
+            if (result.isConfirmed) {
+              saveNotas(notaValue);
+              Swal.fire("Guardado!", "", "success");
+              updateCellsWithStoredValues();
+            } else if (result.isDenied) {
+              Swal.fire("No se guardaron los cambios", "", "info");
+            }
+          });
+    }
   
-        //escuchar eventos de actualizacion de la tabla
+//escuchar eventos de actualizacion de la tabla
         table.on('draw.dt order.dt search.dt page.dt xhr.dt', function () {
             updateCellsWithStoredValues();
         });
 
-        function saveNotas() {
-            save();
+        function saveNotas(valorForAll = null) {
+            save(valorForAll);
 
             fetch('/notas/save', { 
                     method: 'POST',
