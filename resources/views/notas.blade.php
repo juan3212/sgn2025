@@ -7,7 +7,7 @@
 
             <div class="flex items-center gap-2">
                 <label for="nota" class="block text-md font-medium text-gray-700">Agregar una nota a todos los estudiantes:</label>
-                <input type="number" id="notaForAll" value="null" class="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300">
+                <input type="text" id="notaForAll" class="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300">
                 <button class="btn btn-primary btn-md" disabled id="agregarNotaButton">Guardar</button>
             </div>
             
@@ -105,7 +105,7 @@
         }
 
         function parseFloatCell(cell) {
-            const valor = parseFloat(cell.textContent.replace(',', '.'));
+            const valor = parseFloat(cell.replace(',', '.'));
             return valor;
         }
 
@@ -120,10 +120,12 @@
 
         function save(valorForAll){
             let notasCell = document.querySelectorAll('.editable-cell');
+            
             notasCell.forEach(cell => {
                 const id = cell.dataset.id;
-                const valor = parseFloatCell(cell);
-                if (valorForAll && typeof(valorForAll) === 'number') {
+                const valor = parseFloatCell(cell.textContent);
+                if (valorForAll && typeof(valorForAll) !== 'object' ) {
+                    console.log(typeof(valorForAll));
                     updateNota(id, valorForAll);
                 }
                 else if (valor) {
@@ -141,7 +143,7 @@
 
             if (e.target.classList.contains('editable-cell')) {
                 const id = e.target.dataset.id;
-                const valor = parseFloatCell(e.target);
+                const valor = parseFloatCell(e.target.textContent);
 
 
                 if (valor > 10) {
@@ -193,7 +195,14 @@
         });
 
         function notasForAll() {
-        const notaValue = document.getElementById('notaForAll').value;
+        let notaValue = document.getElementById('notaForAll').value;
+        notaValue = parseFloatCell(notaValue);
+
+        if (notaValue > 10 || notaValue < 1) {
+            Swal.fire("La nota debe ser un valor entre 1 y 10", "", "error");
+            return;
+        }
+
         Swal.fire({
             title: "Seguro que desea guardar todas las notas?",
             showDenyButton: true,
@@ -203,7 +212,6 @@
           }).then((result) => {
             if (result.isConfirmed) {
               saveNotas(notaValue);
-              Swal.fire("Guardado!", "", "success");
               updateCellsWithStoredValues();
             } else if (result.isDenied) {
               Swal.fire("No se guardaron los cambios", "", "info");
