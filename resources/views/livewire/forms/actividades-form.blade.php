@@ -32,6 +32,23 @@
                 @endforeach
             </select>
         </div>
+        @if(!$actividadId)
+            <div>
+                <input type="checkbox"  wire:model.live="actividadesForAllCheck"  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-offset-0">
+                <label for="actividadesForAll" class="text-gray-700 font-medium mb-1">Aplicar a todas las materias con la misma competencia</label>
+            </div>
+        @endif
+        
+        @if($actividadesForAllCheck)
+        <div>
+                @foreach ($materias as $materia)
+                    <div>
+                        <input type="checkbox" wire:model="materiasSelected" checked value="{{ $materia['id_materia'] }}" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-offset-0">
+                        <label for="materiasSelected" class="text-gray-700 font-medium mb-1">{{ $materia['nombre_materia'] }} {{ $materia['grado'] }} {{ $materia['grupo'] }}</label>
+                    </div>
+                @endforeach
+        </div>
+        @endif
         <div>
             <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
                 Guardar
