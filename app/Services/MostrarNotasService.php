@@ -12,14 +12,15 @@ class MostrarNotasService
     public $getUserDataService;
     public $isAdmin;
     public $isTeacher;
-    public function __construct()
+    public function __construct($forIndividual = true)
     {
-        $this->getUserDataService = new getUserDataService;
-        $userData = $this->getUserDataService->getUserDataFromAuth();
-        $this->isAdmin = $userData['isAdmin'];
-        $this->isTeacher = $userData['isTeacher'];
+        if ($forIndividual) {
+            $this->getUserDataService = new getUserDataService;
+            $userData = $this->getUserDataService->getUserDataFromAuth();
+            $this->isAdmin = $userData['isAdmin'];
+            $this->isTeacher = $userData['isTeacher'];
+        }
     }
-
 
     public function calcularPeriodo()
     {
@@ -47,12 +48,12 @@ class MostrarNotasService
         return $nota;
     }
 
-    public function mostrarNotasMateria($estudianteId, $materiaId)
+    public function mostrarNotasMateria($estudianteId, $materiaId, $periodoId = null)
     {
         $nota = NotaFinalMateria::select('nota_final')
         ->where('estudiante_id', $estudianteId)
         ->where('materia_id', $materiaId)
-        ->where('periodo_id', $this->calcularPeriodo())
+        ->where('periodo_id', $periodoId??$this->calcularPeriodo())
         ->first();
         return $nota->nota_final ?? 0;
     }

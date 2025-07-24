@@ -77,6 +77,11 @@ Route::get('competenciasMateria', [App\Http\Controllers\MateriasCompetenciasCont
     ->middleware(['auth'])
     ->name('competenciasMateria');
 
+    #notas por materia y periodo para profesores
+    Route::get('notas-estudiantes', [App\Http\Controllers\profesores\NotasEstudiantes::class, 'dataOfEstudiante'])
+    ->middleware(['auth'])
+    ->name('notas-estudiantes');
+
 #actividades
 Route::get('actividades/data', [App\Http\Controllers\ActividadesController::class, 'data'])
     ->middleware(['auth'])
@@ -185,6 +190,7 @@ Route::post('bulk-delete', [App\Http\Controllers\DeleteController::class, 'bulkD
 Route::view('prueba', 'pruebas')
     ->middleware(['auth'])
     ->name('prueba');
+
 
 Route::view('landing', 'landing')
     ->name('landing');

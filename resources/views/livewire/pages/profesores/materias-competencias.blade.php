@@ -128,26 +128,54 @@
         </style>
 
         <!-- Header con selector de período -->
-        <div class=" mb-8">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class=" w-full">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-white">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    @can('administrar competencias')
                     <div class="flex flex-col sm:flex-row gap-2">
-                        <label for="periodo" class="text-sm font-medium text-gray-700 sm:self-center">
-                            Período:
+                        <button class="btn btn-primary" id="competencias-table-button">Ver Competencias</button>
+                        <button class="btn btn-primary" disabled id="estudiantes-table-button">Ver Notas</button>
+                    </div>
+                    @endcan
+
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <label for="periodo" class="text-gray-700 sm:self-center font-semibold">
+                            *Período:
                         </label>
                         <select name="periodo" id="periodo" required class="period-selector">
-                            <option value="">Seleccione un período</option>
+                            <option value="" disabled selected>Seleccione un período</option>
                             @foreach ($periodos as $periodo)
                                 <option value="{{ $periodo->id }}">{{ $periodo->periodo }}</option>
                             @endforeach
                         </select>
                     </div>
+
                 </div>
             </div>
         </div>
 
+        @can('administrar competencias')
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white hidden" id="estudiantes-table-container">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-4 sm:p-6">
+                    <!-- Tabla responsive -->
+                    <div class="overflow-x-auto">
+                        <table id="estudiantes-table" class="display">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Nota</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endcan
         <!-- Contenido principal -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white" id="competencias-table-container">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-4 sm:p-6">
                     <!-- Tabla responsive -->
@@ -199,7 +227,28 @@
                 function isMobile() {
                     return window.innerWidth <= 768;
                 }
+
+                //tabla de notas
+               var tableEstudiantes = $('#estudiantes-table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    pageLength: 30,
+                    ajax: {
+                        url: "{{ route('notas-estudiantes') }}",
+                        data: function (d) {
+                            d.materia = "{{ $materia->id }}";
+                            d.periodo = $("#periodo").val();
+                        }
+                    },
+                    columns: [
+                        { data: 'nombre', name: 'nombre' },
+                        { data: 'apellido', name: 'apellido' },
+                        { data: 'nota', name: 'nota', orderable: false, searchable: false },
+                    ]
+                });
                 
+                //tabla de competencias
                 var table = $('#competenciasMaterias-table').DataTable({
                     processing: true,
                     serverSide: true,
@@ -340,6 +389,19 @@
                 // Filtro por período
                 $('#periodo').on('change', function(){
                     table.ajax.reload();
+                    tableEstudiantes.ajax.reload();
+                    document.getElementById('estudiantes-table-button').disabled = false;
+                    
+                });
+
+                $('#competencias-table-button').on('click', function(){
+                    $('#competencias-table-container').show();
+                    $('#estudiantes-table-container').hide();
+                });
+
+                $('#estudiantes-table-button').on('click', function(){
+                    $('#competencias-table-container').hide();
+                    $('#estudiantes-table-container').show();
                 });
 
                 @can('administrar competencias')
