@@ -26,7 +26,7 @@ class NotasEstudiantes extends Controller
 
     public function dataOfMateria($materia)
     {
-        $materia = Materia::where('materia_id', $materia)->first();
+        $materia = Materia::where('id', $materia)->first();
         return $materia;
     }
     public function getEstudiantes($materiaId)
