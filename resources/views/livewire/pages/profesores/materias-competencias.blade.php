@@ -129,7 +129,7 @@
 
         <!-- Header con selector de período -->
         <div class=" w-full">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-white rounded-t-lg">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     @can('administrar competencias')
                     <div class="flex flex-col sm:flex-row gap-2">
@@ -155,7 +155,7 @@
         </div>
 
         @can('administrar competencias')
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white hidden" id="estudiantes-table-container">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white hidden p-2 rounded-b-lg" id="estudiantes-table-container">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-4 sm:p-6">
                     <!-- Tabla responsive -->
@@ -175,7 +175,7 @@
         </div>
         @endcan
         <!-- Contenido principal -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white" id="competencias-table-container">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white p-2 rounded-b-lg" id="competencias-table-container">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-4 sm:p-6">
                     <!-- Tabla responsive -->
