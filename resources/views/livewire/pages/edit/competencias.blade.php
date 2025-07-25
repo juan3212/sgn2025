@@ -63,7 +63,7 @@
             </div>
 
         {{-- Buscador de Materias --}}
-        <div>
+        <div> 
             <label for="search" class="block text-sm font-medium text-gray-700">Buscar materias:</label>
             <input type="text" id="search" wire:model.live.debounce.500ms="search"
                 placeholder="Escribe para buscar..."

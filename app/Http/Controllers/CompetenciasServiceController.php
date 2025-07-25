@@ -8,12 +8,27 @@ use App\Models\Materia;
 use App\Models\Periodo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Services\getUserDataService;
 
 class CompetenciasServiceController extends Controller
 {
     //
-    public function getSubjects($search, $teacher_id= null)
+    public $getUserData;
+    public $userId;
+    public function __construct()
     {
+        $this->getUserData = new getUserDataService();
+        $userData = $this->getUserData->getUserDataFromAuth();
+        $this->userId = $userData['id'];
+        if($userData['isAdmin']){
+            $this->userId = null;
+        }
+    }
+    public function getSubjects($search, $teacher_id = null)
+    {
+        if(!$teacher_id){
+            $teacher_id = $this->userId;
+        }
         $query = Materia::selectRaw('materias.id as id, CONCAT(nombre_materia, " - ", grado, " - ", grupo) as nombre')
             ->join('base_materia', 'materias.materia_id', '=', 'base_materia.id')
             ->join('grados', 'materias.grado_id', '=', 'grados.id')

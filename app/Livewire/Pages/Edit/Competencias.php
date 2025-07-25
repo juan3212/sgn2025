@@ -35,7 +35,7 @@ class Competencias extends Component
      * Método boot - Inicializa el componente con los servicios requeridos
      */
     public function boot(CompetenciasServiceController $competenciasServiceController){
-        $this->competenceService = $competenciasServiceController;
+        $this->competenceService = $competenciasServiceController; 
     }
 
     public function mount($competence){
