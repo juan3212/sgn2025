@@ -1,3 +1,5 @@
+<x-app-layout>
 <div>
-    @livewire('pages.estudiantes.boletin')
+    @livewire('pages.estudiantes.boletin', ['estudianteID' => $estudianteID])
 </div>
+</x-app-layout>

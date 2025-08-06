@@ -8,6 +8,7 @@
         <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
         <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
         <script src="//cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.min.js"></script>
+        
 
         <style>
             /* Estilos personalizados para mejorar la apariencia */
@@ -55,11 +56,6 @@
                     margin-top: 10px;
                 }
                
-                /* Mejorar la descripción truncada en móviles */
-                .description-cell {
-                    max-width: 70%;
-                    white-space: wrap;
-                }
             }
            
             /* Estilo para los badges de porcentaje */
@@ -79,12 +75,13 @@
             
             /* Estilo para la celda de descripción con ancho fijo */
             .description-cell {
-                max-width: 70vw; /* 70% del ancho de la pantalla */
+                white-space: nowrap;
+                text-wrap: wrap;
                 word-wrap: break-word;
-                word-break: break-word;
-                white-space: normal;
-                overflow-wrap: break-word;
-                hyphens: auto;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+                display: block;
             }
             
             /* Asegurar que la columna descripción tenga ancho fijo */
@@ -117,6 +114,7 @@
                 .dataTable tbody tr:hover {
                     @apply bg-gray-50 cursor-pointer;
                 }
+                
             }
             
             /* Remover hover en móviles */
@@ -124,6 +122,22 @@
                 .dataTable tbody tr:hover {
                     @apply bg-transparent cursor-default;
                 }
+                .description-cell {
+                    max-width: 30vw; 
+                    max-height: 100px;
+                }
+
+                .td-description p{
+                    max-width: 80vw; 
+                    max-height: 100px;
+                    white-space: normal;
+                    word-wrap: break-word;
+                }
+            }
+            
+            /* Estilo para el contenido del modal */
+            .modal-details-content {
+                @apply p-6;
             }
         </style>
 
@@ -134,19 +148,26 @@
                     @can('administrar competencias')
                     <div class="flex flex-col sm:flex-row gap-2">
                         <button class="btn btn-primary" id="competencias-table-button">Ver Competencias</button>
-                        <button class="btn btn-primary" disabled id="estudiantes-table-button">Ver Notas</button>
+                        <button class="btn btn-primary" @if($periodoSelected == null) disabled @endif id="estudiantes-table-button">Ver Notas</button>
                     </div>
                     @endcan
-
                     <div class="flex flex-col sm:flex-row gap-2">
-                        <label for="periodo" class="text-gray-700 sm:self-center font-semibold">
+                        <label for="periodo" class="text-gray-700 sm:self-center font-semibold"> 
                             *Período:
                         </label>
-                        <select name="periodo" id="periodo" required class="period-selector">
-                            <option value="" disabled selected>Seleccione un período</option>
-                            @foreach ($periodos as $periodo)
-                                <option value="{{ $periodo->id }}">{{ $periodo->periodo }}</option>
-                            @endforeach
+                        <select name="periodo" 
+                            id="periodo" 
+                            required 
+                            @cannot('administrar competencias')
+                            disabled
+                            @endcannot
+                            class="period-selector @cannot('administrar competencias') bg-gray-200 @endcannot">    
+                                @foreach ($periodos as $periodo)
+                                    <option value="{{ $periodo->id }}" 
+                                        @if ($periodo->id == $periodoSelected) selected @endif>
+                                        {{ $periodo->periodo }}
+                                    </option>
+                                @endforeach
                         </select>
                     </div>
 
@@ -222,12 +243,12 @@
         </div>
 
         <script type="module">
+            
             $(document).ready(function(){
                 // Función para detectar si es dispositivo móvil
                 function isMobile() {
                     return window.innerWidth <= 768;
                 }
-
                 //tabla de notas
                var tableEstudiantes = $('#estudiantes-table').DataTable({
                     processing: true,
@@ -238,7 +259,7 @@
                         url: "{{ route('notas-estudiantes') }}",
                         data: function (d) {
                             d.materia = "{{ $materia->id }}";
-                            d.periodo = $("#periodo").val();
+                            d.periodo = $('#periodo').val() || "{{ $periodoSelected }}";
                         }
                     },
                     columns: [
@@ -260,7 +281,7 @@
                         url: "{{ route('competenciasMateria') }}",
                         data: function(d) {
                             d.materia = "{{ $materia->id }}";
-                            d.periodo = $("#periodo").val();
+                            d.periodo = $('#periodo').val() || "{{ $periodoSelected }}";
                         }
                     },
                     columns: [
@@ -274,8 +295,10 @@
                             name: 'descripcion',
                             render: function(data, type, row) {
                                 if (type === 'display' && data) {
-                                    return '<div class="description-cell" title="' + data + '">' + data + '</div>';
+                       
+                                    return `<p class="description-cell">${data}</p>`;
                                 }
+                                
                                 return data || '';
                             }
                         },
@@ -302,10 +325,16 @@
                             }),
                             renderer: function(api, rowIdx, columns) {
                                 var data = $.map(columns, function(col, i) {
+                                    if(col.name === 'descripcion') {
+                                        return '<tr>' +
+                                            '<td class="font-semibold text-gray-700 py-2 align-top">' + col.title + ':</td>' +
+                                            '<td class="py-2 pl-4 description-cell-details">' + col.data + '</td>' +
+                                        '</tr>';
+                                    } 
                                     return col ?
                                         '<tr>' +
                                             '<td class="font-semibold text-gray-700 py-2">' + col.title + ':</td>' +
-                                            '<td class="py-2 pl-4">' + col.data + '</td>' +
+                                            '<td class="py-2 pl-4 td-description">' + col.data + '</td>' +
                                         '</tr>' :
                                         '';
                                 }).join('');
@@ -341,7 +370,7 @@
                         },
                         {
                             targets: [3], // Descripción
-                            className: 'min-tablet-l description-column', // Ocultar en móviles
+                            className: 'all description-column', // Ocultar en móviles
                             width: '30%'
                         },
                         {
@@ -350,20 +379,20 @@
                         },
                         {
                             targets: [4], // Período
-                            className: 'tablet-l' // Ocultar en móviles y tablets pequeñas
+                            className: 'min-tablet-l' // Ocultar en móviles y tablets pequeñas
                         },
                         {
                             targets: [7], // Acciones
-                            className: 'all' // Siempre mostrar
+                            className: 'min-tablet-l' // Siempre mostrar
                         }
                         @else
                         {
                             targets: [0], // Nombre
-                            className: 'all' // Siempre mostrar
+                            className: 'min-tablet-l' // Siempre mostrar
                         },
                         {
                             targets: [1], // Descripción
-                            className: 'min-tablet-l description-column', // Ocultar en móviles
+                            className: 'all description-column text-ellipsis', // Ocultar en móviles
                             width: '30%'
                         },
                         {

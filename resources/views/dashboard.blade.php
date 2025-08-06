@@ -2,10 +2,16 @@
     <x-slot name="header">
     <div class="flex flex-wrap justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Materias') }}
-                @can('ver notas')
-                <span class="text-gray-600">- PERIODO {{ $periodo }}</span>
+                @can('administrar materias')
+                {{ __('MATERIAS: ') }}
                 @endcan
+                @if($grado && $grupo)
+                <span class="text-gray-800">{{ $grado->grado }} {{ $grupo->grupo }}</span>
+                @endif
+                @can('ver notas')
+                <span class="text-gray-800">- PERIODO {{ $periodo }}</span>
+                @endcan
+                
             </h2>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
            
@@ -48,9 +54,9 @@
                             <th>ID</th>
                             @endcan
                             <th>Materia</th>
+                            @can('administrar materias')
                             <th>Grado</th>
                             <th>Curso</th>
-                            @can('administrar materias')
                             <th>Profesor</th>
                             @endcan
                             @can('ver notas')
@@ -62,27 +68,6 @@
                             @endcan
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            @can('administrar materias')
-                            <th></th>
-                            <th>ID</th>
-                            @endcan
-                            <th>Materia</th>
-                            <th>Grado</th>
-                            <th>Curso</th>
-                            @can('administrar materias')
-                            <th>Profesor</th>
-                            @endcan
-                            @can('ver notas')
-                            <th>Notas</th>
-                            @endcan
-                            @can('administrar materias')
-                            <th>Intensidad horaria</th>
-                            <th>Acciones</th> {{-- Columna opcional para acciones --}}
-                            @endcan
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
             </div>
@@ -101,7 +86,6 @@
                 var table = $('#materias-table').DataTable({
                     processing: true,
                     serverSide: true,
-                    responsive: true,
                     scrollX: true,
                     ajax: "{{ route('materias.data') }}",
                     columns: [
@@ -110,9 +94,9 @@
                         {data: 'id', name: 'id'},
                         @endcan
                         {data: 'nombre_materia', name: 'materia'},
+                        @can('administrar materias')
                         {data: 'grado', name: 'grado'},
                         {data: 'grupo', name: 'curso'},
-                        @can('administrar materias')
                         {data: 'nombre', name: 'profesor'},
                         @endcan
                         @can('ver notas')

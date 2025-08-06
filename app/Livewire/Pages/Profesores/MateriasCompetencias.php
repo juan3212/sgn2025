@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Materia;
 use App\Models\Periodo;
 use Livewire\Attributes\Layout;
+use App\Services\getPeriodoService;
 
 class MateriasCompetencias extends Component
 {
@@ -13,6 +14,7 @@ class MateriasCompetencias extends Component
     public $periodos = [];
     public $periodoSelected;
     public $materia;
+    public $getPeriodoService;
     
     public function mount(Materia $materia)
     {
@@ -26,10 +28,14 @@ class MateriasCompetencias extends Component
                          ->where('materias.id', $this->materia)
                          ->first();
 
-        $periodos = Periodo::all();
+                                         
+        $getPeriodoService = new getPeriodoService();
+        $periodos = $getPeriodoService->allPeriods();
+        $periodoSelected = $getPeriodoService->currentPeriod();
 
         $this->materia = $materia;
         $this->periodos = $periodos;
+        $this->periodoSelected = $periodoSelected->id;
     }
     
     public function render()

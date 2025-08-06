@@ -1,9 +1,9 @@
 <div>
    
 @foreach($materiasNotas as $materia)
-<table>
+<table class="border border-separate border-gray-400">
     <thead>
-        <th>Materia</th>
+        <th>Materia</th> 
         <th>intensidad horaria</th>
         <th>periodo 1</th>
         <th>R</th>

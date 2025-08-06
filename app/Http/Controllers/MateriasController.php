@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Blade;
 use App\Services\MostrarNotasService;
 use App\Models\Periodo;
 
+
 class MateriasController extends Controller
 {
     //
@@ -42,11 +43,12 @@ class MateriasController extends Controller
             // Para usuarios no administradores, cargar su grado y grupo específicos
             $userData = Usuario::with('grados', 'grupos')->find($user->id);
             if ($userData && $userData->grados->isNotEmpty() && $userData->grupos->isNotEmpty()) {
-                $this->grado = $userData->grados[0]->id;
-                $this->grupo = $userData->grupos[0]->id;
+                $this->grado = $userData->grados[0];
+                $this->grupo = $userData->grupos[0];
             }
         }
     }
+    
 
     public function loadData()
     {
@@ -67,8 +69,8 @@ class MateriasController extends Controller
         if(!$this->isAdmin){
             // Solo aplicar filtros si el usuario no es admin y tiene grado/grupo definidos
             if (isset($this->grado) && isset($this->grupo)) {
-                $query->where('materias.grado_id', $this->grado)
-                      ->where('materias.grupo_id', $this->grupo);
+                $query->where('materias.grado_id', $this->grado->id)
+                      ->where('materias.grupo_id', $this->grupo->id);
             }
         }
         
@@ -113,6 +115,10 @@ class MateriasController extends Controller
 
     public function render(){
         $periodo = $this->getPeriodo();
-        return view('dashboard', compact('periodo'));
+        return view('dashboard', [
+            'periodo' => $periodo,
+            'grado' => $this->grado,
+            'grupo' => $this->grupo,
+        ]);
     }
 }

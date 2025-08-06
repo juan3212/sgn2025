@@ -14,6 +14,7 @@ class Boletin extends Component
 {
     public $materiasNotas= [];
     public $periodoId;
+    public $estudianteID;
     public $user;
 
     public function boot()
@@ -22,10 +23,14 @@ class Boletin extends Component
         $this->Periodos();
         $this->setNotas();
     }
+    public function mount($estudianteID)
+    {
+        $this->estudianteID = $estudianteID;
+    }
     public function getStudentData()
     {
         $user = new getUserDataService;
-        $user = $user->getUserDataFromID(4);
+        $user = $user->getUserDataFromID($this->estudianteID);
         $this->user = $user;
     }
 

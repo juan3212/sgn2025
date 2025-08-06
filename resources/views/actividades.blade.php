@@ -21,10 +21,12 @@
                             <tr>
                                 @can('administrar actividades')
                                 <th><input type="checkbox" id="select-all"></th>
-                                @endcan
                                 <th>Nombre</th>
+                                @endcan
                                 <th>Descripcion</th>
+                                @can('administrar actividades')
                                 <th>Tipo de nota</th>
+                                @endcan
                                 @can('ver notas')
                                 <th>Notas</th>
                                 @endcan
@@ -38,10 +40,12 @@
                             <tr>
                                 @can('administrar actividades')
                                 <th></th>
-                                @endcan
                                 <th>Nombre</th>
+                                @endcan
                                 <th>Descripcion</th>
+                                @can('administrar actividades')
                                 <th>Tipo de nota</th>
+                                @endcan
                                 @can('ver notas')
                                 <th>Notas</th>
                                 @endcan
@@ -78,10 +82,12 @@
             columns: [
                 @can('administrar actividades')
                 { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
-                @endcan
                 { data: 'nombre', name: 'nombre' },
+                @endcan
                 { data: 'descripcion', name: 'descripcion' },
+                @can('administrar actividades')
                 { data: 'tipo_nota.tipo', name: 'tipo_nota' },
+                @endcan
                 @can('ver notas')
                 { data: 'notas', name: 'notas'},
                 @endcan
@@ -101,7 +107,6 @@
                 }
             });
         })
-
 
 
         @can('administrar notas')

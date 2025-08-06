@@ -33,6 +33,17 @@ class MateriasCompetenciasController extends Controller
         $this->isTeacher = $user->hasRole('profesor');
     }
 
+    public function getMateriaData()
+    {
+        $materia = Materia::select('materias.id as id', 'base_materia.nombre_materia as nombre', 'grados.grado as grado', 'grupos.grupo as grupo')
+        ->where('materias.id', $this->materia)
+        ->join('base_materia', 'materias.materia_id', '=', 'base_materia.id')
+        ->join('grados', 'materias.grado_id', '=', 'grados.id')
+        ->join('grupos', 'materias.grupo_id', '=', 'grupos.id')
+        ->first();
+        $materia->nombre = $materia->nombre.' '.$materia->grado.' '.$materia->grupo;
+        return $materia;
+    }
     public function getCompetencesFromSubjects($materiaId, $periodo)
     {
         
@@ -67,6 +78,14 @@ class MateriasCompetenciasController extends Controller
             ->rawColumns(['checkbox', 'actions', 'notas'])
             ->make(true);
 
+    }
+
+    public function render($materiaId)
+    {
+        $this->materia = $materiaId;
+        return view('materias-competencias', [
+            'materia' => $this->getMateriaData(),
+        ]);
     }
 
 }

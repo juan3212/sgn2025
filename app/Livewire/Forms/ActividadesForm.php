@@ -131,7 +131,6 @@ class ActividadesForm extends Component
         } else {
             $this->reset('nombre', 'descripcion', 'tipoSelected');
             session()->flash('message', 'Actividad guardada exitosamente.');
-            return $this->previousPage();
         }
     }
 

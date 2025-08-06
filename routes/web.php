@@ -25,18 +25,9 @@ Route::view('competencias', 'competencias')
 Route::get('boletin/{estudianteID}', [App\Http\Controllers\estudiantes\boletinesController::class, 'render'])
     ->middleware(['auth'])
     ->name('boletin');
-Route::get('pruebaBoletin/{estudianteID}', function ($estudianteID)  {
-    $user = new getUserDataService;
-    $user = $user->getUserDataFromID($estudianteID);
-    
-    return $user;
-    })
-    ->middleware(['auth'])
-    ->name('pruebaBoletin');
+
     #competencias de materias
-Route::get('materia/{materia}', function ($materia)  {
-    return view('materias-competencias', ['materia' => $materia]);
-    })
+Route::get('materia/{materia}', [App\Http\Controllers\MateriasCompetenciasController::class, 'render'])
     ->middleware(['auth'])
     ->name('materia');
 
@@ -206,13 +197,6 @@ Route::get('tabla-notas', [App\Http\Controllers\NotasController::class, 'table']
     ->middleware(['auth'])
     ->name('tabla-notas');
 
-Route::get('pruebaNotas/{materiaId}/{estudianteId}', function($materiaId, $estudianteId){
-    $notas = NotaFinalMateria::select('nota_final', 'periodo_id')
-    ->where('materia_id', $materiaId)
-    ->where('estudiante_id', $estudianteId)
-    ->get();
-    return $notas;
-});
 
 
 # rutas para importacion de usuarios

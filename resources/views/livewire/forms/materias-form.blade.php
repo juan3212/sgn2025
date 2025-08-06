@@ -1,4 +1,10 @@
-<div class="flex items-center justify-center min-h-screen bg-gray-100">
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div class="flex justify-start align-end items-end w-full mt-4 max-w-md">
+        <a href="{{ route('dashboard') }}" class="flex justify-start items-end mb-4 underline text-black">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><!-- Icon from Material Design Icons by Pictogrammers - https://github.com/Templarian/MaterialDesign/blob/master/LICENSE --><path fill="currentColor" d="M20 13.5a6.5 6.5 0 0 1-6.5 6.5H6v-2h7.5c2.5 0 4.5-2 4.5-4.5S16 9 13.5 9H7.83l3.08 3.09L9.5 13.5L4 8l5.5-5.5l1.42 1.41L7.83 7h5.67a6.5 6.5 0 0 1 6.5 6.5"/></svg> 
+            <span class="ml-2">Volver</span>
+        </a>
+    </div>
     <div class="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
         {{-- Do your work, then step back. --}}
         <form wire:submit.prevent="submit" class="space-y-4">
@@ -15,6 +21,7 @@
                     {{ session('error') }}
                 </div>
             @endif
+          
             <div>
                 <label for="subjectSelected" class="block text-sm font-medium text-gray-700">Nombre</label>
                 <select name="subjectSelected" id="subjectSelected" wire:model="subjectSelected" required class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">

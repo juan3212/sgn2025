@@ -32,12 +32,13 @@ class boletinesController extends Controller
 
     public function render($estudianteID)
     {
-        $this->estudianteID = $estudianteID;
+        $this->estudianteID = $estudianteID; 
         $user = $this->getStudentData();
         $date = $this->getDate();
         return view('pages.estudiantes.boletines', [
             'user' => $user,
             'date' => $date,
+            'estudianteID' => $estudianteID,
             ]);
     }
 }

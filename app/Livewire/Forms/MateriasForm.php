@@ -109,7 +109,7 @@ class MateriasForm extends Component
 
     public function submit()
     {
-        try {
+        try { 
             $materiaId = null;
             if($this->classSelected == 'todos'){
                 try {
