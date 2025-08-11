@@ -93,11 +93,11 @@
                         {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
                         {data: 'id', name: 'id'},
                         @endcan
-                        {data: 'nombre_materia', name: 'materia'},
+                        {data: 'nombre_materia', name: 'nombre_materia'},
                         @can('administrar materias')
-                        {data: 'grado', name: 'grado'},
-                        {data: 'grupo', name: 'curso'},
-                        {data: 'nombre', name: 'profesor'},
+                        {data: 'grado', name: 'grados.grado'},
+                        {data: 'grupo', name: 'grupos.grupo'},
+                        {data: 'nombre', name: 'usuarios.nombre'},
                         @endcan
                         @can('ver notas')
                         {data: 'notas', name: 'notas'},
