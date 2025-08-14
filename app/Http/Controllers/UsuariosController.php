@@ -7,15 +7,42 @@ use App\Models\Usuario;
 use Yajra\DataTables\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\UsersImport;
-
+use App\Models\Grado;
+use App\Models\Grupo;
+use Spatie\Permission\Models\Role;
 
 
 class UsuariosController extends Controller
 {
     //
-    public function userData(){
 
-        $usuarios = Usuario::query()->select(['id', 'nombre', 'apellido', 'nuip', 'correo']);
+    public $grados;
+    public $grupos;
+    public $roles;
+
+    public function getUserData(){
+        $usersQuery = Usuario::select('usuarios.id as id', 'usuarios.nombre as nombre', 'usuarios.apellido as apellido', 'usuarios.nuip as nuip', 'usuarios.correo as correo', 'grados.grado as grado', 'grupos.grupo as grupo', 'roles.name as role')
+        ->leftjoin('usuario_grado', 'usuario_grado.usuario_id', '=', 'usuarios.id')
+        ->leftjoin('grados', 'grados.id', '=', 'usuario_grado.grado_id')
+        ->leftjoin('grupos', 'grupos.id', '=', 'usuario_grado.grupo_id')
+        ->leftjoin('model_has_roles', 'model_has_roles.model_id', '=', 'usuarios.id')
+        ->leftjoin('roles', 'roles.id', '=', 'model_has_roles.role_id');
+  
+        return $usersQuery;
+    }
+    
+    public function userData(Request $request){
+
+        $usuarios = $this->getUserData();
+        if($request->grado){
+            $usuarios = $usuarios->where('grados.id', $request->grado);
+        }
+        if($request->grupo){
+            $usuarios = $usuarios->where('grupos.id', $request->grupo);
+        }
+        if($request->role){
+            $usuarios = $usuarios->where('roles.id', $request->role);
+        }
         $datatables = new DataTables();
         return $datatables->eloquent($usuarios)
             ->addColumn('checkbox', function($usuario){
@@ -51,4 +78,19 @@ class UsuariosController extends Controller
         return redirect()->route('usuarios')->with('success', 'Usuarios importados correctamente.');
     }
 
+    public function getFilterData()
+    {
+        $this->grados = Grado::all();
+        $this->grupos = Grupo::all();
+        $this->roles = Role::all();
+    }
+
+    public function render(){
+        $this->getFilterData();
+        return view('usuarios', [
+            'grados' => $this->grados,
+            'grupos' => $this->grupos,
+            'roles' => $this->roles
+        ]);
+    }
 }

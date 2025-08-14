@@ -14,11 +14,11 @@ Route::get('dashboard', [App\Http\Controllers\MateriasController::class, 'render
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::view('usuarios', 'usuarios')
+Route::get('usuarios', [App\Http\Controllers\UsuariosController::class, 'render'])
     ->middleware(['auth', 'permission:administrar usuarios'])
     ->name('usuarios');
 
-Route::view('competencias', 'competencias')
+Route::get('competencias', [App\Http\Controllers\CompetenciasController::class, 'render'])
     ->middleware(['auth', 'verified', 'permission:administrar competencias'])
     ->name('competencias');
 
@@ -31,9 +31,7 @@ Route::get('materia/{materia}', [App\Http\Controllers\MateriasCompetenciasContro
     ->middleware(['auth'])
     ->name('materia');
 
-Route::get('actividades/{materia}/{periodo}/{competencia}', function ($materia, $periodo, $competencia)  {
-    return view('actividades', ['materia' => $materia, 'periodo' => $periodo, 'competencia' => $competencia]);
-    }) 
+Route::get('actividades/{materia}/{periodo}/{competencia}', [App\Http\Controllers\ActividadesController::class, 'render']) 
     ->middleware(['auth'])
     ->name('actividades');
 
@@ -68,8 +66,8 @@ Route::get('competenciasMateria', [App\Http\Controllers\MateriasCompetenciasCont
     ->middleware(['auth'])
     ->name('competenciasMateria');
 
-    #notas por materia y periodo para profesores
-    Route::get('notas-estudiantes', [App\Http\Controllers\profesores\NotasEstudiantes::class, 'dataOfEstudiante'])
+#notas por materia y periodo para profesores
+Route::get('notas-estudiantes', [App\Http\Controllers\profesores\NotasEstudiantes::class, 'dataOfEstudiante'])
     ->middleware(['auth'])
     ->name('notas-estudiantes');
 
@@ -82,6 +80,11 @@ Route::get('notas/{actividad_id}', [App\Http\Controllers\NotasController::class,
     ->middleware(['auth'])
     ->name('notas.data');
 
+#notas actividades
+Route::get('notas-actividades/{materia_id}/{competencia_id}', [App\Http\Controllers\notasActividadesController::class, 'render'])
+    ->middleware(['auth'])
+    ->name('notas-actividades');
+
 #periodos
 Route::get('periodos/data', [App\Http\Controllers\PeriodosController::class, 'getPeriodos'])
     ->middleware(['auth', 'permission:administrar usuarios'])
@@ -90,7 +93,12 @@ Route::get('periodos/data', [App\Http\Controllers\PeriodosController::class, 'ge
 
 #guardar notas
 Route::post('notas/save', [App\Http\Controllers\NotasController::class, 'save'])
-    ->middleware(['auth']);
+    ->middleware(['auth', 'permission:administrar notas']);
+
+#guardar notas de varias actividades
+Route::post('notas/saveNotasActividades', [App\Http\Controllers\notasActividadesController::class, 'saveNotasActividades'])    
+    ->middleware(['auth', 'permission:administrar notas']);
+
 #edit competencias
 Route::get('tablaCompetenciasEdit/{id}', [App\Livewire\Pages\Edit\Competencias::class, 'createTable'])
     ->middleware(['auth', 'permission:administrar competencias'])
@@ -178,7 +186,7 @@ Route::post('bulk-delete', [App\Http\Controllers\DeleteController::class, 'bulkD
     ->name('bulk-delete');
 
 #rutas Prueba
-Route::view('prueba', 'pruebas')
+Route::get('prueba', [App\Http\Controllers\notasActividadesController::class, 'render'])
     ->middleware(['auth'])
     ->name('prueba');
 
