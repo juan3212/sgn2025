@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use App\View\Components\progressBar;
 use App\Services\CalcularNotasService;
+use App\Models\Materia;
 
 class ActividadesController extends Controller
 {
@@ -21,6 +22,18 @@ class ActividadesController extends Controller
     {
         $this->calcularNotasService = new CalcularNotasService();
         $this->getUserData();
+    }
+
+    public function getMateria($materia_id)
+    {
+        $materia = Materia::select('base_materia.nombre_materia as nombre', 'grados.grado', 'grupos.grupo')
+                            ->join('base_materia', 'materias.materia_id', 'base_materia.id')
+                            ->join('grados', 'materias.grado_id', 'grados.id')
+                            ->join('grupos', 'materias.grupo_id', 'grupos.id')
+                            ->where('materias.id', $materia_id)
+                            ->first();
+        $nombreMateria = $materia->nombre.' '.$materia->grado.' '.$materia->grupo;
+        return $nombreMateria;
     }
 
     public function  getUserData()
@@ -67,6 +80,17 @@ class ActividadesController extends Controller
             ->make(true);
     }
 
+    public function render($materia, $periodo, $competencia)
+    {
+        $nombreMateria = $this->getMateria($materia);
+        return view('actividades', [
+            'nombreMateria' => $nombreMateria, 
+            'materia' => $materia, 
+            'periodo' => $periodo, 
+            'competencia' => $competencia
+        ]);   
+    }
+    
     public function delete($id){
         $actividad = Actividad::findOrFail($id);
         $actividad->delete();

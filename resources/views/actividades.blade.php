@@ -2,21 +2,37 @@
     <x-slot name="header">
         <div class="flex flex-wrap justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Actividades') }}
+                {{ $nombreMateria }} - {{ $periodo }} PERIODO
             </h2>
 
             @can('administrar actividades')
-            <x-botones-header :createRoute="route('create-actividad', ['materia'=>$materia, 'periodo'=>$periodo, 'competencia'=>$competencia])"/>
+            <x-botones-header :createRoute="route('create-actividad', ['materia' => $materia, 'periodo' => $periodo, 'competencia' => $competencia])"/>
             @endcan
         </div>
     </x-slot>
 
+  
+
     <div class="py-12">
+
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm sm:rounded-lg">
-                <div class="container">
+
+        @can('administrar actividades')
+            <div class="w-full">
+                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-white rounded-t-lg">
+                    <div class="grid grid-cols-1 w-full sm:flex-row sm:items-center sm:justify-between">
+                        <div class="grid w-full gap-2 h-full">
+                            <a href="{{ route('notas-actividades', ['materia_id' => $materia, 'competencia_id' => $competencia]) }}" class="btn btn-success shadow-md rounded-lg">Notas</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endcan
+
+            <div class="bg-white shadow-sm sm:rounded-b-lg">
+                <div class="w-full px-4 pb-4">
                 <div class="flex flex-row"></div>
-                    <table id="actividades-table" class="display">
+                    <table id="actividades-table" class="display w-full">
                         <thead>
                             <tr>
                                 @can('administrar actividades')
