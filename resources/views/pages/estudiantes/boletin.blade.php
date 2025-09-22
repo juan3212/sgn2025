@@ -239,6 +239,9 @@
   }
 
 }
+
+
+
    
       </style>
   
@@ -280,9 +283,9 @@
         </table>
       </div>
 
-    <div>
+    {{-- <div>
         @livewire('pages.estudiantes.boletin', ['user' => $user])
-    </div>
+    </div> --}}
 
       <div class="footer">
         <table>
@@ -320,7 +323,7 @@
               </tr>
                 <tr>
                   <td ><img class="firma"  src="../images/firma_teacher.avif"></td>
-                  <td id="teacherName" style="border-bottom: 2px #000;"></td>
+                  <td id="teacherName" style="border-bottom: 2px #000;">{{$directorCursoNombre}}</td>
                 </tr>
                 <tr>
                   <td>LIZZETH HERNANDEZ DUQUE<br>PRINCIPAL</td>

@@ -40,7 +40,7 @@
             @if (!$isTeacher)
             @livewire('components.select-users',
             [
-                'role'=>'profesor', 
+                'role'=>'profesor',  
                 'title'=>'Profesor',
                 'usuarioSelected'=>$teacherSelected,
                 'usuario_id'=>$teacher_id,

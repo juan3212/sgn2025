@@ -7,17 +7,20 @@ use Livewire\Component;
 
 class SelectUsers extends Component
 {
+    #[props(['role', 'title', 'usuarioSelected', 'usuario_id', 'class'])]
 
     public $usuarios;
     public $role;
     public $usuarioSelected;
+
+    public $class;
 
     #[Modelable]
     public $usuario_id;
     
     public $title;
     
-    public function mount($role, $title, $usuarioSelected = null, $usuario_id = null)
+    public function mount($role, $title, $usuarioSelected = null, $usuario_id = null, $class = null)
     {
         $this->role = $role;
         $this->title = $title;
@@ -29,10 +32,7 @@ class SelectUsers extends Component
         $this->usuarios = Usuario::whereHas('roles', function ($query) {
             $query->where('name', '=', $this->role);
         })
-        ->where(function($query) {
-                $query->where('nombre', 'like', '%'.$this->usuarioSelected.'%')
-                      ->orWhere('apellido', 'like', '%'.$this->usuarioSelected.'%');
-        })
+        ->whereRaw('CONCAT(nombre, " ", apellido) LIKE ?', ['%' . $this->usuarioSelected . '%'])
         ->get();
         
     }

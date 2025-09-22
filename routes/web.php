@@ -22,9 +22,14 @@ Route::get('competencias', [App\Http\Controllers\CompetenciasController::class, 
     ->middleware(['auth', 'verified', 'permission:administrar competencias'])
     ->name('competencias');
 
+# boletines
 Route::get('boletin/{estudianteID}', [App\Http\Controllers\estudiantes\boletinesController::class, 'render'])
     ->middleware(['auth'])
     ->name('boletin');
+
+Route::view('buscar-boletin', 'pages.profesores.buscar-boletin')
+    ->middleware(['auth', 'permission:administrar materias'])
+    ->name('buscar-boletin');
 
     #competencias de materias
 Route::get('materia/{materia}', [App\Http\Controllers\MateriasCompetenciasController::class, 'render'])
@@ -186,8 +191,7 @@ Route::post('bulk-delete', [App\Http\Controllers\DeleteController::class, 'bulkD
     ->name('bulk-delete');
 
 #rutas Prueba
-Route::get('prueba', [App\Http\Controllers\notasActividadesController::class, 'render'])
-    ->middleware(['auth'])
+Route::view('prueba', 'pages.profesores.buscar-boletin')
     ->name('prueba');
 
 

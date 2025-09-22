@@ -1,4 +1,4 @@
-<div>
+<div class="{{ $class }}">
     <label for="usuario" class="block text-sm font-medium text-gray-700">{{$title}}</label>
     <input type="hidden" name="usuario_id" id="usuario_id" wire:model="usuario_id">
     <input type="text" id="usuario" wire:model.live.debounce.250ms="usuarioSelected" required

@@ -48,6 +48,11 @@ new class extends Component
                         {{ __('Periodos') }}
                     </x-nav-link>
                     @endcan
+                    @can('administrar materias')
+                    <x-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>
+                        {{ __('Boletines') }}
+                    </x-nav-link>
+                    @endcan
                     </div>
 
             </div>
@@ -121,6 +126,11 @@ new class extends Component
             @can('administrar periodos')
             <x-responsive-nav-link :href="route('periodos')" :active="request()->routeIs('periodos')" wire:navigate>
                 {{ __('Periodos') }}
+            </x-responsive-nav-link>
+            @endcan
+            @can('administrar materias')
+            <x-responsive-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>
+                {{ __('Boletines') }}
             </x-responsive-nav-link>
             @endcan
         </div>
