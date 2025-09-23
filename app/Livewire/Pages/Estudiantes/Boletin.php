@@ -68,6 +68,7 @@ class Boletin extends Component
         $notas = NotaFinalMateria::select('nota_final', 'periodo_id')
         ->where('materia_id', $materiaId)
         ->where('estudiante_id', $this->user['id'])
+        ->where('periodo_id', '<=', $this->periodoId)
         ->orderBy('periodo_id', 'asc')
         ->get();
         $notas->each(function ($nota) {
