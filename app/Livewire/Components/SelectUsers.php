@@ -29,10 +29,15 @@ class SelectUsers extends Component
     }
     public function updatedUsuarioSelected()
     {
+        $usuarioSelected = explode(" ", $this->usuarioSelected);
         $this->usuarios = Usuario::whereHas('roles', function ($query) {
             $query->where('name', '=', $this->role);
         })
-        ->whereRaw('CONCAT(nombre, " ", apellido) LIKE ?', ['%' . $this->usuarioSelected . '%'])
+        ->where(function ($query) use ($usuarioSelected) {
+            foreach ($usuarioSelected as $part) {
+                $query->whereRaw('CONCAT(nombre, " ", apellido) LIKE ? ', ['%' . $part . '%']);
+            }
+        })
         ->get();
         
     }
