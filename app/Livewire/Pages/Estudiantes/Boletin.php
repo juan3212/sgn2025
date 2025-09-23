@@ -128,7 +128,9 @@ class Boletin extends Component
                 }
             }
         }
-        $promedioFinal = round($promedioFinal / count($notasMateria), 2);
+        if($promedioFinal > 0){
+            $promedioFinal = round($promedioFinal / count($notasMateria), 2);
+        }
         return [$promedioFinal, $promedioPeriodo];
     }
     public function setNotas()
