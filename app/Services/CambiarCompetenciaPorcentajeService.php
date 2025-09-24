@@ -14,27 +14,40 @@ class CambiarCompetenciaPorcentajeService
         //
     }
 
-    public function changeCompetenciaPorcentaje($competenciaId, $porcentaje, $materias)
+    public function changeCompetenciaPorcentaje($competenciaId, $porcentaje, $materias, $periodo)
     {
-        $calcularNotas = new CalcularNotasService();
+        $calcularNotas = new CalcularNotasService(); 
         $competencias = NotaFinalCompetencia::select('notas_finales_competencias.*', 'competencias.porcentaje')
         ->join('competencias', 'notas_finales_competencias.competencia_id', '=', 'competencias.id')
         ->where('notas_finales_competencias.competencia_id', $competenciaId)
-        ->get();
+        ->get()
+        ->toArray();
         foreach ($competencias as $competencia) {
-            $notaCompetencia = $competencia->nota_final / $competencia->porcentaje * $porcentaje;
-            $notaCompetencia = round($notaCompetencia, 2);
-            
+            $porcentajeCompetencia = floatval($competencia['porcentaje'] / 100);
+            $porcentajeNuevo = floatval($porcentaje / 100);
+            $newNotaCompetencia = (floatval($competencia['nota_final']) / $porcentajeCompetencia) * $porcentajeNuevo;
+            $notaCompetencia = round($newNotaCompetencia, 2);
+            $competenciaSave = NotaFinalCompetencia::find($competencia['id']);
+            $competenciaSave->nota_final =  $notaCompetencia;
+            $competenciaSave->save();
         }
 
+        $notaMaterias = [];
         foreach ($materias as $materia) {
-            
+            $notaMateria = NotaFinalMateria::where('materia_id', $materia['id'])
+            ->where('periodo_id', $periodo)
+            ->get()
+            ->toArray();
+            array_push($notaMaterias,...$notaMateria);
+        }
+
+        foreach ($notaMaterias as $notaMateria) {
            $nota = $calcularNotas->calcularNotasMateriaPeriodo([
-            'materia' => $materia['materia_id'],
-            'estudiante' => $materia['estudiante_id'],
-            'periodo' => $materia['periodo_id']
+            'materia' => $notaMateria['materia_id'],
+            'estudiante' => $notaMateria['estudiante_id'],
+            'periodo' => $notaMateria['periodo_id']
             ]); 
-            $notaFinalMateria = NotaFinalMateria::findOrFail($materia['id']);
+            $notaFinalMateria = NotaFinalMateria::findOrFail($notaMateria['id']);
             $notaFinalMateria->nota_final = $nota;
             $notaFinalMateria->save();
         };

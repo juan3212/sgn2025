@@ -166,16 +166,9 @@ class Competencias extends Component
         foreach ($materias as $materia) {
             $materiasArray[] = $materia;
         }
-        foreach ($materiasArray as $materia) {
-            $notaMateria = NotaFinalMateria::where('materia_id', $materia['id'])
-            ->where('periodo_id', $this->periodoSelected)
-            ->get()
-            ->toArray();
-            if($notaMateria){
-                $cambiarCompetenciaPorcentajeService = new CambiarCompetenciaPorcentajeService();
-                $cambiarCompetenciaPorcentajeService->changeCompetenciaPorcentaje($this->competenceId, $this->porcentaje, $notaMateria);
-            }
-        }
+
+        $cambiarCompetenciaPorcentajeService = new CambiarCompetenciaPorcentajeService();
+        $cambiarCompetenciaPorcentajeService->changeCompetenciaPorcentaje($this->competenceId, $this->porcentaje, $materiasArray, $this->periodoSelected);
         return $competencia;
     }
 
@@ -198,6 +191,7 @@ class Competencias extends Component
             'materias' => $this->subjectsAdded,
         ];
 
+        
         if($this->actualizarNotas){
             $this->actualizarNota();
          }
