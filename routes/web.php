@@ -7,11 +7,11 @@ use App\Models\NotaFinalMateria;
 
 
 Route::get('/', [App\Http\Controllers\MateriasController::class, 'render'])
-->middleware(['auth', 'verified'])
+->middleware(['auth', 'verified', 'paymentStatus'])
 ->name('home');
 
 Route::get('dashboard', [App\Http\Controllers\MateriasController::class, 'render'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'paymentStatus'])
     ->name('dashboard');
 
 Route::get('usuarios', [App\Http\Controllers\UsuariosController::class, 'render'])

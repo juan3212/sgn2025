@@ -20,7 +20,8 @@ new class extends Component
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            <div class="flex">
+            
+            <div class="flex @role('estudiante') hidden @endrole">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" wire:navigate>
@@ -56,9 +57,10 @@ new class extends Component
                     </div>
 
             </div>
+            
 
             <!-- User Name and Settings Dropdown for Desktop -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 ">
                 <div class="flex items-center mr-3"> <!-- User name -->
                     <p class="text-sm font-medium text-gray-500">
                         {{ Auth::user()->nombre.' '.Auth::user()->apellido }}
@@ -109,7 +111,8 @@ new class extends Component
 
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
+        
+        <div class="pt-2 pb-3 space-y-1 @role('estudiante') hidden @endrole">
             @can('administrar usuarios')
             <x-responsive-nav-link :href="route('usuarios')" :active="request()->routeIs('usuarios')" wire:navigate>
                 {{ __('Dashboard') }}
@@ -134,7 +137,7 @@ new class extends Component
             </x-responsive-nav-link>
             @endcan
         </div>
-
+    
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
         
