@@ -86,11 +86,12 @@ class Boletin extends Component
 
     public function NotasCompetencias($materiaId)
     {
-        $notasCompetencias = NotaFinalCompetencia::select('competencias.descripcion', 'competencias.porcentaje', 'notas_finales_competencias.nota_final')
+        $notasCompetencias = NotaFinalCompetencia::select('competencias.nombre', 'competencias.descripcion', 'competencias.porcentaje', 'notas_finales_competencias.nota_final')
         ->where('estudiante_id', $this->user['id'])
         ->where('materia_id', $materiaId)
         ->join('competencias', 'competencias.id', '=', 'notas_finales_competencias.competencia_id')
         ->where('competencias.periodo_id', $this->periodoId)
+        ->orderBy('competencias.nombre', 'asc')
         ->get();
 
         $notasCompetencias->each(function ($nota) {
