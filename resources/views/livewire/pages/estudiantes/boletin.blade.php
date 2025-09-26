@@ -27,7 +27,7 @@
             <td class="border border-black" id="recuperacion3">{{$materia['recuperacion']->firstWhere('periodo_id', 3)['nota_final'] ?? 'N/A'}}</td>
             <td class="border border-black" id="nota4">{{$materia['notas']->firstWhere('periodo_id', 4)['nota_final'] ?? 'N/A'}}</td>
             <td class="border border-black" id="recuperacion4">{{$materia['recuperacion']->firstWhere('periodo_id', 4)['nota_final'] ?? 'N/A'}}</td>
-            <td class="border border-black" id="finalAverage">{{$materia['promedio']}}</td>
+            <td class="border border-black @if($materia['promedio'] < 6) bg-red-500 @endif" id="finalAverage">{{$materia['promedio']}}</td>
             <td class="border border-black" hidden id="termAverage">{{$materia['promedioPeriodo']}}</td>
         </tr>    
         @foreach($materia['competencias'] as $key=>$competencia) 
