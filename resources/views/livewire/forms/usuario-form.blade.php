@@ -39,7 +39,7 @@
             </div>
             <div>
                 <label for="role" class="block text-sm font-medium text-gray-700">Rol:</label>
-                <select name="role" id="role" required wire:model.live="role" class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
+                <select name="role" id="role" required wire:model.live="roleSelected" class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
                     <option value="">Seleccione un rol</option>
                     @foreach ($roles as $role)
                         <option value="{{ $role->name }}">{{ $role->name }}</option>
@@ -47,7 +47,7 @@
                 </select>
             </div>
 
-            @if ($role == 'estudiante')
+            @if ($roleSelected == 'estudiante')
                 <div>
                     <label for="grade" class="block text-sm font-medium text-gray-700">Grado:</label>
                     <select name="grade" id="grade" required wire:model="selectedGrade" class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">

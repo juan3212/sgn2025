@@ -37,7 +37,7 @@ class UsuarioForm extends Component
                 'last_name' => 'required',
                 'nuip' => 'required|numeric',
                 'password' => 'required|min:8',
-                'role' => 'required',
+                'roleSelected' => 'required',
             ]);
 
             $usuario = Usuario::create([
@@ -61,7 +61,7 @@ class UsuarioForm extends Component
             }
 
             session()->flash('message', 'User created successfully.');
-            $this->reset();
+            $this->reset('name', 'last_name', 'email', 'nuip', 'password', 'roleSelected', 'selectedGrade', 'selectedClass');
         } catch (\Exception $e) {
             session()->flash('error', 'An error occurred: ' . $e->getMessage());
         }
