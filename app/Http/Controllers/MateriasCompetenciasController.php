@@ -55,7 +55,7 @@ class MateriasCompetenciasController extends Controller
             ->get();
         return $materias;
     }
-
+ 
     public function data(Request $request)
     {
         $this->materia = $request->materia;

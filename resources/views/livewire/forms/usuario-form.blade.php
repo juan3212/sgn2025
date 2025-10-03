@@ -41,9 +41,9 @@
                 <label for="role" class="block text-sm font-medium text-gray-700">Rol:</label>
                 <select name="role" id="role" required wire:model.live="role" class="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
                     <option value="">Seleccione un rol</option>
-                    <option value="administrador">Administrador</option>
-                    <option value="profesor">Profesor</option>
-                    <option value="estudiante">Estudiante</option>
+                    @foreach ($roles as $role)
+                        <option value="{{ $role->name }}">{{ $role->name }}</option>
+                    @endforeach
                 </select>
             </div>
 

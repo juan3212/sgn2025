@@ -22,10 +22,11 @@ class DeleteController extends Controller
         $controllerName = $request->controller;
         $functionName = $request->functionName;
         $id = $request->id;
+        $isService = $request->isService;
         
         // Lista blanca de controladores permitidos para mayor seguridad
         $allowedControllers = [
-            'Materias', 'Grados', 'Usuarios', 'Competencias', 'CompetenciasService', 'Actividades'
+            'Materias', 'Grados', 'Usuarios', 'Competencias', 'CompetenciasService', 'Actividades', 'RolesyPermisos'
             // Añade otros controladores permitidos
         ];
         
@@ -33,7 +34,11 @@ class DeleteController extends Controller
             return response()->json(['error' => 'Controlador no autorizado'], 403);
         }
         
-        $controllerClass = 'App\\Http\\Controllers\\' . $controllerName . 'Controller';
+        if($isService){
+            $controllerClass = 'App\\Services\\' . $controllerName . 'Service';
+        }else{
+            $controllerClass = 'App\\Http\\Controllers\\' . $controllerName . 'Controller';
+        }
         
         try {
             if (!class_exists($controllerClass)) {
@@ -73,7 +78,7 @@ class DeleteController extends Controller
         $functionName = $request->functionName;
         $ids = $request->ids;
 
-        $allowedModels = ['Materia', 'Usuario', 'Competencia', 'Grado', 'Actividad'];
+        $allowedModels = ['Materia', 'Usuario', 'Competencia', 'Grado', 'Actividad', 'CompetenciaService'];
         
         if (!in_array($modelName, $allowedModels)) {
             return response()->json(['error' => 'Modelo no autorizado'], 403);

@@ -91,5 +91,6 @@ class CalcularNotasService
         $notas = array_column($notas, 'nota_final');
         $notaFinal = array_sum($notas);
         return $notaFinal;
+    
     }
 }

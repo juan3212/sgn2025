@@ -8,10 +8,23 @@ export function deleteResource({
     onErrorCallback,
     redirectUrl = null,
     reloadTable = false,
-    tableId = null
-}) {
-    if (confirm(confirmMessage)) {
-        fetch('/generic-delete', {
+    tableId = null,
+    isService = false
+}) 
+{
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: confirmMessage,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminar!',
+        cancelButtonText: 'Cancelar'
+    })
+    .then((result) => {
+        if (result.isConfirmed) {
+            fetch('/generic-delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -21,7 +34,8 @@ export function deleteResource({
             body: JSON.stringify({
                 controller: controllerName,
                 functionName: functionName,
-                id: resourceId
+                id: resourceId,
+                isService: isService
             }),
         })
         .then(response => {
@@ -76,13 +90,15 @@ export function deleteResource({
             }
         });
     }
+    })
 }
 
 /*
 Uso básico
 deleteResource({
     controllerName: 'User',
-    resourceId: 123
+    resourceId: 123,
+    isService: true
 });
 
 Uso avanzado
@@ -90,6 +106,7 @@ deleteResource({
     controllerName: 'Product',
     functionName: 'softDelete',
     resourceId: 456,
+    isService: true,
     confirmMessage: '¿Seguro que quieres archivar este producto?',
     successMessage: 'Producto archivado correctamente',
     reloadTable: true,

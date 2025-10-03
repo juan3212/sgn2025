@@ -54,6 +54,16 @@ new class extends Component
                         {{ __('Boletines') }}
                     </x-nav-link>
                     @endcan
+                    @can('administrar roles')
+                    <x-nav-link :href="route('gestion-roles')" :active="request()->routeIs('gestion-roles')" wire:navigate>
+                        {{ __('Roles') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('administrar pagos')
+                    <x-nav-link :href="route('gestion-pagos')" :active="request()->routeIs('gestion-pagos')" wire:navigate>
+                        {{ __('Pagos') }}
+                    </x-nav-link>
+                    @endcan
                     </div>
 
             </div>

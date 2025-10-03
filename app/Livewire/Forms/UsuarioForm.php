@@ -17,11 +17,17 @@ class UsuarioForm extends Component
     public $email;
     public $nuip;
     public $password;
-    public $role;
+    public $roles;
+    public $roleSelected;
     public $grades;
     public $selectedGrade;
     public $classes;
     public $selectedClass;
+
+    public function boot()
+    {
+        $this->roles = Role::all();
+    }
 
     public function submit()
     {
@@ -40,9 +46,9 @@ class UsuarioForm extends Component
                 'correo' => $this->email,
                 'nuip' => $this->nuip,
                 'password_hash' => Hash::make($this->password),
-            ])->assignRole($this->role);
+            ])->assignRole($this->roleSelected);
 
-            if($this->role == "estudiante") {
+            if($this->roleSelected == "estudiante") {
                 $this->validate([
                     'selectedGrade' => 'required',
                     'selectedClass' => 'required',
@@ -63,7 +69,7 @@ class UsuarioForm extends Component
     }
 
     public function updatedRole(){
-        if($this->role == "estudiante") {
+        if($this->roleSelected == "estudiante") {
             $this->grades = Grado::all();
         } else {
             $this->grades = [];

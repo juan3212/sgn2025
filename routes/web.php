@@ -191,9 +191,49 @@ Route::post('bulk-delete', [App\Http\Controllers\DeleteController::class, 'bulkD
     ->name('bulk-delete');
 
 #rutas Prueba
-Route::view('prueba', 'pages.profesores.buscar-boletin')
+Route::view('prueba', 'pages.administrador.gestion-pagos')
     ->name('prueba');
 
+
+#rutas Gestion Roles y Permisos
+Route::get('gestion-roles/data', [App\Http\Controllers\administrador\RolesyPermisosController::class, 'rolesTable'])
+    ->middleware(['auth'])
+    ->name('gestion-roles.data');
+
+Route::get('gestion-permisos/data', [App\Http\Controllers\administrador\RolesyPermisosController::class, 'permissionTable'])
+    ->middleware(['auth'])
+    ->name('gestion-permisos.data');
+
+Route::view('gestion-roles', 'pages.administrador.gestion-roles')
+    ->middleware(['auth', 'permission:administrar roles'])
+    ->name('gestion-roles');
+
+Route::view('gestion-permisos', 'pages.administrador.gestion-permisos')
+    ->middleware(['auth', 'permission:administrar roles'])
+    ->name('gestion-permisos');
+
+Route::get('create-role/{role?}', function($role = null){
+    return view('form-template', [
+        'formComponent'=> 'forms.administrador.roles-form',
+        'formTitle' => 'Agregar roles',
+        'params'=> [
+            'role' => $role,
+        ],
+    ]);
+    })->middleware(['auth', 'permission:administrar roles'])
+        ->name('create-role');
+    
+#rutas Gestion Pagos
+Route::view('gestion-pagos', 'pages.administrador.gestion-pagos')
+    ->middleware(['auth', 'permission:administrar pagos'])
+    ->name('gestion-pagos');
+Route::get('gestion-pagos/data', [App\Http\Controllers\administrador\GestionPagosController::class, 'data'])
+    ->middleware(['auth'])
+    ->name('gestion-pagos.data');
+
+Route::get('gestion-pagos/change-state/{id}', [App\Http\Controllers\administrador\GestionPagosController::class, 'cambiarEstadoPago'])
+    ->middleware(['auth', 'permission:administrar pagos'])
+    ->name('gestion-pagos.change-state');
 
 Route::view('landing', 'landing')
     ->name('landing');
