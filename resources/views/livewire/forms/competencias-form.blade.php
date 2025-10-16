@@ -16,19 +16,19 @@
             @endif
             <div class="space-y-2">
                 <label for="competenceName" class="block text-sm font-medium text-gray-700">Nombre</label>
-                <input type="text" 
-                    id="competenceName" 
-                    name="competenceName" 
-                    wire:model="competenceName" 
+                <input type="text"
+                    id="competenceName"
+                    name="competenceName"
+                    wire:model="competenceName"
                     required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div class="space-y-2">
                 <label for="competenceDescription" class="block text-sm font-medium text-gray-700">Descripcion</label>
-                <input type="text" 
-                    id="competenceDescription" 
-                    name="competenceDescription" 
-                    wire:model="competenceDescription" 
+                <input type="text"
+                    id="competenceDescription"
+                    name="competenceDescription"
+                    wire:model="competenceDescription"
                     required
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
@@ -41,11 +41,11 @@
                     @endforeach
                 </select>
             </div>
-            
-            @if (!$isTeacher) 
+
+            @if (!$isTeacher)
                 @livewire('components.select-users',
                 [
-                    'role'=>'profesor', 
+                    'role'=>'profesor',
                     'title'=>'Profesor',
                     'usuarioSelected'=>$teacherSelected,
                     'usuario_id'=>$teacher_id,
@@ -56,23 +56,23 @@
 
             <div class="space-y-2">
                 <label for="porcentaje" class="block text-sm font-medium text-gray-700">Porcentaje</label>
-                <input type="number" 
-                    id="porcentaje" 
-                    name="porcentaje" 
-                    wire:model="porcentaje" 
+                <input type="number"
+                    id="porcentaje"
+                    name="porcentaje"
+                    wire:model="porcentaje"
                     required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div class="space-y-4">
             <div class="space-y-4">
     <!-- Campo de búsqueda -->
     <div class="mb-4">
         <label for="search" class="block text-sm font-medium text-gray-700">Buscar materias:</label>
-        <input 
-            type="text" 
-            id="search" 
-            wire:model.live.debounce.500ms="search" 
-            placeholder="Escribe para buscar..." 
+        <input
+            type="text"
+            id="search"
+            wire:model.live.debounce.500ms="search"
+            placeholder="Escribe para buscar..."
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         >
     </div>
@@ -85,12 +85,12 @@
         @else
             @foreach ($subjects as $subject)
                 <div class="flex items-center px-4 py-3 border-b last:border-b-0 hover:bg-gray-50">
-                    <input type="checkbox" 
-                        id="subject_{{ $subject->id }}" 
-                        wire:model="selectedSubjects" 
+                    <input type="checkbox"
+                        id="subject_{{ $subject->id }}"
+                        wire:model="selectedSubjects"
                         value="{{ $subject->id }}"
                         class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                    <label for="subject_{{ $subject->id }}" 
+                    <label for="subject_{{ $subject->id }}"
                         class="ml-3 block text-sm text-gray-700">
                         {{ $subject->nombre }}
                     </label>
@@ -99,7 +99,7 @@
         @endif
     </div>
 </div>
-            <button type="submit" 
+            <button type="submit"
                     class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
                 Guardar
             </button>
