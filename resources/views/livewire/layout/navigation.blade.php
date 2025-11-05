@@ -3,8 +3,7 @@
 use App\Livewire\Actions\Logout;
 use Livewire\Volt\Component;
 
-new class extends Component
-{
+new class extends Component {
     /**
      * Log the current user out of the application.
      */
@@ -53,6 +52,9 @@ new class extends Component
                     <x-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>
                         {{ __('Boletines') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('informes')" :active="request()->routeIs('informes')" wire:navigate>
+                        {{ __('Informes') }}
+                    </x-nav-link>
                     @endcan
                     @can('administrar roles')
                     <x-nav-link :href="route('gestion-roles')" :active="request()->routeIs('gestion-roles')" wire:navigate>
@@ -73,7 +75,7 @@ new class extends Component
             <div class="hidden sm:flex sm:items-center sm:ms-6 ">
                 <div class="flex items-center mr-3"> <!-- User name -->
                     <p class="text-sm font-medium text-gray-500">
-                        {{ Auth::user()->nombre.' '.Auth::user()->apellido }}
+                        {{ Auth::user()->nombre . ' ' . Auth::user()->apellido }}
                     </p>
                 </div>
 
@@ -142,9 +144,22 @@ new class extends Component
             </x-responsive-nav-link>
             @endcan
             @can('administrar materias')
-            <x-responsive-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>
-                {{ __('Boletines') }}
-            </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>
+                    {{ __('Boletines') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('informes')" :active="request()->routeIs('informes')" wire:navigate>
+                    {{ __('Informes') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('administrar roles')
+                <x-responsive-nav-link :href="route('gestion-roles')" :active="request()->routeIs('gestion-roles')" wire:navigate>
+                    {{ __('Roles') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('administrar pagos')
+                <x-responsive-nav-link :href="route('gestion-pagos')" :active="request()->routeIs('gestion-pagos')" wire:navigate>
+                    {{ __('Pagos') }}
+                </x-responsive-nav-link>
             @endcan
         </div>
     
