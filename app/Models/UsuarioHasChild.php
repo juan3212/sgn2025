@@ -10,5 +10,5 @@ class UsuarioHasChild extends Model
     //
     use HasFactory;
     protected $table = "usuario_has_child";
-    protected $fillable = ['usuario_id', 'child_id'];
+    protected $fillable = ['usuario_id', 'child_id', 'parentesco'];
 }

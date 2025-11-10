@@ -70,4 +70,25 @@ class Usuario extends Authenticatable
     {
         return $this->hasMany(Usuario::class, 'parent_id');
     }
+
+    // Relación con Archivos
+    public function archivos() {
+        return $this->hasMany(UsuarioArchivo::class, 'usuario_id');
+    }
+
+    public function informacion() {
+        return $this->hasOne(UsuarioInformacion::class, 'usuario_id');
+    }
+
+    public function infoMedica() {
+        return $this->hasOne(UsuarioInfoMedica::class, 'usuario_id');
+    }
+
+    public function estadoLaboral() {
+        return $this->hasOne(UsuarioEstadoLaboral::class, 'usuario_id');
+    }
+
+    public function infoDocumentos() {
+        return $this->hasMany(UsuarioInfoDocumento::class, 'usuario_id');
+    }
 }
