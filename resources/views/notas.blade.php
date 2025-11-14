@@ -74,6 +74,8 @@
 
 //si scrollX esta activado, no funcionan moveToCell
        
+        const button = document.getElementById('guardarButton');
+
         const table = $('#notas-table').DataTable({
             processing: true,
             serverSide: true,
@@ -225,7 +227,10 @@
         });
 
         function saveNotas(valorForAll = null) {
+            
+            button.disabled = true;
             save(valorForAll);
+
 
             fetch('/notas/save', { 
                     method: 'POST',
@@ -260,6 +265,7 @@
                             //footer: data.error_details
                         })
                     }
+                    button.disabled = false;
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -269,11 +275,15 @@
                         icon: 'error',
                         //footer: data.error_details
                     })
+                    button.disabled = false;
                 });
         }
         
 
-        document.getElementById('guardarButton').addEventListener('click', saveNotas);
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            saveNotas();
+        });
     </script>
  
     <script src="/js/notas.js?1"></script>
