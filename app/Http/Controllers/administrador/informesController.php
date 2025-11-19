@@ -43,6 +43,9 @@ class informesController extends Controller
                    
         }
         $periodoId = $periodo->id - 1;
+        if(now() >= "2025-11-19"){
+            $periodoId = $periodo->id;
+        }
 
         
         $estudiantes = Usuario::select(
