@@ -10,9 +10,11 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 use App\Models\Usuario;
+use App\Services\PaymentService;
 
 class LoginForm extends Form
 {
+
     #[Validate('required|string')]
     public string $nuip = '';
 
@@ -27,7 +29,7 @@ class LoginForm extends Form
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function authenticate(): void
+    public function authenticate(PaymentService $paymentService): void
     {
         $this->ensureIsNotRateLimited();
 
@@ -40,6 +42,15 @@ class LoginForm extends Form
 
             throw ValidationException::withMessages([
                 'form.nuip' => trans('auth.failed'),
+            ]);
+        }
+
+        if (! $paymentService->canAccess(Auth::user())) {
+            
+            Auth::logout(); // Cerramos sesión inmediatamente
+
+            throw ValidationException::withMessages([
+                'form.nuip' => 'Debe estar a paz y salvo para poder acceder al sistema.',
             ]);
         }
 

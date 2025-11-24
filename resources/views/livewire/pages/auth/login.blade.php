@@ -3,6 +3,7 @@
 use App\Livewire\Forms\LoginForm;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
+use App\Services\PaymentService;
 use Livewire\Volt\Component;
 
 new #[Layout('layouts.guest')] class extends Component
@@ -12,11 +13,11 @@ new #[Layout('layouts.guest')] class extends Component
     /**
      * Handle an incoming authentication request.
      */
-    public function login(): void
+    public function login(PaymentService $paymentService): void
     {
         $this->validate();
 
-        $this->form->authenticate();
+        $this->form->authenticate($paymentService);
 
         Session::regenerate();
 
