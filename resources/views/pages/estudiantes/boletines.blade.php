@@ -1,5 +1,7 @@
 <x-app-layout>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <style>
 
   .reportcard {
@@ -90,15 +92,7 @@
   
 
   @media only screen and (max-width: 768px) {
-    #btnCrearPdf {
-      background-color: #d7d7d7;
-      border-radius: 10px;
-      height:6vh;
-      width: max-content;
-      position: fixed;
-      right: 3%;
-      top: 2%;
-    }
+
     .reportcard td:first-child{
       width: 20%;
     }
@@ -129,9 +123,34 @@
     
   }
 
+  .no-print {
+        display: block;
+    }
+    /* Clase específica para cuando se está generando el PDF (opcional si usas html2pdf con ignore) */
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        .reportcard {
+          background-color: #fff;
+          width: 100%;      /* Asegura que ocupe el ancho completo del PDF */
+          margin: 0 auto;
+        }
+
+        .membrete {
+            max-width: 100%;
+        }
+
 }
 
 </style>
+
+<div class="flex w-full mx-auto px-8 no-print bg-white max-sm:px-0 max-sm:py-4 max-sm:justify-center">
+    <button onclick="generatePDF()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center max-sm:w-full max-sm:justify-center max-sm:mx-auto">
+        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
+        <span>Descargar PDF</span>
+    </button>
+</div>
 
 <div class="reportcard" id="reportcard">
   
@@ -231,6 +250,27 @@
       document.getElementById('termAverageValue').textContent = termAverage;
       document.getElementById('finalAverageValue').textContent = finalAverage;
       });
+
+
+      function generatePDF() {
+        const element = document.getElementById('reportcard');
+        const width = window.innerWidth;
+        const format = width > 768 ? 'a2' : 'a3';
+        
+        const opt = {
+            margin:       0.1, 
+            filename:     'Boletin_{{ $user['nuip'] }}.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true }, 
+            jsPDF:        { unit: 'in', format: format, orientation: 'portrait' } 
+        };
+
+  
+        html2pdf()
+            .set(opt)
+            .from(element)
+            .save();
+    }
 
     </script>
 
