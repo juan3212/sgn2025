@@ -352,12 +352,19 @@ Route::view("informes", "pages.administrador.informe")
     ->middleware(["auth"])
     ->name("informes");
 
-Route::get('documento/{path}', [
+Route::get('documento/{path}/{ver}', [
     App\Http\Controllers\archivos\MostrarArchivosController::class,
     "mostrar",
 ])
     ->middleware(["auth"])
     ->name("documentos.show")
     ->where('path', '.*');
+
+Route::get("certificados/{usuarioId}", [
+    App\Http\Controllers\administrador\certificadosController::class,
+    "render",
+])
+    ->middleware(["auth"])
+    ->name("certificados");
 
 require __DIR__ . "/auth.php";
