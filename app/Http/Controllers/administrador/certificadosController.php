@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Administrador;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Services\getUserDataService;
 use App\Models\UsuarioGrado;
 use App\Models\Periodo;
 use App\Models\Materia;
@@ -12,10 +12,12 @@ use App\Models\NotaFinalMateria;
 use App\Models\NotaRecuperacion;
 use App\Models\Usuario;
 
+
 class certificadosController extends Controller
 {
     //
     public $usuarioId;
+    public $user;
     public $groupedMaterias = [];
     
     // Definimos las estructuras como propiedades protegidas
@@ -66,6 +68,223 @@ class certificadosController extends Controller
         ['name' => "PARENT'S COMMITMENT", 'esName' => 'Compromiso de los padres', 'type' => 'environment'],
     ];
 
+
+    public function start($userid){
+        $this->getStudentData($userid);
+        $this->Periodos();
+        $this->setNotas();
+    }
+
+     public function getStudentData($userId)
+    {
+        $user = new getUserDataService;
+        $user = $user->getUserDataFromID($userId);
+        $this->user = $user;
+    }
+
+    public function getDirectorCurso()
+    {
+        $director = Usuario::find($this->directorCurso);
+        if($director){
+            $nombreDirector = $director->nombre . ' ' . $director->apellido;
+            $this->dispatch('directorCursoNombre', $nombreDirector);
+        }else{
+            $this->dispatch('directorCursoNombre', 'N/A');
+        }
+    }
+
+    public function Materias()
+    {
+        $materias = Materia::select('materias.id', 'base_materia.nombre_materia', 'materias.intensidad_horaria', 'materias.profesor_id')
+        ->join('base_materia', 'base_materia.id', '=', 'materias.materia_id')
+        ->where('grado_id', $this->user['gradoID'])
+        ->where('grupo_id', $this->user['grupoID'])
+        ->get();
+        return $materias;
+    }
+
+    public function NotasMateria($materiaId)
+    {
+        $notas = NotaFinalMateria::select('nota_final', 'periodo_id')
+        ->where('materia_id', $materiaId)
+        ->where('estudiante_id', $this->user['id'])
+        ->where('periodo_id', '<=', $this->periodoId)
+        ->orderBy('periodo_id', 'asc')
+        ->get();
+        $notas->each(function ($nota) {
+            $nota->nota_final = number_format($nota->nota_final, 2);
+        });
+        return $notas;
+    }
+
+    public function Periodos()
+    {
+        $periodo = Periodo::where('fecha_fin', '>', now())
+        ->first();
+        $this->periodoId = $periodo->id - 1;
+        if(date("j-n") >= "19-11"){
+            $this->periodoId = $periodo->id;
+        }
+    }
+
+    public function NotasCompetencias($materiaId)
+    {
+        $notasCompetencias = NotaFinalCompetencia::select('competencias.nombre', 'competencias.descripcion', 'competencias.porcentaje', 'notas_finales_competencias.nota_final')
+        ->where('estudiante_id', $this->user['id'])
+        ->where('materia_id', $materiaId)
+        ->join('competencias', 'competencias.id', '=', 'notas_finales_competencias.competencia_id')
+        ->where('competencias.periodo_id', $this->periodoId)
+        ->orderBy('competencias.nombre', 'asc')
+        ->get();
+
+        $notasCompetencias->each(function ($nota) {
+            $nota->nota_final = number_format($nota->nota_final / ($nota->porcentaje / 100), 2);
+        });
+        return $notasCompetencias; 
+    }
+    public function NotasRecuperacion($materiaId)
+    {
+        $notasRecuperacion = NotaRecuperacion::select('nota_final', 'periodo_id')
+        ->where('materia_id', $materiaId)
+        ->where('estudiante_id', $this->user['id'])
+        ->orderBy('periodo_id', 'asc')
+        ->get();
+        $notasRecuperacion->each(function ($nota) {
+            $nota->nota_final = number_format($nota->nota_final, 2);
+        });
+        return $notasRecuperacion;
+    }
+    public function promedioFinal($materiaId, $notasMateria, $notasRecuperacion)
+    {
+        $promedioFinal = 0;
+        $promedioPeriodo = 0;
+        foreach($notasMateria as $nota){
+            $notaRecuperacion = $notasRecuperacion->firstWhere('periodo_id', $nota->periodo_id);
+            if($notaRecuperacion){
+                $promedioFinal += max($nota->nota_final, $notaRecuperacion->nota_final);
+                if($nota->periodo_id == $this->periodoId){
+                    $promedioPeriodo = max($nota->nota_final, $notaRecuperacion->nota_final);
+                }
+            }else{
+                $promedioFinal += $nota->nota_final;
+                if($nota->periodo_id == $this->periodoId){
+                    $promedioPeriodo = $nota->nota_final;
+                }
+            }
+        }
+        if($promedioFinal > 0){
+            $promedioFinal = round($promedioFinal / count($notasMateria), 2);
+        }
+        return [$promedioFinal, $promedioPeriodo];
+    }
+    public function setNotas()
+    {
+        $materias = $this->Materias();
+        $materiasNotas = [];
+              $grouped = [];
+        foreach ($this->subjectGroups as $group) {
+            $grouped[$group['type']] = [
+                'name' => $group['name'],
+                'materias' => []
+            ];
+        }
+
+        foreach($materias as $materia){
+            if($materia->nombre_materia == 'SCHOOL BEHAVIOR'){
+                $this->directorCurso = $materia->profesor_id;
+            }
+            $notas = $this->NotasMateria($materia->id);
+            $recuperacion = $this->NotasRecuperacion($materia->id);
+            $promedioFinal = $this->promedioFinal($materia->id, $notas, $recuperacion);
+
+
+        
+
+        $detalles = $this->getSubjectDetails($materia->nombre_materia);
+
+            // Construir el objeto de la materia
+            $datosMateria = [
+                'nombre_original' => $materia->nombre_materia,
+                'nombre_es' => $detalles['esName'],
+                'ih' => $materia->intensidad_horaria,
+                'promedio' => $promedioFinal[0],
+                // Puedes agregar aquí más detalles como notas por periodo si la vista lo requiere
+            ];
+
+            // Asignar al grupo correspondiente
+            $type = $detalles['type'];
+            
+            if (isset($grouped[$type])) {
+                $grouped[$type]['materias'][] = $datosMateria;
+            } else {
+                // Si no encuentra grupo, crea uno genérico o lo mete en 'other'
+                if (!isset($grouped['other'])) {
+                    $grouped['other'] = ['name' => 'Otras Asignaturas', 'materias' => []];
+                }
+                $grouped['other']['materias'][] = $datosMateria;
+            }
+
+        }
+        // Filtrar grupos que quedaron vacíos (opcional)
+        $this->groupedMaterias = array_filter($grouped, function($grupo) {
+            return count($grupo['materias']) > 0;
+        });
+
+        return $this->groupedMaterias;
+
+        $this->materiasNotas = $materiasNotas;
+        $this->getDirectorCurso();
+    }
+
+     private function getSubjectDetails($nombreMateria) {
+        $nombreUpper = trim(strtoupper($nombreMateria));
+        
+        foreach ($this->subjectsTree as $subject) {
+            if ($subject['name'] === $nombreUpper) {
+                return [
+                    'esName' => $subject['esName'],
+                    'type' => strtolower($subject['type'])
+                ];
+            }
+        }
+
+        return [
+            'esName' => $nombreMateria, // Si no encuentra traducción, usa el original
+            'type' => 'other'
+        ];
+    }
+
+    public function estudiante($usuarioId)
+    {
+        $estudiante = Usuario::with('grados', 'grupos')->find($usuarioId);
+        return $estudiante;
+    }
+
+    public function date()
+    {
+        setlocale(LC_TIME, 'es_ES.UTF-8');
+        $meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        return [
+            'dia' => date('d'),
+            'mes' => $meses[date('n')], // Mes en español
+            'anio' => date('Y')
+        ];
+    }
+
+    public function render($usuarioId){
+        $fechaActual = $this->date();
+        $this->start($usuarioId);
+        $estudiante = $this->estudiante($usuarioId);
+
+        return view('pages.administrador.certificados', [
+            'fechaActual' => $fechaActual,
+            'groupedMaterias' => $this->groupedMaterias,
+            'estudiante' => $estudiante
+        ]);
+        
+    }
+
+    /*
     public function estudiante($usuarioId)
     {
         $estudiante = Usuario::with('grados', 'grupos')->find($usuarioId);
@@ -105,6 +324,7 @@ class certificadosController extends Controller
         if(date("j-n") >= "19-11"){
             $periodoId = $periodo->id;
         }
+        $periodoId =4;
 
         // 3. Obtener Materias del estudiante
         $materias = Materia::select('materias.id', 'base_materia.nombre_materia', 'materias.intensidad_horaria')
@@ -201,6 +421,7 @@ class certificadosController extends Controller
     /**
      * Función auxiliar para buscar en el array de configuración
      */
+    /*
     private function getSubjectDetails($nombreMateria) {
         $nombreUpper = trim(strtoupper($nombreMateria));
         
@@ -231,4 +452,5 @@ class certificadosController extends Controller
         ]);
         
     }
+    */
 }
