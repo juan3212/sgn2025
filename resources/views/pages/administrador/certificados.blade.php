@@ -263,7 +263,7 @@ body {
                     <td id="comment" style="text-align: center;">
                         @php
                             $gradoNombre = strtoupper($estudiante->grado->nombre_grado ?? '');
-                            $esOnce = strpos($gradoNombre, 'ONCE') !== false || strpos($gradoNombre, '11') !== false;
+                            $esOnce = strpos($gradoNombre, 'UNDÉCIMO') !== false || strpos($gradoNombre, 'UNDECIMO') !== false;
                         @endphp
                         
                         @if($esOnce)
