@@ -262,7 +262,7 @@ body {
                     <td>CONCEPTO DEL COMITÉ DE EVALUACIÓN Y PROMOCIÓN</td>
                     <td id="comment" style="text-align: center;">
                         @php
-                            $gradoNombre = strtoupper($estudiante->grado->nombre_grado ?? '');
+                            $gradoNombre = strtoupper($estudiante->grados[0]->grado ?? '');
                             $esOnce = strpos($gradoNombre, 'UNDÉCIMO') !== false || strpos($gradoNombre, 'UNDECIMO') !== false;
                         @endphp
                         
