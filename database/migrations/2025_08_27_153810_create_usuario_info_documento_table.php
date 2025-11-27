@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('usuario_info_documento', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('usuario_id');
-            $table->string('numero_documento')->unique();
+            $table->string('numero_documento', 100)->unique();
             $table->string('tipo_documento');
             $table->string('departamento_expedicion');
             $table->string('municipio_expedicion');

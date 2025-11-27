@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Modelable;
 
 class UploadDocument extends Component
 {
@@ -18,14 +19,16 @@ class UploadDocument extends Component
     public $tipoDocumento;
     public $usuario;
     public $usuarioId;
+    public $usuarioNuip;
     public $nombreDocumento;
 
-    public function mount($tipoDocumento, $usuario, $nombreDocumento, $usuarioId=null)
+    public function mount($tipoDocumento, $usuario, $nombreDocumento, $usuarioId=null, $usuarioNuip=null)
     {
         $this->tipoDocumento = $tipoDocumento;
         $this->usuario = $usuario;
         $this->nombreDocumento = $nombreDocumento;
         $this->usuarioId = $usuarioId;
+        $this->usuarioNuip = $usuarioNuip;
 
         $this->getEstudianteNuip();
         if(!$this->usuarioId && $this->usuario == "estudiante"){
@@ -51,18 +54,22 @@ class UploadDocument extends Component
 
     }
 
-    #[On("saveData")]
-    public function saveDocumento()
+    #[On("upload-document")]
+    public function saveDocumento($data)
     {
         if($this->documento){
+            if($data['usuario'] == "acudiente" && $this->usuarioId == $this->estudianteId)
+                {
+                    return true;
+                }
             $extension = $this->documento->extension();
-            $path = "documentos/estudiantes/".$this->estudianteNuip."/".$this->usuario;
+            $path = "documentos/estudiantes/".$this->usuarioNuip."/documentos";
             $name = $this->nombreDocumento.".".$extension;
             try{
                 $this->documento->storeAs($path, $name);
                 DB::table('usuario_archivos')
                 ->updateOrInsert([
-                    'usuario_id' => $this->estudianteId,
+                    'usuario_id' => $this->usuarioId,
                     'nombre_archivo' => $this->nombreDocumento,
                 ],[
                     'ruta_archivo' => $path."/".$name,

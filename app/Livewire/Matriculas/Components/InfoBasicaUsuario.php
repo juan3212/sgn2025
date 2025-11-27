@@ -22,6 +22,8 @@ class InfoBasicaUsuario extends Component
     public $departamentoNacimiento;
     public $municipioNacimiento;
     public $sexo;
+    public $valueUbicacionNacimiento = [];
+    public $valueUbicacionExpedicion = [];
 
     public function mount()
     {
@@ -34,9 +36,13 @@ class InfoBasicaUsuario extends Component
             if ($data['tipoUbicacion'] === 'expedicion') {
                 $this->departamentoExpedicion = $data['departamento'];
                 $this->municipioExpedicion = $data['municipio'];
+                $this->valueUbicacionExpedicion['departamento'] = $data['departamento'];
+                $this->valueUbicacionExpedicion['municipio'] = $data['municipio'];
             } elseif ($data['tipoUbicacion'] === 'nacimiento') {
                 $this->departamentoNacimiento = $data['departamento'];
                 $this->municipioNacimiento = $data['municipio'];
+                $this->valueUbicacionNacimiento['departamento'] = $data['departamento'];
+                $this->valueUbicacionNacimiento['municipio'] = $data['municipio'];
             }
         }
     }
@@ -60,6 +66,11 @@ class InfoBasicaUsuario extends Component
             $this->departamentoNacimiento = $usuario->departamento_nacimiento;
             $this->municipioNacimiento = $usuario->municipio_nacimiento;
             $this->sexo = $usuario->sexo;
+            $this->valueUbicacionExpedicion['departamento'] = $usuario->departamento_expedicion;
+            $this->valueUbicacionExpedicion['municipio'] = $usuario->municipio_expedicion;
+            $this->valueUbicacionNacimiento['departamento'] = $usuario->departamento_nacimiento;
+            $this->valueUbicacionNacimiento['municipio'] = $usuario->municipio_nacimiento;
+
         }
     }
     #[On("saveData")]
@@ -110,7 +121,8 @@ class InfoBasicaUsuario extends Component
             );
             
             DB::commit();
-            session()->flash('message', 'Información guardada correctamente');
+            $this->dispatch('estudiante-guardado', ["estado" => true]);
+            $this->dispatch('upload-document', ["usuario" => "estudiante"]);
         }
         catch (\Exception $e) {
             DB::rollBack();

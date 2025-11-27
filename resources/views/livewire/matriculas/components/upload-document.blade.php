@@ -10,7 +10,7 @@
         </div>
         <div>
             @if($documentoUrl)
-            <a href="{{ route("documentos.show", $documentoUrl) }}" target="_blank" class="text-blue-500 hover:underline">Ver documento</a>
+            <a href="{{ route("documentos.show", [$documentoUrl, time()]) }}" target="_blank" class="text-blue-500 hover:underline">Ver documento</a>
             @endif
         </div>
     </fieldset>

@@ -6,48 +6,85 @@ use Livewire\Component;
 use Livewire\Attributes\Modelable;
 use Livewire\Attributes\On;
 use App\Models\Usuario;
+use App\Livewire\Forms\AcudienteForm;
+use Illuminate\Support\Facades\DB;
 
 class FormularioAcudiente extends Component
 {
     public $estudianteId;
-    public $acudienteId;
-    public $acudientes;
+    
+    // Instancia del Form Object
+    public AcudienteForm $form;
 
-    public function mount()
+    // Lista local para mostrar en la tabla sin re-consultar todo el tiempo
+    public $acudientes = [];
+
+    public function mount($estudianteId)
     {
-        $this->getAcudientes();
+        $this->estudianteId = $estudianteId;
+        $this->cargarAcudientes();
     }
 
-    public function getAcudientes()
+    public function cargarAcudientes()
     {
+        // Tu lógica original adaptada
         $this->acudientes = Usuario::select("usuarios.id", "nombre", "apellido", "nuip", "telefono", "parentesco")
-        ->join("usuario_contacto", "usuarios.id", "=", "usuario_contacto.usuario_id")
-        ->join("usuario_has_child", "usuarios.id", "=", "usuario_has_child.parent_id")
-        ->where("usuario_has_child.child_id", $this->estudianteId)
-        ->distinct()
-        ->get();
+            ->leftJoin("usuario_contacto", "usuarios.id", "=", "usuario_contacto.usuario_id")
+            ->join("usuario_has_child", "usuarios.id", "=", "usuario_has_child.parent_id")
+            ->where("usuario_has_child.child_id", $this->estudianteId)
+            ->get();
     }
 
-    public function agregarAcudiente()
+    // Método llamado desde la vista cuando dan click en "Buscar Acudiente"
+    public function buscarAcudiente()
     {
-        $this->dispatch("agregar-acudiente");
-    }
-
-    #[On("acudiente-completado")]
-    public function acudienteCompletado($data)
-    {
-        if($data['estado']){
-            
+        $encontrado = $this->form->buscarPorDocumento();
+        
+        if ($encontrado) {
+            $this->dispatch('showAlert', ['message' => 'Usuario encontrado. Datos cargados.', 'type' => 'success']);
+        } else {
+            $this->dispatch('showAlert', ['message' => 'Usuario no encontrado. Por favor registre los datos.', 'type' => 'info']);
         }
     }
 
-    #[On('acudiente-cambiado')]
-    public function acudienteCambiado($acudienteId)
+    // Método llamado al dar click en "Agregar Acudiente"
+    public function guardar()
     {
-        $this->acudienteId = $acudienteId;
+        $acudientes = DB::table('usuario_has_child')->where('child_id', $this->estudianteId)->get();
+        if($acudientes->contains('parentesco', 'Padre') && $this->form->parentesco == 'Padre' && $this->form->acudienteId != $acudientes->where('parentesco', 'Padre')->first()->parent_id){
+            $this->dispatch('showAlert', ['type' => 'info', 'message' => 'Ya existe un acudiente padre.']);
+            return;
+        }
+
+        if($acudientes->contains('parentesco', 'Madre') && $this->form->parentesco == 'Madre' && $this->form->acudienteId != $acudientes->where('parentesco', 'Madre')->first()->parent_id){
+            $this->dispatch('showAlert', ['type' => 'info', 'message' => 'Ya existe un acudiente madre.']);
+            return;
+        }
+
+        $this->form->store($this->estudianteId);
+        $this->dispatch('upload-document', ['usuario' => 'acudiente']);
+        $this->cargarAcudientes(); // Refrescar tabla
+        $this->dispatch('alert', ['type' => 'success', 'message' => 'Acudiente agregado correctamente']);
     }
-    public function render()
+
+    public function guardarContacto()
     {
-        return view('livewire.matriculas.formulario-acudiente');
+        $this->form->guardarContacto();
+    }
+
+    public function quitarContacto($id)
+    {
+        $this->form->quitarContacto($id);
+    }
+
+    public function quitarAcudiente($id)
+    {
+        // Lógica para desvincular
+        DB::table('usuario_has_child')
+            ->where('parent_id', $id)
+            ->where('child_id', $this->estudianteId)
+            ->delete();
+            
+        $this->cargarAcudientes();
     }
 }

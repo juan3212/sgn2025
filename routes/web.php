@@ -352,6 +352,23 @@ Route::view("informes", "pages.administrador.informe")
     ->middleware(["auth"])
     ->name("informes");
 
+
+Route::view("dashboard-estudiantes/{estudianteId?}", "pages.estudiantes.dashboard-estudiantes")
+    ->middleware(["auth"])
+    ->name("dashboard-estudiantes");
+
+Route::get("matricula/{estudianteId?}", function ($estudianteId = null) {
+    $usuario = request()->user();
+    if($usuario->hasRole("estudiante")){
+        $estudianteId = $usuario->id;
+    }else{
+        $estudianteId = $estudianteId;
+    }
+
+    return view("pages.estudiantes.matriculas", compact("estudianteId"));
+})
+    ->middleware(["auth"])
+    ->name("matricula");
 Route::get('documento/{path}/{ver}', [
     App\Http\Controllers\archivos\MostrarArchivosController::class,
     "mostrar",
@@ -366,5 +383,60 @@ Route::get("certificados/{usuarioId}", [
 ])
     ->middleware(["auth"])
     ->name("certificados");
+
+
+Route::get('/documentos/ver/{tipo}/{estudianteId}', function ($tipo, $estudianteId) {
+    $grados = DB::table('grados')
+    ->select('grados.*')
+    ->get();
+    $estudiante = DB::table('usuarios')
+    ->select('*')
+    ->join('usuario_grado', 'usuario_grado.usuario_id', 'usuarios.id')
+    ->join('grados', 'grados.id', 'usuario_grado.grado_id')
+    ->where('usuarios.id', $estudianteId)
+    ->first();
+    $padres = DB::table('usuario_has_child')
+    ->select('*')
+    ->where('child_id', $estudianteId)
+    ->join('usuarios', 'usuarios.id', 'usuario_has_child.parent_id')
+    ->join('usuario_contacto', 'usuario_contacto.usuario_id', 'usuarios.id')
+    ->get();
+    $acudienteFacturacion = DB::table('usuario_facturacion')
+    ->select('*')
+    ->where('estudiante_id', $estudianteId)
+    ->join('usuarios', 'usuarios.id', 'usuario_facturacion.acudiente_id')
+    ->join('usuario_contacto', 'usuario_contacto.usuario_id', 'usuarios.id')
+    ->first();
+
+    $datos = [
+          'studentName' => $estudiante->nombre.' '.$estudiante->apellido,
+        'studentGrade' => $grados->where('id', $estudiante->grado_id +1)->first()->grado,
+        'fatherName' => $padres->where('parentesco', 'Padre')->first()->nombre.' '.$padres->where('parentesco', 'Padre')->first()->apellido,
+        'fatherCc' => $padres->where('parentesco', 'Padre')->first()->nuip,
+        'fatherEmail' => $padres->where('parentesco', 'Padre')->first()->email,
+        'fatherPhone' => $padres->where('parentesco', 'Padre')->first()->telefono,
+        'motherName' => $padres->where('parentesco', 'Madre')->first()->nombre.' '.$padres->where('parentesco', 'Madre')->first()->apellido,
+        'motherCc' => $padres->where('parentesco', 'Madre')->first()->nuip,
+        'motherEmail' => $padres->where('parentesco', 'Madre')->first()->email,
+        'motherPhone' => $padres->where('parentesco', 'Madre')->first()->telefono,
+        'parentName' => $acudienteFacturacion->nombre.' '.$acudienteFacturacion->apellido,
+        'parentId' => $acudienteFacturacion->nuip,
+        'parentIdCity' => 'Bogotá',
+    'studentName' => $estudiante->nombre.' '.$estudiante->apellido,
+    'studentGrade' => $grados->where('id', $estudiante->grado_id +1)->first()->grado,
+    'billedName' => $acudienteFacturacion->nombre.' '.$acudienteFacturacion->apellido, // Nombre de la persona a quien se facturará
+    'billedId' => $acudienteFacturacion->nuip,
+    'billedEmail' => $acudienteFacturacion->email,
+    'billedAddress' => $acudienteFacturacion->direccion,
+    'billedPhone' => $acudienteFacturacion->telefono,
+    ];
+
+    
+
+    return view('matriculas.mostrar-contrato', [
+        'tipo' => $tipo, 
+        'datos' => $datos
+    ]);
+})->name('documentos.ver');
 
 require __DIR__ . "/auth.php";

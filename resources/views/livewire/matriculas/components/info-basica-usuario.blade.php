@@ -26,13 +26,13 @@
                 <input type="text" name="numero_documento" wire:model="numeroDocumento" id="numero_documento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
 
-            <livewire:matriculas.components.ubicacion wire:key="ubicacion_expedicion" tipoUbicacion="expedicion" tipoUsuario="estudiante" :departamento="$departamentoExpedicion" :municipio="$municipioExpedicion" />
+            <livewire:matriculas.components.ubicacion wire:key="ubicacion_expedicion" tipoUbicacion="expedicion" tipoUsuario="estudiante" wire:model="valueUbicacionExpedicion" :departamento="$departamentoExpedicion" :municipio="$municipioExpedicion" />
 
             <div class="md:col-span-2">
                 <label for="fecha_nacimiento" class="block text-sm font-medium text-gray-700">Fecha Nacimiento</label>
                 <input type="date" name="fecha_nacimiento" wire:model="fechaNacimiento" id="fecha_nacimiento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
-            <livewire:matriculas.components.ubicacion wire:key="ubicacion_nacimiento" tipoUbicacion="nacimiento"  tipoUsuario="estudiante" :departamento="$departamentoNacimiento" :municipio="$municipioNacimiento" />
+            <livewire:matriculas.components.ubicacion wire:key="ubicacion_nacimiento" tipoUbicacion="nacimiento"  tipoUsuario="estudiante" wire:model="valueUbicacionNacimiento" :departamento="$departamentoNacimiento" :municipio="$municipioNacimiento" />
             <div class="md:col-span-2">
                 <label for="sexo" class="block text-sm font-medium text-gray-700">Sexo</label>
                 <select id="sexo" name="sexo" wire:model="sexo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">

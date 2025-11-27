@@ -38,7 +38,7 @@ class PaymentStatus
         // 2. Usamos el servicio para ver si DEBE ver el boletín (tu lógica original de 'si')
         // Nota: Aquí podrías reutilizar el método hasPaid() del servicio si quieres limpiar más.
         if ($this->paymentService->hasPaid($user) && !$request->routeIs('boletin')) {
-             return redirect()->route('boletin', $user->id);
+             return redirect()->route('dashboard-estudiantes', $user->id);
         }
 
         return $next($request);

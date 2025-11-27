@@ -68,7 +68,7 @@ class UsuarioForm extends Component
 
     }
 
-    public function updatedRole(){
+    public function updatedRoleSelected(){
         if($this->roleSelected == "estudiante") {
             $this->grades = Grado::all();
         } else {

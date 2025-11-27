@@ -13,6 +13,8 @@ class Ubicacion extends Component
     public $tipoUbicacion;
     public $departamentosLista;
     public $municipiosLista;
+    #[Modelable]
+    public $value = [];
     public $departamento;
     public $municipio;
     public $tipoUsuario;
@@ -25,7 +27,7 @@ class Ubicacion extends Component
         $this->tipoUsuario = $tipoUsuario;
 
         $this->getDepartamentos();
-        if($this->departamento){
+        if(isset($this->value['departamento'])){
             $this->searchMunicipios();
         }
     }
@@ -41,16 +43,19 @@ class Ubicacion extends Component
     {
         
         $this->municipiosLista = null;
-        if($this->departamento) {
+        if(isset($this->value['departamento']) && $this->value['departamento']) {
             $data = Http::withoutVerifying()->get(
-                "https://api-colombia.com/api/v1/Department/{$this->departamento}/cities",
+                "https://api-colombia.com/api/v1/Department/{$this->value['departamento']}/cities",
             );
             $this->municipiosLista = $data->collect();
         }
     }
-    public function updatedDepartamento()
+    public function updatedValue($key, $value)
     {
-        $this->searchMunicipios();
+        if ($value == 'departamento') {
+            $this->value['municipio'] = ''; // Limpiar municipio
+            $this->searchMunicipios();
+        }
     }
 
     public function updatedMunicipio()

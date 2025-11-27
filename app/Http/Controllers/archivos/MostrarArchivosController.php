@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class MostrarArchivosController extends Controller
 {
     //
-      public function mostrar($path)
+      public function mostrar($path, $ver)
     {
         $ruta = storage_path("app/private/".$path);
         

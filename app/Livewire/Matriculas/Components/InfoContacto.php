@@ -40,7 +40,8 @@ class InfoContacto extends Component
     {
         $contacto = UsuarioContacto::where("usuario_id", $usuarioId)
             ->get();
-        if($contacto) {
+            
+        if($contacto && count($contacto) > 0) {
             if($this->tipoUsuario == "estudiante"){
                 $this->contactoId = $contacto[0]->id;
                 $this->telefono = $contacto[0]->telefono;
