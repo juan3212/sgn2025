@@ -399,13 +399,13 @@ Route::get('/documentos/ver/{tipo}/{estudianteId}', function ($tipo, $estudiante
     ->select('*')
     ->where('child_id', $estudianteId)
     ->join('usuarios', 'usuarios.id', 'usuario_has_child.parent_id')
-    ->join('usuario_contacto', 'usuario_contacto.usuario_id', 'usuarios.id')
+    ->leftJoin('usuario_contacto', 'usuario_contacto.usuario_id', 'usuarios.id')
     ->get();
     $acudienteFacturacion = DB::table('usuario_facturacion')
     ->select('*')
     ->where('estudiante_id', $estudianteId)
     ->join('usuarios', 'usuarios.id', 'usuario_facturacion.acudiente_id')
-    ->join('usuario_contacto', 'usuario_contacto.usuario_id', 'usuarios.id')
+    ->leftJoin('usuario_contacto', 'usuario_contacto.usuario_id', 'usuarios.id')
     ->first();
 
     $datos = [
