@@ -101,8 +101,8 @@ class InfoBasicaUsuario extends Component
                 [
                     "tipo_documento" => $this->documentoTipo ?? '',
                     "numero_documento" => $this->numeroDocumento ?? '',
-                    "departamento_expedicion" => $this->departamentoExpedicion ?? '',
-                    "municipio_expedicion" => $this->municipioExpedicion ?? '',
+                    "departamento_expedicion" => $this->valueUbicacionExpedicion['departamento'] ?? '',
+                    "municipio_expedicion" => $this->valueUbicacionExpedicion['municipio'] ?? '',
                 ]
             );
             
@@ -114,8 +114,8 @@ class InfoBasicaUsuario extends Component
                 ],
                 [
                     "fecha_nacimiento" => $this->fechaNacimiento ?? null,
-                    "departamento_nacimiento" => $this->departamentoNacimiento ?? '',
-                    "municipio_nacimiento" => $this->municipioNacimiento ?? '',
+                    "departamento_nacimiento" => $this->valueUbicacionNacimiento['departamento'] ?? '',
+                    "municipio_nacimiento" => $this->valueUbicacionNacimiento['municipio'] ?? '',
                     "sexo" => $this->sexo ?? '',
                 ]
             );
