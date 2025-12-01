@@ -124,7 +124,7 @@
          </div>
       </div>
 
-      <div class="fixed bottom-0 left-0 right-0 p-4  flex justify-between items-center z-10  ">
+      <div class="sticky bottom-0 left-0 right-0 p-4 mt-4 flex justify-between items-center ">
          <a 
             wire:click="anterior" 
             class="p-4 px-8 bg-indigo-600 text-white text-lg font-bold rounded-full shadow-xl hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 hover:cursor-pointer select-none"

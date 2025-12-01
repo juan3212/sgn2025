@@ -25,6 +25,7 @@ class FormularioMatricula extends Component
         'autorizacion-factura-electronica' => false,
         'acta' => false,
     ];
+    public $canContinue = false;
     public $acudienteFacturacion;
     public $padres;
 
@@ -68,6 +69,7 @@ class FormularioMatricula extends Component
        switch ($this->seccionActiva) {
            case 'estudiante':
                $this->guardarEstudiante();
+               $this->canContinue = true;
                $this->dispatch('scrollToTop');
                break;
            case 'acudiente':
@@ -75,6 +77,7 @@ class FormularioMatricula extends Component
                break;
            case 'servicios':
                $this->inscribirServicios();
+               $this->canContinue = true;
                break;
            case 'contratos':
                $this->guardarContratos();
@@ -82,8 +85,9 @@ class FormularioMatricula extends Component
                break;
        }
        
-       if($siguienteSeccion < count($this->secciones)){
+       if($siguienteSeccion < count($this->secciones) && $this->canContinue){
            $this->seccionActiva = $this->secciones[$siguienteSeccion];
+           $this->canContinue = false;
        }
     }
 
@@ -98,6 +102,7 @@ class FormularioMatricula extends Component
     public function guardarEstudiante()
     {
         $this->dispatch('saveData');
+        
 
     }
 
@@ -116,17 +121,26 @@ class FormularioMatricula extends Component
 
     public function guardarAcudiente()
     {
-        $acudientes = DB::table("usuario_has_child")->select("*")->where("child_id", $this->estudianteId)
+        $acudientes = DB::table("usuario_has_child")->select("*")
+        ->join("usuarios", "usuario_has_child.parent_id", "usuarios.id")
+        ->leftJoin('usuario_contacto', 'usuario_has_child.parent_id', 'usuario_contacto.usuario_id')
+        ->where("child_id", $this->estudianteId)
         ->get();
+        $emailsAgrupados = $acudientes->mapToGroups(function ($acudiente) {
+            return [$acudiente->parentesco => $acudiente->email];
+        });
+        $padreHasEmail = $emailsAgrupados->get('Padre', collect())->filter()->isNotEmpty();
+        $madreHasEmail = $emailsAgrupados->get('Madre', collect())->filter()->isNotEmpty();
 
-        
-        if($acudientes->contains('parentesco', 'Padre') && $acudientes->contains('parentesco', 'Madre')){
+    
+        if($acudientes->contains('parentesco', 'Padre') && $acudientes->contains('parentesco', 'Madre') && $padreHasEmail && $madreHasEmail){
             $this->showAcudiente = false;
             $this->showContratos = true;
+            $this->canContinue = true;
             $this->dispatch("scrollToTop");
         }
         else{
-            $this->dispatch("showAlert", ['message' => "El estudiantes debe tener por lo menos un padre y una madre", 'type' => "error"]);
+            $this->dispatch("showAlert", ['message' => "El estudiantes debe tener por lo menos un padre y una madre y cada uno debe tener al menos un email", 'type' => "error"]);
         }
         
     }

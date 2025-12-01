@@ -28,8 +28,7 @@ class FormularioAcudiente extends Component
     public function cargarAcudientes()
     {
         // Tu lógica original adaptada
-        $this->acudientes = Usuario::select("usuarios.id", "nombre", "apellido", "nuip", "telefono", "parentesco")
-            ->leftJoin("usuario_contacto", "usuarios.id", "=", "usuario_contacto.usuario_id")
+        $this->acudientes = Usuario::select("usuarios.id", "nombre", "apellido", "nuip", "parentesco")
             ->join("usuario_has_child", "usuarios.id", "=", "usuario_has_child.parent_id")
             ->where("usuario_has_child.child_id", $this->estudianteId)
             ->get();
