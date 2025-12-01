@@ -44,7 +44,7 @@ class PaymentService
 
         // Aquí defines la lógica: ¿Debe existir el registro? ¿Debe tener un estado 'pagado'?
         // Ejemplo: Si existe y el estado es 'pagado' (ajusta según tus columnas reales)
-        if ($matricula && $matricula->estado_pago == 'pagado') {
+        if ($matricula && $matricula->estado_pago == 'si') {
             return true;
         }
 
