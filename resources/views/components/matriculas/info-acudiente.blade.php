@@ -49,6 +49,9 @@
 
             
             <livewire:matriculas.components.ubicacion wire:key="ubicacion_acudiente" tipoUbicacion="expedicion" tipoUsuario="acudiente" wire:model="form.valueUbicacion" />
+            @error('form.valueUbicacion')
+                <span class="text-red-500 mt-1">{{ $message }}</span>
+            @enderror
             
             <div class="md:col-span-2">
                 <label for="parentesco" class="block text-sm font-medium text-gray-700">Parentesco</label>

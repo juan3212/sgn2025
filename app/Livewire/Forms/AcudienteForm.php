@@ -33,7 +33,7 @@ class AcudienteForm extends Form
     public $parentesco = '';
 
     // --- UBICACIÓN (Usando Modelable en el hijo) ---
-    #[Validate('required | array')]
+    #[Validate('required|array')]
     public $valueUbicacion = [];
 
     // --- INFO CONTACTO ---
