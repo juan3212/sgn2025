@@ -19,7 +19,7 @@ return new class extends Migration
         });
 
         Schema::table('matricula_completada_info', function (Blueprint $table) {
-            $table->foreign("estudiante_id")->references("id")->on("estudiantes")->onDelete("cascade");
+            $table->foreign("estudiante_id")->references("id")->on("usuarios")->onDelete("cascade");
         });
 
     }
