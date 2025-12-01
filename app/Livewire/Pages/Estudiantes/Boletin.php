@@ -82,7 +82,7 @@ class Boletin extends Component
         $periodo = Periodo::where('fecha_fin', '>', now())
         ->first();
         $this->periodoId = $periodo->id - 1;
-        if(date("j-n") >= "19-11"){
+        if(date("n") >= "11"){
             $this->periodoId = $periodo->id;
         }
     }

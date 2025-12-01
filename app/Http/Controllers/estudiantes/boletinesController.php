@@ -35,8 +35,9 @@ class boletinesController extends Controller
         $periodo = Periodo::where('fecha_fin', '>', now())
         ->first();
         $periodo->id -= 1;
-        if(date("j-n") >= "19-11"){
-            $periodo->id += 1;
+        if(date("n") >= "11"){
+                $periodo->id += 1;
+           
         }
         switch (true){
             case $periodo->id == 1:
