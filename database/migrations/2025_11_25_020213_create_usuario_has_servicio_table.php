@@ -12,9 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('usuario_has_servicio', function (Blueprint $table) {
-            $table->foreignId('usuario_id')->constrained('usuarios');
-            $table->foreignId('servicio_id')->constrained('servicios_adicionales');
+            $table->unsignedBigInteger('usuario_id');
+            $table->unsignedBigInteger('servicio_id');
             $table->timestamps();
+        });
+
+        Schema::table('usuario_has_servicio', function (Blueprint $table) {
+            $table->foreign('usuario_id')->references('id')->on('usuarios')->onDelete('cascade');
+            $table->foreign('servicio_id')->references('id')->on('servicios_adicionales')->onDelete('cascade');
         });
     }
 

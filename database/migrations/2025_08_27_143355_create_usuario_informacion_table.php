@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('religion')->nullable();
             $table->timestamps();
             
+        });
+
+        Schema::table('usuario_informacion', function (Blueprint $table) {
             $table->foreign('usuario_id')->references('id')->on('usuarios')->onDelete('cascade');
         });
     }

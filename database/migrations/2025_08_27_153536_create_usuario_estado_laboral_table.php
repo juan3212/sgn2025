@@ -16,8 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('usuario_id');
             $table->string('estado_laboral')->nullable();
             $table->string('empresa')->nullable();
-            $table->timestamps();
-            
+            $table->timestamps(); 
+        });
+
+        Schema::table('usuario_estado_laboral', function (Blueprint $table) {
             $table->foreign('usuario_id')->references('id')->on('usuarios')->onDelete('cascade');
         });
     }

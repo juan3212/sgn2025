@@ -35,9 +35,20 @@ class PaymentStatus
             return redirect()->route('home')->with('error', 'Regularice sus pagos.');
         }
 
+        if ($request->routeIs('matricula')) {
+            if (! $this->paymentService->hasPaidMatricula($user)) {
+                // Si no ha pagado matrícula, lo mandamos a otro lado (ej. dashboard o home)
+                return redirect()
+                        ->route('dashboard-estudiantes', $user->id)
+                        ->with('error', 'Para continuar, es necesario realizar el pago de la matrícula. Tu acceso se habilitará el siguiente día hábil a partir de las 8:00 a.m');
+            }
+        }
+
         // 2. Usamos el servicio para ver si DEBE ver el boletín (tu lógica original de 'si')
         // Nota: Aquí podrías reutilizar el método hasPaid() del servicio si quieres limpiar más.
-        if ($this->paymentService->hasPaid($user) && !$request->routeIs('boletin')) {
+        $rutaActualEsPermitida = $request->routeIs('boletin') || $request->routeIs('matricula');
+
+        if ($this->paymentService->hasPaid($user) && !$rutaActualEsPermitida) {
              return redirect()->route('dashboard-estudiantes', $user->id);
         }
 

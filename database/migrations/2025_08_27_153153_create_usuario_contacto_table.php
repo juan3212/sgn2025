@@ -17,8 +17,10 @@ return new class extends Migration
             $table->string('telefono')->nullable();
             $table->string('email')->nullable();
             $table->string('direccion')->nullable();
-            $table->timestamps();
+            $table->timestamps();  
+        });
 
+        Schema::table('usuario_contacto', function (Blueprint $table) {
             $table->foreign('usuario_id')->references('id')->on('usuarios')->onDelete('cascade');
         });
     }

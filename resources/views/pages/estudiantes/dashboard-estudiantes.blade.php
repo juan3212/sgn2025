@@ -14,6 +14,14 @@
             </div>
         </div>
     </div>
+    @if (session('error'))
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <div>
+                <strong class="font-bold">Error!</strong>
+                <span class="block sm:inline">{{ session('error') }}</span>
+            </div>
+        </div>
+    @endif
     <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
         <a href="{{ route('boletin', $estudianteId) }}" class="block w-11/12 sm:w-64 p-4 text-center text-xl font-bold bg-blue-500 text-white rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out">
             Boletin

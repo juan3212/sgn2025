@@ -367,7 +367,7 @@ Route::get("matricula/{estudianteId?}", function ($estudianteId = null) {
 
     return view("pages.estudiantes.matriculas", compact("estudianteId"));
 })
-    ->middleware(["auth"])
+    ->middleware(["auth","paymentStatus"])
     ->name("matricula");
 Route::get('documento/{path}/{ver}', [
     App\Http\Controllers\archivos\MostrarArchivosController::class,

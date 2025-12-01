@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Usuario;
 use App\Models\UsuarioEstadoPago;
+use App\Models\PagoMatricula;
 
 class PaymentService
 {
@@ -27,6 +28,27 @@ class PaymentService
         }
 
         return true;
+    }
+
+    public function hasPaidMatricula(Usuario $user): bool
+    {
+        // Si no es estudiante, asumimos que tiene acceso (o false, según tu lógica de negocio)
+        if (! $user->hasRole('estudiante')) {
+            return true; 
+        }
+
+        // Consultamos la nueva tabla 'pago_matricula'
+        // Ajusta el nombre del modelo o la tabla según tu base de datos
+        $matricula = PagoMatricula::where('user_id', $user->id)
+                        ->first();
+
+        // Aquí defines la lógica: ¿Debe existir el registro? ¿Debe tener un estado 'pagado'?
+        // Ejemplo: Si existe y el estado es 'pagado' (ajusta según tus columnas reales)
+        if ($matricula && $matricula->estado_pago == 'pagado') {
+            return true;
+        }
+
+        return false;
     }
     
     /**

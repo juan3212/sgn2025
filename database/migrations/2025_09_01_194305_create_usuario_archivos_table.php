@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('ruta_archivo');
             $table->timestamps();
             
+        });
+
+        Schema::table('usuario_archivos', function (Blueprint $table) {
             $table->foreign('usuario_id')->references('id')->on('usuarios')->onDelete('cascade');
         });
     }
