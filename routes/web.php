@@ -407,10 +407,16 @@ Route::get('/documentos/ver/{tipo}/{estudianteId}', function ($tipo, $estudiante
     ->join('usuarios', 'usuarios.id', 'usuario_facturacion.acudiente_id')
     ->leftJoin('usuario_contacto', 'usuario_contacto.usuario_id', 'usuarios.id')
     ->first();
+    $valores = DB::table('usuario_valores_matricula_pension')
+    ->select('*')
+    ->where('usuario_id', $estudianteId)
+    ->first();
 
     $datos = [
           'studentName' => $estudiante->nombre.' '.$estudiante->apellido,
         'studentGrade' => $grados->where('id', $estudiante->grado_id +1)->first()->grado,
+        'matricula' => $valores->valor_matricula,
+        'pension' => $valores->valor_pension,
         'fatherName' => $padres->where('parentesco', 'Padre')->first()->nombre.' '.$padres->where('parentesco', 'Padre')->first()->apellido,
         'fatherCc' => $padres->where('parentesco', 'Padre')->first()->nuip,
         'fatherEmail' => $padres->where('parentesco', 'Padre')->first()->email,
