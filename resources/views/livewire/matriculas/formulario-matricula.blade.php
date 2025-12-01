@@ -38,6 +38,7 @@
                @endforeach
             </select>
          </div>
+         @if($acudienteFacturacion)
          <div class="flex flex-col gap-4">
             
             {{-- Item 1: Contrato Educativo --}}
@@ -122,6 +123,7 @@
             </div>
 
          </div>
+         @endif
       </div>
 
       <div class="sticky bottom-0 left-0 right-0 p-4 mt-4 flex justify-between items-center ">
