@@ -415,8 +415,8 @@ Route::get('/documentos/ver/{tipo}/{estudianteId}', function ($tipo, $estudiante
     $datos = [
           'studentName' => $estudiante->nombre.' '.$estudiante->apellido,
         'studentGrade' => $grados->where('id', $estudiante->grado_id +1)->first()->grado,
-        'matricula' => $valores->valor_matricula,
-        'pension' => $valores->valor_pension,
+        'matricula' => number_format($valores->valor_matricula, 0, ',', '.'),
+        'pension' => number_format($valores->valor_pension, 0, ',', '.'),
         'fatherName' => $padres->where('parentesco', 'Padre')->first()->nombre.' '.$padres->where('parentesco', 'Padre')->first()->apellido,
         'fatherCc' => $padres->where('parentesco', 'Padre')->first()->nuip,
         'fatherEmail' => $padres->where('parentesco', 'Padre')->first()->email,

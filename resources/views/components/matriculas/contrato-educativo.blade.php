@@ -1,6 +1,8 @@
 @props([
     'studentName' => 'Juan Pablo Acevedo Hernandez',
     'studentGrade' => 'Décimo',
+    'matricula' => '',
+    'pension' => '',
     'fatherName' => '',
     'fatherCc' => '',
     'fatherEmail' => '',
@@ -176,8 +178,8 @@
                             <span class="font-bold">QUINTA. VALOR:</span> EI presente Contrato de Servicios Educativos tiene un costo de:<br>
                             NOMBRE ESTUDIANTE: <span class="font-bold underline uppercase">{{ $studentName }}</span><br>
                             CURSO 2026: <span class="font-bold underline uppercase">{{ $studentGrade }}</span><br>
-                            VALOR MATRÍCULA: <span class="font-bold underline">$712.000</span> Pesos Colombianos.<br>
-                            VALOR PENSIÓN MENSUAL: <span class="font-bold underline">$665.500</span> Pesos Colombianos.
+                            VALOR MATRÍCULA: <span class="font-bold underline">$ {{ $matricula }}</span> Pesos Colombianos.<br>
+                            VALOR PENSIÓN MENSUAL: <span class="font-bold underline">$ {{ $pension }}</span> Pesos Colombianos.
                         </p>
                     </div>
 
