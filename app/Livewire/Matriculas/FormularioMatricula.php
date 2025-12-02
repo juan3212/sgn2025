@@ -33,6 +33,11 @@ class FormularioMatricula extends Component
     {
         $this->estudianteId = $estudianteId;
 
+        
+    }
+
+    public function boot()
+    {
         $this->padres = DB::table("usuario_has_child")
             ->select("*")
             ->where("child_id", $this->estudianteId)

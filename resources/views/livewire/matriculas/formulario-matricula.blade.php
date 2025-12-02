@@ -32,7 +32,7 @@
          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg shadow-md mb-6">
             <p class="font-semibold text-blue-800 mb-2">Selecciona el acudiente que recibirá la facturación electrónica</p>
             <select wire:model.live="acudienteFacturacion" class="block w-full p-2 border border-blue-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-               <option value="" disabled>Seleccione un acudiente</option>
+               <option value="" selected disabled>Seleccione un acudiente</option>
                @foreach ($padres as $padre)
                   <option value="{{ $padre->parent_id }}">{{ $padre->parentesco }}</option>
                @endforeach
