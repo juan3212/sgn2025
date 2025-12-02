@@ -29,8 +29,10 @@ class UploadDocument extends Component
         $this->nombreDocumento = $nombreDocumento;
         $this->usuarioId = $usuarioId;
         $this->usuarioNuip = $usuarioNuip;
+        if(!$usuarioNuip && $usuario == "estudiante"){
+           $this->usuarioNuip = $this->getEstudianteNuip();
+        }
 
-        $this->getEstudianteNuip();
         if(!$this->usuarioId && $this->usuario == "estudiante"){
             $this->usuarioId = $this->estudianteId;
         }
@@ -51,7 +53,7 @@ class UploadDocument extends Component
         $this->estudianteNuip = DB::table("usuarios")
         ->where("id", $this->estudianteId)
         ->value("nuip");
-
+        return $this->estudianteNuip;
     }
 
     #[On("upload-document")]
