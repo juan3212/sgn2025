@@ -416,19 +416,23 @@ Route::get('/documentos/ver/{tipo}/{estudianteId}', function ($tipo, $estudiante
     ->where('usuario_id', $estudianteId)
     ->first();
 
+    $padre = $padres->where('parentesco', 'Padre')->first();
+    $madre = $padres->where('parentesco', 'Madre')->first();
+    $padreMadre = $padres->where('parentesco', 'Padre/Madre_cabeza_de_familia')->first();
+
     $datos = [
           'studentName' => $estudiante->nombre.' '.$estudiante->apellido,
         'studentGrade' => isset($promovido) ? $grados->where('id', $promovido->grado_destino)->first()->grado : $grados->where('id', $estudiante->grado_id +1)->first()->grado,
         'matricula' => number_format($valores->valor_matricula, 0, ',', '.'),
         'pension' => number_format($valores->valor_pension, 0, ',', '.'),
-        'fatherName' => $padres->where('parentesco', 'Padre')->first()->nombre.' '.$padres->where('parentesco', 'Padre')->first()->apellido,
-        'fatherCc' => $padres->where('parentesco', 'Padre')->first()->nuip,
-        'fatherEmail' => $padres->where('parentesco', 'Padre')->first()->email,
-        'fatherPhone' => $padres->where('parentesco', 'Padre')->first()->telefono,
-        'motherName' => $padres->where('parentesco', 'Madre')->first()->nombre.' '.$padres->where('parentesco', 'Madre')->first()->apellido,
-        'motherCc' => $padres->where('parentesco', 'Madre')->first()->nuip,
-        'motherEmail' => $padres->where('parentesco', 'Madre')->first()->email,
-        'motherPhone' => $padres->where('parentesco', 'Madre')->first()->telefono,
+        'fatherName' => isset($padreMadre) ? $padreMadre->nombre.' '.$padreMadre->apellido : $padre->nombre.' '.$padre->apellido,
+        'fatherCc' => isset($padreMadre) ? $padreMadre->nuip : $padre->nuip,
+        'fatherEmail' => isset($padreMadre) ? $padreMadre->email : $padre->email,
+        'fatherPhone' => isset($padreMadre) ? $padreMadre->telefono : $padre->telefono,
+        'motherName' => isset($padreMadre) ? $padreMadre->nombre.' '.$padreMadre->apellido : $madre->nombre.' '.$madre->apellido,
+        'motherCc' => isset($padreMadre) ? $padreMadre->nuip : $madre->nuip,
+        'motherEmail' => isset($padreMadre) ? $padreMadre->email : $madre->email,
+        'motherPhone' => isset($padreMadre) ? $padreMadre->telefono : $madre->telefono,
         'parentName' => $acudienteFacturacion->nombre.' '.$acudienteFacturacion->apellido,
         'parentId' => $acudienteFacturacion->nuip,
         'parentIdCity' => 'Bogotá',

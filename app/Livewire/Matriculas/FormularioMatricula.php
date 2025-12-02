@@ -43,7 +43,8 @@ class FormularioMatricula extends Component
             ->where("child_id", $this->estudianteId)
             ->where(function($query) {
                 $query->where("parentesco", "Padre")
-                      ->orWhere("parentesco", "Madre");
+                      ->orWhere("parentesco", "Madre")
+                      ->orWhere("parentesco", "Padre/Madre_cabeza_de_familia");
             })
             ->get();
 
@@ -136,9 +137,9 @@ class FormularioMatricula extends Component
         });
         $padreHasEmail = $emailsAgrupados->get('Padre', collect())->filter()->isNotEmpty();
         $madreHasEmail = $emailsAgrupados->get('Madre', collect())->filter()->isNotEmpty();
-
+        $padreMadreHasEmail = $emailsAgrupados->get('Padre/Madre_cabeza_de_familia', collect())->filter()->isNotEmpty();
     
-        if($acudientes->contains('parentesco', 'Padre') && $acudientes->contains('parentesco', 'Madre') && $padreHasEmail && $madreHasEmail){
+        if(($acudientes->contains('parentesco', 'Padre') && $acudientes->contains('parentesco', 'Madre') && $padreHasEmail && $madreHasEmail) || ($acudientes->contains('parentesco', 'Padre/Madre_cabeza_de_familia') && $padreMadreHasEmail)){
             $this->showAcudiente = false;
             $this->showContratos = true;
             $this->canContinue = true;

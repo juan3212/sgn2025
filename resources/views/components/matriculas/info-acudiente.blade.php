@@ -61,6 +61,7 @@
                     <option selected="" value="">Seleccione...</option>
                     <option value="Padre">Padre</option>
                     <option value="Madre">Madre</option>
+                    <option value="Padre/Madre_cabeza_de_familia">Padre/Madre cabeza de familia</option>
                     <option value="Hermano(a)">Hermano(a)</option>
                     <option value="Tio(a)">Tio(a)</option>
                     <option value="Abuelo(a)">Abuelo(a)</option>
