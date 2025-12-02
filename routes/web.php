@@ -411,10 +411,14 @@ Route::get('/documentos/ver/{tipo}/{estudianteId}', function ($tipo, $estudiante
     ->select('*')
     ->where('usuario_id', $estudianteId)
     ->first();
+    $promovido = DB::table('usuarios_promovidos')
+    ->select('*')
+    ->where('usuario_id', $estudianteId)
+    ->first();
 
     $datos = [
           'studentName' => $estudiante->nombre.' '.$estudiante->apellido,
-        'studentGrade' => $grados->where('id', $estudiante->grado_id +1)->first()->grado,
+        'studentGrade' => isset($promovido) ? $grados->where('id', $promovido->grado_destino)->first()->grado : $grados->where('id', $estudiante->grado_id +1)->first()->grado,
         'matricula' => number_format($valores->valor_matricula, 0, ',', '.'),
         'pension' => number_format($valores->valor_pension, 0, ',', '.'),
         'fatherName' => $padres->where('parentesco', 'Padre')->first()->nombre.' '.$padres->where('parentesco', 'Padre')->first()->apellido,
@@ -429,7 +433,7 @@ Route::get('/documentos/ver/{tipo}/{estudianteId}', function ($tipo, $estudiante
         'parentId' => $acudienteFacturacion->nuip,
         'parentIdCity' => 'Bogotá',
     'studentName' => $estudiante->nombre.' '.$estudiante->apellido,
-    'studentGrade' => $grados->where('id', $estudiante->grado_id +1)->first()->grado,
+    'studentGrade' => isset($promovido) ? $grados->where('id', $promovido->grado_destino)->first()->grado : $grados->where('id', $estudiante->grado_id +1)->first()->grado,
     'billedName' => $acudienteFacturacion->nombre.' '.$acudienteFacturacion->apellido, // Nombre de la persona a quien se facturará
     'billedId' => $acudienteFacturacion->nuip,
     'billedEmail' => $acudienteFacturacion->email,
