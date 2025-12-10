@@ -302,7 +302,7 @@ Route::get("gestion-pagos/data", [
     ->middleware(["auth"])
     ->name("gestion-pagos.data");
 
-Route::get("gestion-pagos/change-state/{id}", [
+Route::get("gestion-pagos/change-state/{id}/{tipo}", [
     App\Http\Controllers\administrador\GestionPagosController::class,
     "cambiarEstadoPago",
 ])

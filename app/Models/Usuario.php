@@ -91,4 +91,8 @@ class Usuario extends Authenticatable
     public function infoDocumentos() {
         return $this->hasMany(UsuarioInfoDocumento::class, 'usuario_id');
     }
+    public function bloqueos()
+    {
+        return $this->hasOne(UsuarioBLoqueado::class, 'usuario_id');
+    }
 }

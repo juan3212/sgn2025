@@ -35,7 +35,15 @@ class LoginForm extends Form
 
         $usuario = Usuario::where('nuip', $this->nuip)
         ->with('roles')
+        ->with('bloqueos')
         ->first();
+
+        if ($usuario->bloqueos()->exists()) {
+            throw ValidationException::withMessages([
+                'form.nuip' => 'El usuario está bloqueado, por favor pongase en contacto con el colegio.',
+            ]);
+        }
+
 
         if (!$usuario || ! Auth::attempt($this->only(['nuip', 'password']), $this->remember)) {
             RateLimiter::hit($this->throttleKey());

@@ -14,8 +14,8 @@
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Documento</th>
-                            <th>Estado de Pago</th>
-                            <th>Acciones</th>
+                            <th>Pension</th>
+                            <th>Matricula</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,13 +38,13 @@
                 { data: 'nombre', name: 'nombre' },
                 { data: 'apellido', name: 'apellido' },
                 { data: 'nuip', name: 'nuip' },
-                { data: 'estado_pago', name: 'estado_pago', searchable: false},
-                { data: 'action', name: 'action' }
+                { data: 'pension', name: 'pension', searchable: false},
+                { data: 'matricula', name: 'matricula', searchable: false}
             ]    
         });
 
-        function changeState(id) {
-            fetch(`/gestion-pagos/change-state/${id}`, {
+        function changeState(id, tipo) {
+            fetch(`/gestion-pagos/change-state/${id}/${tipo}`, {
                 method: 'get',
             })
             .then(response => response.json())
@@ -63,7 +63,8 @@
 
         $('#estudiantesTable').on('click', '.change-state', function () {
             const id = $(this).data('id');
-            changeState(id);
+            const tipo = $(this).data('tipo');
+            changeState(id, tipo);
         });
 
     });
