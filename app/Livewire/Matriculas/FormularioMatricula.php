@@ -32,6 +32,21 @@ class FormularioMatricula extends Component
     public function mount($estudianteId)
     {
         $this->estudianteId = $estudianteId;
+        $matriculaCompletadaInfo = DB::table("matricula_completada_info")
+            ->select("*")
+            ->where("estudiante_id", $this->estudianteId)
+            ->first();
+        if($matriculaCompletadaInfo){
+            $this->checks = [
+                'contrato' => true,
+                'carta' => true,
+                'pagare' => true,
+                'autorizacion-factura-electronica' => true,
+                'acta' => true,
+            ]; 
+
+            $this->seccionActiva = "contratos";
+        }
 
         
     }
@@ -178,7 +193,13 @@ class FormularioMatricula extends Component
             "ip" => request()->ip()
         ]);
 
-        $this->dispatch("showAlert", ['message' => "Matricula completada", 'type' => "success"]);
+        $estudianteGrado = DB::table("usuario_grado")
+            ->select("grados.grado")
+            ->join("grados", "usuario_grado.grado_id", "grados.id")
+            ->where("usuario_grado.usuario_id", $this->estudianteId)
+            ->first();
+
+        $this->dispatch("showAlert", ['message' => "Matricula completada, el estudiante se inscribio en el grado: " . ucfirst(strtolower($estudianteGrado->grado)), 'type' => "success"]);
         
     }
 
