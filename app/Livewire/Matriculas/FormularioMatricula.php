@@ -193,8 +193,30 @@ class FormularioMatricula extends Component
             "ip" => request()->ip()
         ]);
 
+        $estudianteGrado = DB::table("usuario_grado")
+            ->select("*")
+            ->join("grados", "usuario_grado.grado_id", "grados.id")
+            ->where("usuario_grado.usuario_id", $this->estudianteId)
+            ->first();
 
-        $this->dispatch("showAlert", ['message' => "Matricula completada", 'type' => "success"]);
+        $promovido = DB::table("usuarios_promovidos")
+            ->select("*")
+            ->where("usuarios_promovidos.usuario_id", $this->estudianteId)
+            ->first();
+
+        if($promovido){
+            $gradoActual = $promovido->grado_destino;
+        }
+        else{
+            $gradoActual = $estudianteGrado->grado_id+1;
+        }
+
+        $grado = DB::table("grados")
+            ->select("*")
+            ->where("grados.id", $gradoActual)
+            ->first();
+
+        $this->dispatch("showAlert", ['message' => "Matricula completada, el estudiante se inscribio en el grado: " . $grado->grado, 'type' => "success"]);
         
     }
 
