@@ -13,6 +13,8 @@ use App\Models\Periodo;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\DB;
 use App\Services\getUserDataService;
+use App\Exports\FacturacionExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class informesController extends Controller
 {
@@ -185,5 +187,33 @@ class informesController extends Controller
 
         // 6. Retornar la vista (Total de 5 consultas)
         return $informe;
+    }
+
+    public function informeFacturacionElectronica(){
+        $resultados = $this->getFacturacionQuery()->get();
+        return datatables()->of($resultados)->make(true);
+    }
+
+    private function getFacturacionQuery()
+    {
+        return DB::table('matricula_completada_info as info')
+            ->join('usuario_facturacion as fact', 'fact.estudiante_id', '=', 'info.estudiante_id')
+            ->join('usuarios', 'usuarios.id', '=', 'fact.acudiente_id')
+            ->join('usuarios as estudiantes', 'estudiantes.id', '=', 'fact.estudiante_id')
+            ->join('usuario_grado', 'usuario_grado.usuario_id', '=', 'estudiantes.id')
+            ->join('grados', 'grados.id', '=', DB::raw('(usuario_grado.grado_id)+1'))
+            ->leftJoin('usuario_contacto as contacto', function ($join) {
+                $join->on('contacto.id', '=', DB::raw('(SELECT id FROM usuario_contacto WHERE usuario_id = usuarios.id ORDER BY id ASC LIMIT 1)'));
+            })
+            ->select('info.estudiante_id', 'info.updated_at as fecha_facturacion', 'fact.*', 
+            'usuarios.nombre as nombre_acudiente', 'usuarios.apellido as apellido_acudiente', 'usuarios.nuip as nuip_acudiente',
+            'estudiantes.*', 'usuario_grado.*', 'grados.*', 'contacto.*')
+            ->orderBy('info.estudiante_id');
+    }
+
+    public function exportarFacturacion() 
+    {
+        $query = $this->getFacturacionQuery();
+        return Excel::download(new FacturacionExport($query), 'facturacion_electronica.xlsx');
     }
 }

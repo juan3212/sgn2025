@@ -52,8 +52,11 @@ class boletinesController extends Controller
                 return 'I';
         }
     }
-    public function render($estudianteID)
+    public function render($estudianteID = null)
     {
+        if($estudianteID == null){
+            $estudianteID = Auth::user()->id;
+        }
         $this->estudianteID = $estudianteID; 
         $user = $this->getStudentData();
         $date = $this->getDate();

@@ -48,6 +48,11 @@ new class extends Component {
                         {{ __('Periodos') }}
                     </x-nav-link>
                     @endcan
+                    @role('estudiante')
+                    <x-nav-link :href="route('boletin')" :active="request()->routeIs('boletin')" wire:navigate>
+                        {{ __('Boletines') }}
+                    </x-nav-link>
+                    @endrole
                     @can('administrar materias')
                     <x-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>
                         {{ __('Boletines') }}
@@ -65,6 +70,11 @@ new class extends Component {
                     @can('administrar pagos')
                     <x-nav-link :href="route('gestion-pagos')" :active="request()->routeIs('gestion-pagos')" wire:navigate>
                         {{ __('Pagos') }}
+                    </x-nav-link>
+                    @endcan
+                    @can('administrar facturacion')
+                    <x-nav-link :href="route('informes.facturacion-electronica.data')" :active="request()->routeIs('informes.facturacion-electronica.data')" wire:navigate>
+                        {{ __('Facturacion') }}
                     </x-nav-link>
                     @endcan
                     </div>
@@ -160,6 +170,11 @@ new class extends Component {
             @can('administrar pagos')
                 <x-responsive-nav-link :href="route('gestion-pagos')" :active="request()->routeIs('gestion-pagos')" wire:navigate>
                     {{ __('Pagos') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('administrar facturacion')
+                <x-responsive-nav-link :href="route('informes.facturacion-electronica.data')" :active="request()->routeIs('informes.facturacion-electronica.data')" wire:navigate>
+                    {{ __('Facturacion') }}
                 </x-responsive-nav-link>
             @endcan
         </div>

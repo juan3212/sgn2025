@@ -31,11 +31,11 @@ Route::get("competencias", [
     ->name("competencias");
 
 # boletines
-Route::get("boletin/{estudianteID}", [
+Route::get("boletin/{estudianteID?}", [
     App\Http\Controllers\estudiantes\boletinesController::class,
     "render",
 ])
-    ->middleware(["auth"])
+    ->middleware(["auth", "paymentStatus"])
     ->name("boletin");
 
 Route::view("buscar-boletin", "pages.profesores.buscar-boletin")
@@ -347,6 +347,26 @@ Route::get('informes/generarInforme/{grado}/{grupo}/{materia?}/{tipoInforme?}', 
 ])
     ->middleware(["auth"])
     ->name("informes.generarInforme");
+
+Route::get("informes/facturacion-electronica/export", [
+    App\Http\Controllers\administrador\informesController::class,
+    "exportarFacturacion",
+])
+    ->middleware(["auth"])
+    ->name("informes.facturacion-electronica.export");
+
+Route::get("informes/facturacion-electronica", [
+    App\Http\Controllers\administrador\informesController::class,
+    "informeFacturacionElectronica",
+])
+    ->middleware(["auth"])
+    ->name("informes.facturacion-electronica");
+
+Route::view("informes/facturacion-electronica/data", [
+    "pages.administrador.informe-facturacion-electronica"
+])
+    ->middleware(["auth"])
+    ->name("informes.facturacion-electronica.data");
 
 Route::view("informes", "pages.administrador.informe")
     ->middleware(["auth"])
