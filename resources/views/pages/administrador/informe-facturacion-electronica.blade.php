@@ -11,7 +11,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg p-4">
-                <table class="table" id="facturacion_table" style="width:100%">
+                <table class="table overflow-auto" id="facturacion_table" >
                     <thead>
                         <tr>
                             <th>Fecha</th>
@@ -50,6 +50,7 @@
         $('#facturacion_table').DataTable({
             processing: true,
             serverSide: true,
+            scrollX: true,
             layout: {
                 topStart: {
                     buttons: [
@@ -75,7 +76,7 @@
                 { data: 'nuip', name: 'nuip' },
                 { data: 'nombre_acudiente', name: 'nombre_acudiente' },
                 { data: 'apellido_acudiente', name: 'apellido_acudiente' },
-                { data: 'correo', name: 'correo' },
+                { data: 'email', name: 'email' },
                 { data: 'telefono', name: 'telefono' },
                 { data: 'direccion', name: 'direccion' },
             ],

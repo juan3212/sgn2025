@@ -80,7 +80,7 @@ class FacturacionExport implements FromQuery, WithHeadings, WithMapping, ShouldA
             $row->nombre_acudiente ?? '',
             $row->apellido_acudiente ?? '',
             $row->telefono ?? '', // From contacto likely
-            $row->correo ?? '',   // From contacto likely
+            $row->email ?? '',   // From contacto likely
             $row->direccion ?? '' // From somewhere?
         ];
     }
