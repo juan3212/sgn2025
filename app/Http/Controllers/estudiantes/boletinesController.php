@@ -54,8 +54,12 @@ class boletinesController extends Controller
     }
     public function render($estudianteID = null)
     {
+        $usuarioActual = Auth::user();
         if($estudianteID == null){
-            $estudianteID = Auth::user()->id;
+            $estudianteID = $usuarioActual->id;
+        }
+        if($estudianteID != $usuarioActual->id && !$usuarioActual->hasRole(['administrador', 'profesor', 'Super-Admin'])){
+            return redirect()->route('dashboard-estudiantes');
         }
         $this->estudianteID = $estudianteID; 
         $user = $this->getStudentData();

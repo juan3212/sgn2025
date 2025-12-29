@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\DB;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Modelable;
+use Livewire\Attributes\Validate;
 
 class UploadDocument extends Component
 {
     use WithFileUploads;
     public $estudianteId;
     public $estudianteNuip;
+    #[Validate('required|file|max:10240|mimes:pdf,jpg,jpeg,png')]
     public $documento;
     public $documentoUrl;   
     public $tipoDocumento;
@@ -59,12 +61,14 @@ class UploadDocument extends Component
     #[On("upload-document")]
     public function saveDocumento($data)
     {
+        $this->validate();
         if($this->documento){
             if($data['usuario'] == "acudiente" && $this->usuarioId == $this->estudianteId)
                 {
                     return true;
                 }
             $extension = $this->documento->extension();
+            
             $path = "documentos/estudiantes/".$this->usuarioNuip."/documentos";
             $name = $this->nombreDocumento.".".$extension;
             try{
