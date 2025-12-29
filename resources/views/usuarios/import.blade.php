@@ -20,9 +20,14 @@
                         </div>
 
                         <div class="flex items-center justify-between">
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Importar Usuarios
-                            </button>
+                            <div class="flex items-center space-x-4">
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                    Importar Usuarios
+                                </button>
+                                <a href="{{ route('users.template') }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                    Descargar Plantilla
+                                </a>
+                            </div>
                             <a href="{{ route('usuarios') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
                                 Cancelar
                             </a>

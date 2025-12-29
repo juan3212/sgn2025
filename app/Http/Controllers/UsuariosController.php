@@ -80,6 +80,11 @@ class UsuariosController extends Controller
         return redirect()->route('usuarios')->with('success', 'Usuarios importados correctamente.');
     }
 
+    public function template()
+    {
+        return response()->download(storage_path('app/public/templates/TEMPLATE_IMPORT_ESTUDIANTES_PADRES.xlsx'));
+    }
+
     public function getFilterData()
     {
         $this->grados = Grado::all();
