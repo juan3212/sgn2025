@@ -31,6 +31,7 @@ class FacturacionExport implements FromQuery, WithHeadings, WithMapping, ShouldA
             'NUIP estudiante',
             'Nombre del Contacto',
             'Apellido del Contacto',
+            'NUIP del Contacto',
             'Telefono del Contacto',
             'Correo del Contacto',
             'Direccion'
@@ -79,6 +80,7 @@ class FacturacionExport implements FromQuery, WithHeadings, WithMapping, ShouldA
             $row->nuip ?? '',
             $row->nombre_acudiente ?? '',
             $row->apellido_acudiente ?? '',
+            $row->nuip_acudiente ?? '',
             $row->telefono ?? '', // From contacto likely
             $row->email ?? '',   // From contacto likely
             $row->direccion ?? '' // From somewhere?

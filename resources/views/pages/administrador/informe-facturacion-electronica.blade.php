@@ -21,6 +21,7 @@
                             <th>NUIP estudiante</th>
                             <th>Nombre del Contacto</th>
                             <th>Apellido del Contacto</th>
+                            <th>NUIP del Contacto</th>
                             <th>Telefono del Contacto</th>
                             <th>Correo del Contacto</th>
                             <th>Direccion</th>
@@ -76,6 +77,7 @@
                 { data: 'nuip', name: 'nuip' },
                 { data: 'nombre_acudiente', name: 'nombre_acudiente' },
                 { data: 'apellido_acudiente', name: 'apellido_acudiente' },
+                { data: 'nuip_acudiente', name: 'nuip_acudiente' },
                 { data: 'email', name: 'email' },
                 { data: 'telefono', name: 'telefono' },
                 { data: 'direccion', name: 'direccion' },
