@@ -15,7 +15,7 @@ class FormularioMatricula extends Component
     public $nombre;
     public $apellido;
     public $email;
-    public $secciones = ["estudiante", "acudiente", "servicios", "contratos"];
+    public $secciones = ["estudiante", "acudiente", "contratos"]; //"servicios",
     public $seccionActiva = "estudiante";
     public $basicData;
     public $checks = [
