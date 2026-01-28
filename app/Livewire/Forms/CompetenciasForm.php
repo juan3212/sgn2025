@@ -77,22 +77,19 @@ class CompetenciasForm extends Component
 
             DB::commit();
 
-            // Limpiar el formulario
             $this->reset();
+            $this->dispatch('actividad-competencia-guardada');
 
-            // Mostrar mensaje de éxito
             session()->flash('message', 'Competencia creada exitosamente.');
         } catch (\Exception $e) {
             DB::rollBack();
             dd($e);
             session()->flash('error', 'Ocurrió un error al crear la competencia. Por favor, intenta nuevamente.');
-           // \Log::error('Error al crear competencia: ' . $e->getMessage());
         }
     }
 
     public function render()
     {
-        //dd($this->teacher_id);
         
         $this->periodos = $this->competenciaService->getPeriodo();
         return view('livewire.forms.competencias-form');

@@ -176,7 +176,7 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts, Wit
 
     public function chunkSize(): int
     {
-        return 500; // Reducimos un poco el chunk porque ahora procesamos más datos por fila
+        return 500;
     }
 
     public function batchSize(): int

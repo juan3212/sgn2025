@@ -4,10 +4,25 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Services\getUserDataService;
 use App\Models\NotaFinalMateria;
+use Illuminate\Support\Facades\Session;
 
 Route::get("/", [App\Http\Controllers\MateriasController::class, "render"])
     ->middleware(["auth", "verified", "paymentStatus"])
     ->name("home");
+
+#crear nuevo ciclo y promover estudiantes
+Route::post("crear-ciclo", [App\Http\Controllers\administrador\SistemaController::class, "crearNuevoCiclo"])
+    ->middleware(["auth", "verified", "role:Super-Admin"])
+    ->name("crear.ciclo");
+
+#cambiar año escolar
+Route::get("change-year/{year}", function ($year) {
+    $year = intval($year);
+    session()->put("school_year", $year);
+    return redirect()->back()->with("success", "Año escolar cambiado correctamente a $year");
+})
+    ->middleware(["auth", "verified", "permission:administracion general"])
+    ->name("change-year");
 
 Route::get("dashboard", [
     App\Http\Controllers\MateriasController::class,
@@ -107,6 +122,13 @@ Route::get("notas-estudiantes", [
 ])
     ->middleware(["auth"])
     ->name("notas-estudiantes");
+
+#notas completas por materia y periodo para profesores
+Route::get("calificaciones/{materia_id}/{periodo_id}", function ($materia_id, $periodo_id) {
+    return view("pages.profesores.administrar-notas", ["materiaId" => $materia_id, "periodoId" => $periodo_id]);
+})
+    ->middleware(["auth"])
+    ->name("calificaciones");
 
 #actividades
 Route::get("actividades/data", [
@@ -256,6 +278,12 @@ Route::post("bulk-delete", [
 #rutas Prueba
 Route::view("prueba", "pruebas")->name("prueba");
 
+
+# Dashboard Administrador
+Route::view("dashboard-administrador", "pages.administrador.dashboard")
+    ->middleware(["auth", "permission:administracion general"])
+    ->name("dashboard-administrador");
+
 #rutas Gestion Roles y Permisos
 Route::get("gestion-roles/data", [
     App\Http\Controllers\administrador\RolesyPermisosController::class,
@@ -340,6 +368,13 @@ Route::post("usuarios/import", [
 ])
     ->middleware(["auth", "permission:administrar usuarios"])
     ->name("users.import");
+
+Route::post("usuarios/import-teachers", [
+    App\Http\Controllers\UsuariosController::class,
+    "importTeachers",
+])
+    ->middleware(["auth", "permission:administrar usuarios"])
+    ->name("users.import.teachers");
 
 # rutas para template de importacion de usuarios
 Route::get("users/template", [

@@ -7,6 +7,7 @@ use App\Models\Usuario;
 use Yajra\DataTables\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\UsersImport;
+use App\Imports\UsersImportTeachers;
 use App\Models\Grado;
 use App\Models\Grupo;
 use Spatie\Permission\Models\Role;
@@ -78,6 +79,19 @@ class UsuariosController extends Controller
         Excel::import(new UsersImport, $request->file('file'));
 
         return redirect()->route('usuarios')->with('success', 'Usuarios importados correctamente.');
+    }
+
+    public function importTeachers(Request $request)
+    {
+        set_time_limit(300);
+        ini_set('memory_limit', '512M');
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv'
+        ]);
+
+        Excel::import(new UsersImportTeachers, $request->file('file'));
+
+       // return redirect()->route('usuarios')->with('success', 'Usuarios importados correctamente.');
     }
 
     public function template()

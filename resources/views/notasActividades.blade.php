@@ -1,38 +1,6 @@
 <x-app-layout>
 
-    <style>
-             .editable-cell {
-                display: block;
-                width: 100%;
-                height: 100%;
-                padding: 5px;
-                text-align: center;
-            }
-            td {
-                padding: 0px 5px 0px 5px !important;
-                border: 1px solid #ccc;
-            }
-            .outRange {
-                background-color: #DB4040;
-                font-weight: bold;
-                color: white; /* Para asegurar que el texto sea legible */
-            }
-
-            .loader {
-                border: 6px solid #f3f3f3;
-                border-top: 6px solid #3498db;
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                animation: spin 1s linear infinite;
-            }
-
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/notas.css') }}">
 
 
     <x-slot name="header">

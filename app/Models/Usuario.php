@@ -95,4 +95,8 @@ class Usuario extends Authenticatable
     {
         return $this->hasOne(UsuarioBLoqueado::class, 'usuario_id');
     }
+    public function notasMateria()
+    {
+        return $this->hasMany(NotaFinalMateria::class, 'estudiante_id', 'id');
+    }
 }

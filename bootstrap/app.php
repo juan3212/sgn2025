@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'paymentStatus' => \App\Http\Middleware\PaymentStatus::class,
         ]);
+        $middleware->web(append: [\App\Http\Middleware\SetDatabaseConnection::class]);
       
 
     })

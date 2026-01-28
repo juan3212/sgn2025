@@ -81,7 +81,12 @@ class Boletin extends Component
     {
         $periodo = Periodo::where('fecha_fin', '>', now())
         ->first();
-        $this->periodoId = $periodo->id - 1;
+        $year = session()->get('school_year');
+        if($year != date("Y")){
+            $this->periodoId = 4;
+        }else{
+            $this->periodoId = $periodo->id - 1;
+        }
         if(date("n") >= "11"){
             $this->periodoId = $periodo->id;
         }

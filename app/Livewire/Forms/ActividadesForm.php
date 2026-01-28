@@ -7,6 +7,7 @@ use App\Models\TipoNota;
 use App\Models\MateriaHasCompetencia;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use App\Models\Competencia;
 
 class ActividadesForm extends Component
 {
@@ -20,19 +21,26 @@ class ActividadesForm extends Component
     public $materias = []; //materias con competencia
     public $periodo;
     public $competencia;
+    public $competencias;
     public $actividadesForAllCheck = false;
 
     public function mount($id = null, $materia = null, $periodo = null, $competencia = null)
     {
+        
         $this->actividadId = $id;
         $this->tipo = TipoNota::all();
 
         if ($id) {
             $this->loadActividad();
-        } else {
+        } elseif ($competencia) {
             $this->materia = $materia;
             $this->periodo = $periodo;
             $this->competencia = $competencia;
+        } else{
+            $this->materia = $materia;
+            $this->periodo = $periodo;
+            $this->loadCompetencias();
+
         }
     }
 
@@ -49,6 +57,14 @@ class ActividadesForm extends Component
         }
 
         return $rules;
+    }
+
+    protected function loadCompetencias()
+    {
+        $this->competencias = Competencia::join('materia_has_competencia', 'competencias.id', '=', 'materia_has_competencia.competencia_id')
+        ->where('periodo_id', $this->periodo)
+        ->where('materia_id', $this->materia)
+        ->get();
     }
 
     public function updatedActividadesForAllCheck()
@@ -132,6 +148,8 @@ class ActividadesForm extends Component
             $this->reset('nombre', 'descripcion', 'tipoSelected');
             session()->flash('message', 'Actividad guardada exitosamente.');
         }
+
+        $this->dispatch('actividad-competencia-guardada');
     }
 
     public function previousPage()

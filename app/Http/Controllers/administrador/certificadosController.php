@@ -120,8 +120,13 @@ class certificadosController extends Controller
     public function Periodos()
     {
         $periodo = Periodo::where('fecha_fin', '>', now())
-        ->first();
-        $this->periodoId = $periodo->id - 1;
+            ->first();
+        $year = session()->get('school_year');
+        if($year != date('Y') ){
+            $this->periodoId = 4;
+        }else{
+            $this->periodoId = $periodo->id -1;
+        }
         if(date("n") >= "11"){
             $this->periodoId = $periodo->id;
         }
@@ -273,11 +278,13 @@ class certificadosController extends Controller
 
     public function render($usuarioId){
         $fechaActual = $this->date();
+        $year = session()->get('school_year');
         $this->start($usuarioId);
         $estudiante = $this->estudiante($usuarioId);
 
         return view('pages.administrador.certificados', [
             'fechaActual' => $fechaActual,
+            'year' => $year,
             'groupedMaterias' => $this->groupedMaterias,
             'estudiante' => $estudiante
         ]);

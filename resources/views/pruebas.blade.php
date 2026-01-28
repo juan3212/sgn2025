@@ -1,3 +1,4 @@
 <x-app-layout>
-    <livewire:matriculas.formulario-matricula :estudianteId="1062" />
+    <link rel="stylesheet" href="{{ asset('css/notas.css') }}">
+    <livewire:pages.profesores.notas-periodo :periodoId="4" :materiaId="199" />
 </x-app-layout>

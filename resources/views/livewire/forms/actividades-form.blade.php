@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+<div class="flex flex-col items-center justify-center min-h-[100%] bg-gray-100 p-4">
     <div class="flex justify-start align-end items-end w-full mt-4 max-w-md">
         <a wire:click="previousPage" class="flex justify-start items-end mb-4 underline text-black hover:cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
@@ -26,6 +26,20 @@
 
                 
         <form wire:submit.prevent="submit" class="space-y-4">
+
+            @if($competencias->count() > 0)
+                <div class="flex flex-col">
+                    <select wire:model="competencia" class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Seleccione una competencia</option>
+                        @foreach ($competencias as $competencia)
+                            <option value="{{ $competencia->id }}">
+                                {{ $competencia->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
+
             <div class="flex flex-col">
                 <label for="nombre" class="text-gray-700 font-medium mb-1">Nombre:</label>
                 <input type="text" wire:model="nombre" class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">

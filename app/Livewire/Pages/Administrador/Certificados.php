@@ -80,7 +80,6 @@ class Certificados extends Component
         if (!$periodo) {
             return []; 
         }
-
         $periodoId = $periodo->id - 1;
         // Ajuste manual de fechas según tu lógica
         if(date("j-n") >= "19-11"){

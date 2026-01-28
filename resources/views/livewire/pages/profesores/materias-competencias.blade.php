@@ -170,8 +170,12 @@
                                 @endforeach
                         </select>
                     </div>
-
                 </div>
+                @can('administrar competencias')
+                <div class="flex flex-col min-w-full mt-4">
+                    <button id="calificaciones-button" class="rounded-lg min-h-12 bg-cyan-500 hover:bg-cyan-600 font-semibold text-white min-w-full">Calificaciones</button>
+                </div>
+                @endcan
             </div>
         </div>
 
@@ -459,6 +463,12 @@
                     if (data && data.id && periodo) {
                         window.location.href = '/actividades/{{ $materia->id }}/'+ periodo +'/' + data.id;
                     }
+                });
+
+                //redirigir a notas generales
+                $('#calificaciones-button').on('click', function(){
+                    var periodo = $('#periodo').val();
+                    window.location.href = '/calificaciones/{{ $materia->id }}/'+ periodo;
                 });
                 
                 // Manejar cambios de tamaño de ventana

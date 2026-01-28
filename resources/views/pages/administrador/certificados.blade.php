@@ -1,4 +1,6 @@
-
+@php
+  $materiasPerdidas = 0;
+@endphp
    <style>
 
 @font-face {
@@ -196,7 +198,7 @@ body {
             <p>Res. No. 14-023 del 23 de septiembre de 2014</p>
             <p>Res. No. 14-032 del 25 de octubre de 2011</p>
             <p>DANE. 311001041423</p>
-            <h1 id="titulo">CERTIFICADO ESCOLAR DE VALORACIÓN AÑO {{ $fechaActual['anio'] }}</h1>
+            <h1 id="titulo">CERTIFICADO ESCOLAR DE VALORACIÓN AÑO {{ $year }}</h1>
             <h2>Los suscritos <br> RECTORA Y SECRETARIO ACADÉMICO</h2>
             <h2>CERTIFICAN</h2>
         </header>
@@ -209,7 +211,7 @@ body {
                         identificado con NUIP N° <strong>{{ $estudiante->nuip ?? $estudiante->usuario }}</strong>
                         cursó y aprobó los logros previstos en el Plan de Estudios correspondientes al grado 
                         <strong>{{ strtoupper($estudiante->grados[0]->grado ?? 'N/A') }}</strong>,
-                        durante el año lectivo <strong>{{ $fechaActual['anio'] }}</strong>, en concordancia con los fines y objetivos de la 
+                        durante el año lectivo <strong>{{ $year }}</strong>, en concordancia con los fines y objetivos de la 
                         Ley General de Educación 115 de 1994, el Decreto 1860 de Agosto 3 de 1994 y los criterios de Evaluación y 
                         Promoción de la Institución, con las valoraciones e intensidad horaria que se relacionan a continuación:
                     </p>
@@ -244,8 +246,9 @@ body {
                                     
                                     
                                     <td style="font-weight: bold; text-align: center;">{{ number_format($materia['promedio'], 1) }}</td>
-                                    
-                                    {{-- Desempeño (Calculado arriba) --}}
+                                    @php
+                                    if($materia['promedio'] < 6) $materiasPerdidas++;
+                                    @endphp
                                     <td style="text-align: center;">{{ getDesempeno($materia['promedio']) }}</td>
                                 </tr>
                             @endforeach
@@ -268,6 +271,8 @@ body {
                         
                         @if($esOnce)
                             EL ESTUDIANTE SE ENCUENTRA GRADUADO COMO BACHILLER BILINGÜE ACADÉMICO CON ÉNFASIS ARTÍSTICO.
+                        @elseif($materiasPerdidas > 0)
+                            EL ESTUDIANTE NO SE PROMUEVE AL SIGUIENTE GRADO.
                         @else
                             EL ESTUDIANTE SE PROMUEVE AL SIGUIENTE GRADO.
                         @endif

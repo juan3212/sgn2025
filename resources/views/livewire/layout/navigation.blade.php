@@ -30,6 +30,11 @@ new class extends Component {
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    @can('administracion general')
+                    <x-nav-link :href="route('dashboard-administrador')" :active="request()->routeIs('dashboard-administrador')" wire:navigate>
+                        {{ __('Dashboard') }}
+                    </x-nav-link>
+                    @endcan
                     @can('administrar usuarios')
                     <x-nav-link :href="route('usuarios')" :active="request()->routeIs('usuarios')" wire:navigate>
                         {{ __('Usuarios') }}
@@ -41,11 +46,6 @@ new class extends Component {
                     @can('administrar competencias')
                     <x-nav-link :href="route('competencias')" :active="request()->routeIs('competencias')" wire:navigate>
                         {{ __('Competencias') }}
-                    </x-nav-link>
-                    @endcan
-                    @can('administrar periodos')
-                    <x-nav-link :href="route('periodos')" :active="request()->routeIs('periodos')" wire:navigate>
-                        {{ __('Periodos') }}
                     </x-nav-link>
                     @endcan
                     @role('estudiante')
@@ -62,25 +62,36 @@ new class extends Component {
                         {{ __('Informes') }}
                     </x-nav-link>
                     @endcan
-                    @can('administrar roles')
-                    <x-nav-link :href="route('gestion-roles')" :active="request()->routeIs('gestion-roles')" wire:navigate>
-                        {{ __('Roles') }}
-                    </x-nav-link>
-                    @endcan
-                    @can('administrar pagos')
-                    <x-nav-link :href="route('gestion-pagos')" :active="request()->routeIs('gestion-pagos')" wire:navigate>
-                        {{ __('Pagos') }}
-                    </x-nav-link>
-                    @endcan
-                    @can('administrar facturacion')
-                    <x-nav-link :href="route('informes.facturacion-electronica.data')" :active="request()->routeIs('informes.facturacion-electronica.data')" wire:navigate>
-                        {{ __('Facturacion') }}
-                    </x-nav-link>
-                    @endcan
                     </div>
 
             </div>
-            
+
+
+            @can('administracion general')
+            <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <x-dropdown align="right" width="48">
+                    <x-slot name="trigger">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition ease-in-out duration-150">
+                            <div>Ciclo: {{ session('school_year', '2026') }}</div>
+                            <div class="ms-1">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </button>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <x-dropdown-link :href="route('change-year', '2026')">
+                            {{ __('2026 (Actual)') }}
+                        </x-dropdown-link>
+                        <x-dropdown-link :href="route('change-year', '2025')">
+                            {{ __('2025 (Histórico)') }}
+                        </x-dropdown-link>
+                    </x-slot>
+                </x-dropdown>
+            </div>
+            @endcan
 
             <!-- User Name and Settings Dropdown for Desktop -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 ">
@@ -136,9 +147,14 @@ new class extends Component {
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         
         <div class="pt-2 pb-3 space-y-1 @role('estudiante') hidden @endrole">
+            @can('administracion general')
+            <x-responsive-nav-link :href="route('dashboard-administrador')" :active="request()->routeIs('dashboard-administrador')" wire:navigate>
+                {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            @endcan
             @can('administrar usuarios')
             <x-responsive-nav-link :href="route('usuarios')" :active="request()->routeIs('usuarios')" wire:navigate>
-                {{ __('Dashboard') }}
+                {{ __('Usuarios') }}
             </x-responsive-nav-link>
             @endcan
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
@@ -149,11 +165,6 @@ new class extends Component {
                 {{ __('Competencias') }}
             </x-responsive-nav-link>
             @endcan
-            @can('administrar periodos')
-            <x-responsive-nav-link :href="route('periodos')" :active="request()->routeIs('periodos')" wire:navigate>
-                {{ __('Periodos') }}
-            </x-responsive-nav-link>
-            @endcan
             @can('administrar materias')
                 <x-responsive-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>
                     {{ __('Boletines') }}
@@ -162,21 +173,7 @@ new class extends Component {
                     {{ __('Informes') }}
                 </x-responsive-nav-link>
             @endcan
-            @can('administrar roles')
-                <x-responsive-nav-link :href="route('gestion-roles')" :active="request()->routeIs('gestion-roles')" wire:navigate>
-                    {{ __('Roles') }}
-                </x-responsive-nav-link>
-            @endcan
-            @can('administrar pagos')
-                <x-responsive-nav-link :href="route('gestion-pagos')" :active="request()->routeIs('gestion-pagos')" wire:navigate>
-                    {{ __('Pagos') }}
-                </x-responsive-nav-link>
-            @endcan
-            @can('administrar facturacion')
-                <x-responsive-nav-link :href="route('informes.facturacion-electronica.data')" :active="request()->routeIs('informes.facturacion-electronica.data')" wire:navigate>
-                    {{ __('Facturacion') }}
-                </x-responsive-nav-link>
-            @endcan
+            
         </div>
     
         <!-- Responsive Settings Options -->
