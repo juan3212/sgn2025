@@ -7,7 +7,7 @@ use App\Models\NotaFinalMateria;
 use Illuminate\Support\Facades\Session;
 
 Route::get("/", [App\Http\Controllers\MateriasController::class, "render"])
-    ->middleware(["auth", "verified", "paymentStatus"])
+    ->middleware(["auth", "paymentStatus"])
     ->name("home");
 
 #crear nuevo ciclo y promover estudiantes
