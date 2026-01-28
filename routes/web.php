@@ -28,7 +28,7 @@ Route::get("dashboard", [
     App\Http\Controllers\MateriasController::class,
     "render",
 ])
-    ->middleware(["auth", "verified", "paymentStatus"])
+    ->middleware(["auth", "paymentStatus"])
     ->name("dashboard");
 
 Route::get("usuarios", [

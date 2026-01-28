@@ -38,7 +38,7 @@ class MateriasController extends Controller
         $this->user = $user; // Almacenar el objeto usuario para usos potenciales
         $this->isAdmin = $user->hasRole('Super-Admin');
         $this->isTeacher = $user->hasRole('profesor');
-
+        
         if (!$this->isAdmin) {
             // Para usuarios no administradores, cargar su grado y grupo específicos
             $userData = Usuario::with('grados', 'grupos')->find($user->id);

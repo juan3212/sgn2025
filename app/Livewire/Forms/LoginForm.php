@@ -52,7 +52,7 @@ class LoginForm extends Form
                 'form.nuip' => trans('auth.failed'),
             ]);
         }
-
+        
         if (! $paymentService->canAccess(Auth::user())) {
             
             Auth::logout(); // Cerramos sesión inmediatamente

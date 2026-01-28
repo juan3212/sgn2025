@@ -21,7 +21,14 @@ class SetDatabaseConnection
     public function handle(Request $request, Closure $next): Response
     {
         // 1. Obtener el año deseado (Por defecto el actual + 1 si estamos a fin de año, o manual)
-        $defaultYear = date('Y'); // O 2026
+        // Intentamos obtener el año de la base de datos configurada en el .env
+        $defaultDatabase = env('DB_DATABASE', 'sgn' . date('Y'));
+        $defaultYear = date('Y');
+        
+        if (preg_match('/sgn(\d{4})/', $defaultDatabase, $matches)) {
+            $defaultYear = $matches[1];
+        }
+
         $anio = session()->get('school_year', $defaultYear);
        
        

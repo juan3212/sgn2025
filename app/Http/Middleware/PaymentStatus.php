@@ -28,10 +28,13 @@ class PaymentStatus
         }
 
         $user = Auth::user();
+        if ($user->hasRole(['profesor', 'administrador', 'Super-Admin', 'docente'])) {
+            return $next($request);
+        }
 
         // 1. Usamos el servicio para ver si DEBE ser expulsado
         if (! $this->paymentService->canAccess($user)) {
-            Auth::logout();
+             Auth::logout();
             return redirect()->route('home')->with('error', 'Regularice sus pagos.');
         }
 
