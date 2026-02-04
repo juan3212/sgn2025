@@ -11,7 +11,10 @@ Route::get("/", [App\Http\Controllers\MateriasController::class, "render"])
     ->name("home");
 
 #crear nuevo ciclo y promover estudiantes
-Route::post("crear-ciclo", [App\Http\Controllers\administrador\SistemaController::class, "crearNuevoCiclo"])
+Route::post("crear-ciclo", [
+    App\Http\Controllers\administrador\SistemaController::class,
+    "crearNuevoCiclo",
+])
     ->middleware(["auth", "verified", "role:Super-Admin"])
     ->name("crear.ciclo");
 
@@ -19,7 +22,9 @@ Route::post("crear-ciclo", [App\Http\Controllers\administrador\SistemaController
 Route::get("change-year/{year}", function ($year) {
     $year = intval($year);
     session()->put("school_year", $year);
-    return redirect()->back()->with("success", "Año escolar cambiado correctamente a $year");
+    return redirect()
+        ->back()
+        ->with("success", "Año escolar cambiado correctamente a $year");
 })
     ->middleware(["auth", "verified", "permission:administracion general"])
     ->name("change-year");
@@ -124,8 +129,14 @@ Route::get("notas-estudiantes", [
     ->name("notas-estudiantes");
 
 #notas completas por materia y periodo para profesores
-Route::get("calificaciones/{materia_id}/{periodo_id}", function ($materia_id, $periodo_id) {
-    return view("pages.profesores.administrar-notas", ["materiaId" => $materia_id, "periodoId" => $periodo_id]);
+Route::get("calificaciones/{materia_id}/{periodo_id}", function (
+    $materia_id,
+    $periodo_id,
+) {
+    return view("pages.profesores.administrar-notas", [
+        "materiaId" => $materia_id,
+        "periodoId" => $periodo_id,
+    ]);
 })
     ->middleware(["auth"])
     ->name("calificaciones");
@@ -278,7 +289,6 @@ Route::post("bulk-delete", [
 #rutas Prueba
 Route::view("prueba", "pruebas")->name("prueba");
 
-
 # Dashboard Administrador
 Route::view("dashboard-administrador", "pages.administrador.dashboard")
     ->middleware(["auth", "permission:administracion general"])
@@ -376,6 +386,13 @@ Route::post("usuarios/import-teachers", [
     ->middleware(["auth", "permission:administrar usuarios"])
     ->name("users.import.teachers");
 
+Route::post("usuarios/import-grades", [
+    App\Http\Controllers\UsuariosController::class,
+    "importGrades",
+])
+    ->middleware(["auth", "permission:administrar usuarios"])
+    ->name("users.import.grades");
+
 # rutas para template de importacion de usuarios
 Route::get("users/template", [
     App\Http\Controllers\UsuariosController::class,
@@ -384,10 +401,13 @@ Route::get("users/template", [
     ->middleware(["auth", "permission:administrar usuarios"])
     ->name("users.template");
 
-Route::get('informes/generarInforme/{grado}/{grupo}/{materia?}/{tipoInforme?}', [
-    App\Http\Controllers\administrador\informesController::class,
-    "generarInforme",
-])
+Route::get(
+    "informes/generarInforme/{grado}/{grupo}/{materia?}/{tipoInforme?}",
+    [
+        App\Http\Controllers\administrador\informesController::class,
+        "generarInforme",
+    ],
+)
     ->middleware(["auth"])
     ->name("informes.generarInforme");
 
@@ -406,7 +426,7 @@ Route::get("informes/facturacion-electronica", [
     ->name("informes.facturacion-electronica");
 
 Route::view("informes/facturacion-electronica/data", [
-    "pages.administrador.informe-facturacion-electronica"
+    "pages.administrador.informe-facturacion-electronica",
 ])
     ->middleware(["auth"])
     ->name("informes.facturacion-electronica.data");
@@ -415,30 +435,32 @@ Route::view("informes", "pages.administrador.informe")
     ->middleware(["auth"])
     ->name("informes");
 
-
-Route::view("dashboard-estudiantes/{estudianteId?}", "pages.estudiantes.dashboard-estudiantes")
+Route::view(
+    "dashboard-estudiantes/{estudianteId?}",
+    "pages.estudiantes.dashboard-estudiantes",
+)
     ->middleware(["auth"])
     ->name("dashboard-estudiantes");
 
 Route::get("matricula/{estudianteId?}", function ($estudianteId = null) {
     $usuario = request()->user();
-    if($usuario->hasRole("estudiante")){
+    if ($usuario->hasRole("estudiante")) {
         $estudianteId = $usuario->id;
-    }else{
+    } else {
         $estudianteId = $estudianteId;
     }
 
     return view("pages.estudiantes.matriculas", compact("estudianteId"));
 })
-    ->middleware(["auth","paymentStatus"])
+    ->middleware(["auth", "paymentStatus"])
     ->name("matricula");
-Route::get('documento/{path}/{ver}', [
+Route::get("documento/{path}/{ver}", [
     App\Http\Controllers\archivos\MostrarArchivosController::class,
     "mostrar",
 ])
     ->middleware(["auth"])
     ->name("documentos.show")
-    ->where('path', '.*');
+    ->where("path", ".*");
 
 Route::get("certificados/{usuarioId}", [
     App\Http\Controllers\administrador\certificadosController::class,
@@ -447,10 +469,9 @@ Route::get("certificados/{usuarioId}", [
     ->middleware(["auth"])
     ->name("certificados");
 
-
-Route::get('/documentos/ver/{tipo}/{estudianteId}', [
+Route::get("/documentos/ver/{tipo}/{estudianteId}", [
     App\Http\Controllers\Matriculas\MostrarContratosController::class,
     "mostrar",
-])->name('documentos.ver');
+])->name("documentos.ver");
 
 require __DIR__ . "/auth.php";

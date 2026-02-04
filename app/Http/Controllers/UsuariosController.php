@@ -8,10 +8,10 @@ use Yajra\DataTables\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\UsersImport;
 use App\Imports\UsersImportTeachers;
+use App\Imports\ChangeGradeImport;
 use App\Models\Grado;
 use App\Models\Grupo;
 use Spatie\Permission\Models\Role;
-
 
 class UsuariosController extends Controller
 {
@@ -21,82 +21,129 @@ class UsuariosController extends Controller
     public $grupos;
     public $roles;
 
-    public function getUserData(){
-        $usersQuery = Usuario::select('usuarios.id as id', 'usuarios.nombre as nombre', 'usuarios.apellido as apellido', 'usuarios.nuip as nuip', 'usuarios.correo as correo', 'grados.grado as grado', 'grupos.grupo as grupo', 'roles.name as role')
-        ->leftjoin('usuario_grado', 'usuario_grado.usuario_id', '=', 'usuarios.id')
-        ->leftjoin('grados', 'grados.id', '=', 'usuario_grado.grado_id')
-        ->leftjoin('grupos', 'grupos.id', '=', 'usuario_grado.grupo_id')
-        ->leftjoin('model_has_roles', 'model_has_roles.model_id', '=', 'usuarios.id')
-        ->leftjoin('roles', 'roles.id', '=', 'model_has_roles.role_id');
-  
+    public function getUserData()
+    {
+        $usersQuery = Usuario::select(
+            "usuarios.id as id",
+            "usuarios.nombre as nombre",
+            "usuarios.apellido as apellido",
+            "usuarios.nuip as nuip",
+            "usuarios.correo as correo",
+            "grados.grado as grado",
+            "grupos.grupo as grupo",
+            "roles.name as role",
+        )
+            ->leftjoin(
+                "usuario_grado",
+                "usuario_grado.usuario_id",
+                "=",
+                "usuarios.id",
+            )
+            ->leftjoin("grados", "grados.id", "=", "usuario_grado.grado_id")
+            ->leftjoin("grupos", "grupos.id", "=", "usuario_grado.grupo_id")
+            ->leftjoin(
+                "model_has_roles",
+                "model_has_roles.model_id",
+                "=",
+                "usuarios.id",
+            )
+            ->leftjoin("roles", "roles.id", "=", "model_has_roles.role_id");
+
         return $usersQuery;
     }
-    
-    public function userData(Request $request){
 
+    public function userData(Request $request)
+    {
         $usuarios = $this->getUserData();
-        if($request->grado){
-            $usuarios = $usuarios->where('grados.id', $request->grado);
+        if ($request->grado) {
+            $usuarios = $usuarios->where("grados.id", $request->grado);
         }
-        if($request->grupo){
-            $usuarios = $usuarios->where('grupos.id', $request->grupo);
+        if ($request->grupo) {
+            $usuarios = $usuarios->where("grupos.id", $request->grupo);
         }
-        if($request->role){
-            $usuarios = $usuarios->where('roles.id', $request->role);
+        if ($request->role) {
+            $usuarios = $usuarios->where("roles.id", $request->role);
         }
         $datatables = new DataTables();
-        return $datatables->eloquent($usuarios)
-            ->addColumn('checkbox', function($usuario){
-                return '<input type="checkbox" class="select-checkbox form-checkbox h-5 w-5 text-blue-600" data-id="' . $usuario->id . '">';
+        return $datatables
+            ->eloquent($usuarios)
+            ->addColumn("checkbox", function ($usuario) {
+                return '<input type="checkbox" class="select-checkbox form-checkbox h-5 w-5 text-blue-600" data-id="' .
+                    $usuario->id .
+                    '">';
             })
-            ->addColumn('action', function($usuario){
+            ->addColumn("action", function ($usuario) {
                 return '<a href="#" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> Edit</a>
-                        <a href="#" class="btn btn-xs btn-danger delete" data-id="' . $usuario->id . '"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
+                        <a href="#" class="btn btn-xs btn-danger delete" data-id="' .
+                    $usuario->id .
+                    '"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
             })
-            ->rawColumns(['action', 'checkbox'])
+            ->rawColumns(["action", "checkbox"])
             ->toJson();
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         $usuario = Usuario::find($id);
         $usuario->delete();
-        return redirect()->route('dashboard');
+        return redirect()->route("dashboard");
     }
 
     public function importForm()
     {
-        return view('usuarios.import');
+        return view("usuarios.import");
     }
 
     public function import(Request $request)
     {
         set_time_limit(300); // Aumenta el limite a 5 minutos
-        ini_set('memory_limit', '512M');
+        ini_set("memory_limit", "512M");
         $request->validate([
-            'file' => 'required|mimes:xlsx,csv'
+            "file" => "required|mimes:xlsx,csv",
         ]);
 
-        Excel::import(new UsersImport, $request->file('file'));
+        Excel::import(new UsersImport(), $request->file("file"));
 
-        return redirect()->route('usuarios')->with('success', 'Usuarios importados correctamente.');
+        return redirect()
+            ->route("usuarios")
+            ->with("success", "Usuarios importados correctamente.");
     }
 
     public function importTeachers(Request $request)
     {
         set_time_limit(300);
-        ini_set('memory_limit', '512M');
+        ini_set("memory_limit", "512M");
         $request->validate([
-            'file' => 'required|mimes:xlsx,csv'
+            "file" => "required|mimes:xlsx,csv",
         ]);
 
-        Excel::import(new UsersImportTeachers, $request->file('file'));
+        Excel::import(new UsersImportTeachers(), $request->file("file"));
 
-       // return redirect()->route('usuarios')->with('success', 'Usuarios importados correctamente.');
+        // return redirect()->route('usuarios')->with('success', 'Usuarios importados correctamente.');
+    }
+
+    public function importGrades(Request $request)
+    {
+        set_time_limit(300);
+        ini_set("memory_limit", "512M");
+        $request->validate([
+            "file" => "required|mimes:xlsx,csv",
+        ]);
+
+        Excel::import(new ChangeGradeImport(), $request->file("file"));
+
+        return redirect()
+            ->route("usuarios")
+            ->with("success", "Usuarios importados correctamente.");
     }
 
     public function template()
     {
-        return response()->download(storage_path('app/public/templates/TEMPLATE_IMPORT_ESTUDIANTES_PADRES.xlsx'));
+        return response()->download(
+            storage_path(
+                "app/public/templates/TEMPLATE_IMPORT_ESTUDIANTES_PADRES.xlsx",
+            ),
+        );
     }
 
     public function getFilterData()
@@ -106,12 +153,13 @@ class UsuariosController extends Controller
         $this->roles = Role::all();
     }
 
-    public function render(){
+    public function render()
+    {
         $this->getFilterData();
-        return view('usuarios', [
-            'grados' => $this->grados,
-            'grupos' => $this->grupos,
-            'roles' => $this->roles
+        return view("usuarios", [
+            "grados" => $this->grados,
+            "grupos" => $this->grupos,
+            "roles" => $this->roles,
         ]);
     }
 }

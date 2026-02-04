@@ -1,0 +1,1 @@
+<?php echo ALIVE_CHECK_SUCCESS; ?>
