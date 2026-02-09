@@ -22,7 +22,7 @@
                 <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-white rounded-t-lg">
                     <div class="grid grid-cols-1 w-full sm:flex-row sm:items-center sm:justify-between">
                         <div class="grid w-full gap-2 h-full">
-                            <a href="{{ route('notas-actividades', ['materia_id' => $materia, 'competencia_id' => $competencia]) }}" class="btn btn-success shadow-md rounded-lg">Notas</a>
+                            <a href="{{ route('notas-actividades', ['materia_id' => $materia, 'competencia_id' => $competencia]) }}" class="btn btn-success shadow-md rounded-lg @if($actividades == 0) disabled @endif">Notas</a>
                         </div>
                     </div>
                 </div>

@@ -27,7 +27,7 @@
                 
         <form wire:submit.prevent="submit" class="space-y-4">
 
-            @if($competencias->count() > 0)
+            @if($competencias && $competencias->count() > 0)
                 <div class="flex flex-col">
                     <select wire:model="competencia" class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Seleccione una competencia</option>

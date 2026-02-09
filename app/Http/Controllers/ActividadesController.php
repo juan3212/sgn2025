@@ -36,6 +36,15 @@ class ActividadesController extends Controller
         return $nombreMateria;
     }
 
+    public function getActividades($materia, $periodo, $competencia)
+    {
+        $actividades = Actividad::where('materia_id', $materia)
+            ->where('periodo_id', $periodo)
+            ->where('competencia_id', $competencia)
+            ->count();
+        return $actividades;
+    }
+
     public function  getUserData()
     {
         $user = Auth::user();
@@ -83,11 +92,13 @@ class ActividadesController extends Controller
     public function render($materia, $periodo, $competencia)
     {
         $nombreMateria = $this->getMateria($materia);
+        $actividades = $this->getActividades($materia, $periodo, $competencia);
         return view('actividades', [
             'nombreMateria' => $nombreMateria, 
             'materia' => $materia, 
             'periodo' => $periodo, 
-            'competencia' => $competencia
+            'competencia' => $competencia,
+            'actividades' => $actividades
         ]);   
     }
     
