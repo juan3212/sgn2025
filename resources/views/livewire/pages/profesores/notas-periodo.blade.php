@@ -3,10 +3,10 @@
     <div x-data="{ open: false, competenciaForm: false }">
 
         <div x-show="open"
-            class="fixed h-screen inset-0 z-50 flex items-center justify-center overflow-y-hidden overflow-x-hidden bg-gray-900 bg-opacity-50 backdrop-blur-sm p-4">
+            class="fixed h-screen inset-0 z-50 flex items-center justify-center overflow-scroll bg-gray-900 bg-opacity-50 backdrop-blur-sm p-4">
 
             <div x-on:click.away="open = false"
-                class="relative w-full max-w-2xl max-h-full rounded-lg bg-white shadow-xl ring-1 ring-gray-900/5">
+                class="relative w-full max-w-2xl overflow-scroll rounded-lg bg-white shadow-xl ring-1 ring-gray-900/5">
 
 
                 <button x-on:click="open = false" type="button"
@@ -27,10 +27,10 @@
         </div>
 
         <div x-show="competenciaForm"
-            class="fixed h-screen inset-0 z-50 flex items-center justify-center overflow-y-hidden overflow-x-hidden bg-gray-900 bg-opacity-50 backdrop-blur-sm p-4">
+            class="fixed h-screen inset-0 z-50 flex items-center justify-center overflow-scroll bg-gray-900 bg-opacity-50 backdrop-blur-sm p-4">
 
             <div x-on:click.away="competenciaForm = false"
-                class="relative w-full max-w-2xl max-h-full rounded-lg bg-white shadow-xl ring-1 ring-gray-900/5">
+                class="relative w-full max-w-2xl overflow-scroll rounded-lg bg-white shadow-xl ring-1 ring-gray-900/5">
 
 
                 <button x-on:click="competenciaForm = false" type="button"
