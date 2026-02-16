@@ -84,6 +84,9 @@ class NotasPeriodo extends Component
             'notasMateria' => function ($query) {
                 $query->where('materia_id', $this->materia_id);
                 $query->where('periodo_id', $this->periodo_id);
+            },
+            'comentariosPeriodo' => function ($query) {
+                $query->where('periodo_id', $this->periodo_id);
             }
         ])
             ->whereHas('grados', function ($query) {

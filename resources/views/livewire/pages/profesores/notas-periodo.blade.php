@@ -151,12 +151,19 @@
                     </th>
 
                     @foreach ($competencias as $competencia)
+                    @if($competencia->actividades->count() > 0)
                         <th class="text-center px-4 py-2 border-b border-l border-gray-300 bg-gray-200 whitespace-nowrap"
                             colspan="{{ $competencia->actividades->count() }}"
                             title="{{ $competencia->descripcion }}">
                             {{ $competencia->nombre . ' - ' . substr($competencia->descripcion, 0, 30) . '...' }}
                         </th>
+                    @endif
                     @endforeach
+                    @if($nombre_materia == "SCHOOL BEHAVIOR")
+                    <th rowspan="2" class="sticky left-[600px] z-20 bg-gray-200 px-4 py-3 border-b border-gray-300 shadow-sm min-w-[100px] max-sm:left-0 max-sm:z-10">
+                        Comentarios
+                    </th>
+                    @endif
 
                 </tr>
                 <tr>
@@ -189,6 +196,7 @@
 
                         @foreach ($competencias as $competencia)
                             @foreach ($competencia->actividades as $actividad)
+                            @if($competencia->actividades->count() > 0)
                                 <td class="px-2 py-2 border border-gray-200 text-gray-900 text-center align-middle">
                                     <span contenteditable="true"
                                         class="editable-cell block w-full rounded border border-transparent hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none px-2 py-1 transition-all cursor-text"
@@ -197,9 +205,20 @@
                                         {{ $estudiante->notas->firstWhere('actividad_id', $actividad->id)?->valor }}
                                     </span>
                                 </td>
+                            @endif
                             @endforeach
                         @endforeach
-
+                        @if($nombre_materia == 'SCHOOL BEHAVIOR')
+                        <td class="px-2 py-2 border border-gray-200 text-gray-900 text-center align-middle">
+                            <span contenteditable="true"
+                                class="comentario-periodo block w-full rounded border border-transparent hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none px-2 py-1 transition-all cursor-text"
+                                data-estudiante_id="{{ $estudiante->id }}"
+                                data-actividad_id="comentario_periodo"
+                                data-periodo_id="{{ $periodo_id }}">
+                                {{ $estudiante->comentariosPeriodo->firstWhere('periodo_id', $periodo_id)?->comentario }}
+                            </span>
+                        </td>
+                        @endif
                     </tr>
                 @endforeach
             </tbody>
@@ -283,6 +302,25 @@
                 return notasParaGuardar;
             }
 
+            function collectComentarios() {
+                let comentariosParaGuardar = [];
+                const cells = document.querySelectorAll('.comentario-periodo');
+
+                cells.forEach(cell => {
+                    const valorRaw = cell.innerText.trim();
+
+                    if (valorRaw !== '' && !cell.classList.contains('outRange')) {
+                        comentariosParaGuardar.push({
+                            estudiante_id: cell.dataset.estudiante_id,
+                            actividad_id: cell.dataset.actividad_id,
+                            periodo_id: cell.dataset.periodo_id,
+                            comentario: valorRaw
+                        });
+                    }
+                });
+                return comentariosParaGuardar;
+            }
+
             function saveNotas() {
                 if (document.querySelectorAll('.outRange').length > 0) {
                     sweetalert2.fire({
@@ -304,6 +342,9 @@
                 saveButton.textContent = 'Guardando...';
                 overlay.classList.remove('hidden');
 
+
+                
+                saveComentarios();
                 fetch('/notas/saveNotasActividades', {
                         method: 'POST',
                         headers: {
@@ -348,6 +389,36 @@
                         saveButton.disabled = false;
                         saveButton.textContent = 'Guardar Notas';
                     });
+            }
+
+            function saveComentarios()
+            {
+                const comentarios = collectComentarios();
+
+                if (comentarios.length === 0) {
+                    return;
+                }
+
+                saveButton.disabled = true;
+                saveButton.textContent = 'Guardando...';
+                overlay.classList.remove('hidden');
+
+                fetch('/notas/saveComentarios', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content'),
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            comentarios: comentarios
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                        return response.json();
+                    })
             }
 
 

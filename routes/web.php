@@ -6,6 +6,11 @@ use App\Services\getUserDataService;
 use App\Models\NotaFinalMateria;
 use Illuminate\Support\Facades\Session;
 
+Route::get("pruebaServicio", function () {
+    $service = new App\Services\CambiarGradoUsuarioService();
+    $service->cambiarGradoUsuario(662, 7, 1, 7, 3, 1);
+})->middleware(["auth", "verified", "role:Super-Admin"]);
+
 Route::get("/", [App\Http\Controllers\MateriasController::class, "render"])
     ->middleware(["auth", "paymentStatus"])
     ->name("home");
@@ -182,6 +187,12 @@ Route::post("notas/save", [
 Route::post("notas/saveNotasActividades", [
     App\Http\Controllers\notasActividadesController::class,
     "saveNotasActividades",
+])->middleware(["auth", "permission:administrar notas"]);
+
+#guardar comentarios de periodo
+Route::post("notas/saveComentarios", [
+    App\Http\Controllers\Notas\ComentariosController::class,
+    "saveComentarios",
 ])->middleware(["auth", "permission:administrar notas"]);
 
 #edit competencias

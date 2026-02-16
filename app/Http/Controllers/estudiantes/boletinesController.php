@@ -11,6 +11,7 @@ use App\Models\NotaFinalMateria;
 use App\Models\NotaFinalCompetencia;
 use App\Models\Periodo;
 use Illuminate\Support\Facades\DB;
+use App\Models\ComentarioEstudiantePeriodo;
 class boletinesController extends Controller
 {
     //
@@ -39,19 +40,30 @@ class boletinesController extends Controller
                 $periodo->id += 1;
            
         }
+        
         switch (true){
             case $periodo->id == 1:
-                return 'I';
+                return ['id' => 1, 'nombre' => 'I'];
             case $periodo->id == 2:
-                return 'II';
+                return ['id' => 2, 'nombre' => 'II'];
             case $periodo->id == 3:
-                return 'III';
+                return ['id' => 3, 'nombre' => 'III'];
             case $periodo->id == 4:
-                return 'IV';
+                return ['id' => 4, 'nombre' => 'IV'];
             default:
-                return 'I';
+                return ['id' => 1, 'nombre' => 'I'];
         }
     }
+
+    private function getComments($periodo)
+    {
+        $comentarios = ComentarioEstudiantePeriodo::select('comentario')
+        ->where('estudiante_id', $this->estudianteID)
+        ->where('periodo_id', $periodo)
+        ->first();
+        return $comentarios;
+    }
+
     public function render($estudianteID = null)
     {
         $usuarioActual = Auth::user();
@@ -65,11 +77,13 @@ class boletinesController extends Controller
         $user = $this->getStudentData();
         $date = $this->getDate();
         $periodo = $this->getPeriodo();
+        $comentario = $this->getComments($periodo['id']);
         return view('pages.estudiantes.boletines', [
             'user' => $user,
             'date' => $date,
             'estudianteID' => $estudianteID,
-            'periodo' => $periodo,
+            'periodo' => $periodo['nombre'],
+            'comentario' => $comentario,
             ]);
     }
 }

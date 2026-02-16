@@ -99,4 +99,8 @@ class Usuario extends Authenticatable
     {
         return $this->hasMany(NotaFinalMateria::class, 'estudiante_id', 'id');
     }
+    public function comentariosPeriodo()
+    {
+        return $this->hasMany(ComentarioEstudiantePeriodo::class, 'estudiante_id', 'id');
+    }
 }

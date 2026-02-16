@@ -2,7 +2,23 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Knewave&display=swap" rel="stylesheet">
 <style>
+
+.story-script-regular {
+  font-family: "Knewave", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.nota{
+    font-family: "Knewave", system-ui !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+}
+
 
   .reportcard {
     background-color: #fff;
@@ -90,6 +106,11 @@
     border-right: hidden;
   }
   
+  .nota {
+    table:first-child{
+      min-width: 100%;
+    }
+  }
 
   @media only screen and (max-width: 768px) {
 
@@ -143,6 +164,7 @@
 
 }
 
+
 </style>
 
 <div class="flex w-full mx-auto px-8 no-print bg-white max-sm:px-0 max-sm:py-4 max-sm:justify-center">
@@ -176,13 +198,13 @@
           </table>  
       </div>
   
-      <div class="w-3/4 md:w-3/4 mx-auto text-center mb-4">
+      <div class="w-3/4 md:w-3/4 mx-auto text-center mb-4" id="averages">
         <table class="border border-black">
             <tr>
               <td>Term average</td>
-              <td id="termAverageValue"></td>
+              <td class="nota" id="termAverageValue"></td>
               <td>Final average</td>
-              <td id="finalAverageValue"></td>
+              <td class="nota" id="finalAverageValue"></td>
             </tr>
         </table>
       </div>
@@ -192,7 +214,7 @@
       </div>
 
       <div class="footer">
-        <table class="border border-black">
+        <table class="border border-black levels">
             <tr>
                 <td class="text-center border border-black">Note 1</td>
                 <td class="text-center border border-black">STRENGTHS AND WEAKNESSES</td>
@@ -201,8 +223,15 @@
                 </td>
             </tr>
         </table>
+
+        <table class="border border-black" id="comentarios" hidden>
+            <tr>
+                <td class="text-center border border-black">Comentarios</td>
+                <td class="text-center border border-black">{{ $comentario->comentario }}</td>
+            </tr>
+        </table>
   
-        <table class="border border-black">
+        <table class="border border-black levels">
                 <tr class="border border-black">
                     
                     <td rowspan="2" class="border border-black">LEVELS OF PERFORMANCE</td>
@@ -271,6 +300,37 @@
             .from(element)
             .save();
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.nota').forEach(element => {
+        let grade = {{ $user['gradoID']}};
+        if(grade < 4){
+          let averages = document.getElementById('averages');
+          let levels = document.querySelectorAll('.levels');
+          let comments = document.getElementById('comentarios');
+          averages.hidden = true;
+          levels.forEach(level => level.hidden = true);
+          comments.hidden = false;
+          let nota = element.textContent;
+          if(nota > 8){
+            element.innerHTML = `<table>
+            <tr>
+            <td>Lo lograste</td>
+            <td><img src="{{ asset('img/icons/boletin/happy-face.png') }}" alt="Happy Emoji" style="width: 20px;"></td>
+            </tr>
+            </table>`;
+          }
+          else{
+            element.innerHTML = `<table>
+            <tr>
+            <td>En proceso</td>
+            <td><img src="{{ asset('img/icons/boletin/sad-face.png') }}" alt="Prejudice Emoji" style="width: 20px;"></td>
+            </tr>
+            </table>`;
+          }
+        }
+      });
+    });
 
     </script>
 

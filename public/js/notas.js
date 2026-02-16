@@ -98,5 +98,6 @@ function handlePaste() {
                 }
             }
         }
+
     });
 }

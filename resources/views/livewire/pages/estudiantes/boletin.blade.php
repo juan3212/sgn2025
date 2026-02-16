@@ -19,22 +19,22 @@
         <tr class="bg-gray-300 text-center">
             <td class="border border-black">{{$materia['materia']}}</td>
             <td class="border border-black">{{$materia['intensidad_horaria']}}</td>
-            <td class="border border-black" id="nota1">{{$materia['notas']->firstWhere('periodo_id', 1)['nota_final'] ?? 'N/A'}}</td>
-            <td class="border border-black" id="recuperacion1">{{$materia['recuperacion']->firstWhere('periodo_id', 1)['nota_final'] ?? 'N/A'}}</td>
-            <td class="border border-black" id="nota2">{{$materia['notas']->firstWhere('periodo_id', 2)['nota_final'] ?? 'N/A'}}</td>
-            <td class="border border-black" id="recuperacion2">{{$materia['recuperacion']->firstWhere('periodo_id', 2)['nota_final'] ?? 'N/A'}}</td>
-            <td class="border border-black" id="nota3">{{$materia['notas']->firstWhere('periodo_id', 3)['nota_final'] ?? 'N/A'}}</td>
-            <td class="border border-black" id="recuperacion3">{{$materia['recuperacion']->firstWhere('periodo_id', 3)['nota_final'] ?? 'N/A'}}</td>
-            <td class="border border-black" id="nota4">{{$materia['notas']->firstWhere('periodo_id', 4)['nota_final'] ?? 'N/A'}}</td>
-            <td class="border border-black" id="recuperacion4">{{$materia['recuperacion']->firstWhere('periodo_id', 4)['nota_final'] ?? 'N/A'}}</td>
-            <td class="border border-black @if($materia['promedio'] < 6) bg-red-500 @endif" id="finalAverage">{{$materia['promedio']}}</td>
-            <td class="border border-black" hidden id="termAverage">{{$materia['promedioPeriodo']}}</td>
+            <td class="border border-black nota" id="nota1">{{$materia['notas']->firstWhere('periodo_id', 1)['nota_final'] ?? 'N/A'}}</td>
+            <td class="border border-black recuperacion" id="recuperacion1">{{$materia['recuperacion']->firstWhere('periodo_id', 1)['nota_final'] ?? 'N/A'}}</td>
+            <td class="border border-black nota" id="nota2">{{$materia['notas']->firstWhere('periodo_id', 2)['nota_final'] ?? 'N/A'}}</td>
+            <td class="border border-black recuperacion" id="recuperacion2">{{$materia['recuperacion']->firstWhere('periodo_id', 2)['nota_final'] ?? 'N/A'}}</td>
+            <td class="border border-black nota" id="nota3">{{$materia['notas']->firstWhere('periodo_id', 3)['nota_final'] ?? 'N/A'}}</td>
+            <td class="border border-black recuperacion" id="recuperacion3">{{$materia['recuperacion']->firstWhere('periodo_id', 3)['nota_final'] ?? 'N/A'}}</td>
+            <td class="border border-black nota" id="nota4">{{$materia['notas']->firstWhere('periodo_id', 4)['nota_final'] ?? 'N/A'}}</td>
+            <td class="border border-black recuperacion" id="recuperacion4">{{$materia['recuperacion']->firstWhere('periodo_id', 4)['nota_final'] ?? 'N/A'}}</td>
+            <td class="border border-black nota @if($materia['promedio'] < 6) bg-red-500 @endif" id="finalAverage">{{$materia['promedio']}}</td>
+            <td class="border border-black nota" hidden id="termAverage">{{$materia['promedioPeriodo']}}</td>
         </tr>    
         @foreach($materia['competencias'] as $key=>$competencia) 
         <tr class="skillrow">
             <td class="font-bold">C{{ $key+1 }}</td>
             <td colspan="9" class="p-2">{{$competencia['descripcion']}}</td>
-            <td class="text-center">{{$competencia['nota_final']}}</td>
+            <td class="text-center nota nota_competencia">{{$competencia['nota_final']}}</td>
         </tr>
         @endforeach
     </tbody>
