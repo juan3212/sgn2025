@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\UsersImport;
 use App\Imports\UsersImportTeachers;
 use App\Imports\ChangeGradeImport;
+use App\Imports\ChangePasswordImport;
 use App\Models\Grado;
 use App\Models\Grupo;
 use Spatie\Permission\Models\Role;
@@ -131,6 +132,21 @@ class UsuariosController extends Controller
         ]);
 
         Excel::import(new ChangeGradeImport(), $request->file("file"));
+
+        return redirect()
+            ->route("usuarios")
+            ->with("success", "Usuarios importados correctamente.");
+    }
+
+    public function importChangePassword(Request $request)
+    {
+        set_time_limit(300);
+        ini_set("memory_limit", "512M");
+        $request->validate([
+            "file" => "required|mimes:xlsx,csv",
+        ]);
+
+        Excel::import(new ChangePasswordImport(), $request->file("file"));
 
         return redirect()
             ->route("usuarios")

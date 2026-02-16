@@ -41,6 +41,42 @@
         </div>
     </div>
 
+     <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <h2>Importar cambio de contraseña</h2>
+                </div>
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <form action="{{ route('users.import.change-password') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="mb-4">
+                            <label for="file" class="block text-gray-700 text-sm font-bold mb-2">Seleccionar Archivo (CSV o XLSX):</label>
+                            <input type="file" name="file" id="file" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            @error('file')
+                                <p class="text-red-500 text-xs italic mt-2">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                    Importar cambio de contraseña
+                                </button>
+                                <a href="{{ route('users.template') }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                    Descargar Plantilla
+                                </a>
+                            </div>
+                            <a href="{{ route('usuarios') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

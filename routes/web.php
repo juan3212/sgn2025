@@ -390,6 +390,13 @@ Route::post("usuarios/import", [
     ->middleware(["auth", "permission:administrar usuarios"])
     ->name("users.import");
 
+Route::post("usuarios/import-change-password", [
+    App\Http\Controllers\UsuariosController::class,
+    "importChangePassword",
+])
+    ->middleware(["auth", "permission:administrar usuarios"])
+    ->name("users.import.change-password");
+
 Route::post("usuarios/import-teachers", [
     App\Http\Controllers\UsuariosController::class,
     "importTeachers",
