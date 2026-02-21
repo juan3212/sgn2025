@@ -10,6 +10,8 @@ use App\Imports\UsersImport;
 use App\Imports\UsersImportTeachers;
 use App\Imports\ChangeGradeImport;
 use App\Imports\ChangePasswordImport;
+use App\Services\CambiarGradoUsuarioService;
+use App\Services\getPeriodoService;
 use App\Models\Grado;
 use App\Models\Grupo;
 use Spatie\Permission\Models\Role;
@@ -123,7 +125,7 @@ class UsuariosController extends Controller
         // return redirect()->route('usuarios')->with('success', 'Usuarios importados correctamente.');
     }
 
-    public function importGrades(Request $request)
+    public function importGrades(Request $request, CambiarGradoUsuarioService $cambiarGradoUsuarioService, getPeriodoService $getPeriodoService)
     {
         set_time_limit(300);
         ini_set("memory_limit", "512M");
@@ -131,11 +133,11 @@ class UsuariosController extends Controller
             "file" => "required|mimes:xlsx,csv",
         ]);
 
-        Excel::import(new ChangeGradeImport(), $request->file("file"));
+        Excel::import(new ChangeGradeImport($cambiarGradoUsuarioService, $getPeriodoService), $request->file("file"));
 
-        return redirect()
-            ->route("usuarios")
-            ->with("success", "Usuarios importados correctamente.");
+        //return redirect()
+        //    ->route("usuarios")
+        //    ->with("success", "Usuarios importados correctamente.");
     }
 
     public function importChangePassword(Request $request)

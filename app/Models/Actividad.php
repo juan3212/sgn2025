@@ -36,6 +36,6 @@ class Actividad extends Model
     }
     public function notas()
     {
-        return $this->hasMany(Nota::class);
+        return $this->hasMany(Nota::class, 'actividad_id', 'id');
     }
 }

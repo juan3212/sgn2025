@@ -1,5 +1,6 @@
 <div>
-   
+
+
 @foreach($materiasNotas as $materia)
 <table class="border">
     <thead class="border">
@@ -33,7 +34,7 @@
         @foreach($materia['competencias'] as $key=>$competencia) 
         <tr class="skillrow">
             <td class="font-bold">C{{ $key+1 }}</td>
-            <td colspan="9" class="p-2">{{$competencia['descripcion']}}</td>
+            <td colspan="9" class="p-4 text-comentario">{{$competencia['descripcion']}}</td>
             <td class="text-center nota nota_competencia">{{$competencia['nota_final']}}</td>
         </tr>
         @endforeach

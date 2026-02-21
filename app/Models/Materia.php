@@ -50,4 +50,9 @@ class Materia extends Model
     {
         return $this->hasMany(Actividad::class);
     }
+
+    public function notasMateria()
+    {
+        return $this->hasMany(NotaFinalMateria::class);
+    }
 }

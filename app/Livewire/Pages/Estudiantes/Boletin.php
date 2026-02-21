@@ -84,11 +84,12 @@ class Boletin extends Component
         $year = session()->get('school_year');
         if($year != date("Y")){
             $this->periodoId = 4;
+        }else if(date("n") >= "11"){
+            $this->periodoId = $periodo->id;
+        }else if(date("n") <= "4"){
+            $this->periodoId = $periodo->id;
         }else{
             $this->periodoId = $periodo->id - 1;
-        }
-        if(date("n") >= "11"){
-            $this->periodoId = $periodo->id;
         }
     }
 

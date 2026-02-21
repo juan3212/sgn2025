@@ -35,10 +35,17 @@ class boletinesController extends Controller
     {
         $periodo = Periodo::where('fecha_fin', '>', now())
         ->first();
-        $periodo->id -= 1;
-        if(date("n") >= "11"){
-                $periodo->id += 1;
-           
+        $schoolYear = session()->get('school_year');
+        if($schoolYear < date("Y")){
+            $periodo->id = 4;
+        }else if(date("n") >= "11"){
+            $periodo->id += 1;
+        }
+        else if(date("n") <= "4"){
+            $periodo->id = 1;
+        }
+        else{
+            $periodo->id -= 1;
         }
         
         switch (true){
@@ -57,11 +64,20 @@ class boletinesController extends Controller
 
     private function getComments($periodo)
     {
-        $comentarios = ComentarioEstudiantePeriodo::select('comentario')
-        ->where('estudiante_id', $this->estudianteID)
-        ->where('periodo_id', $periodo)
+        $DByear = session()->get('school_year');
+        $comentariosDB = DB::table('information_schema.tables')
+        ->where('table_schema', 'sgn'.$DByear)
+        ->where('table_name', 'comentarios_estudiante_periodo')
         ->first();
-        return $comentarios;
+        if($comentariosDB){
+            $comentarios = ComentarioEstudiantePeriodo::select('comentario')
+            ->where('estudiante_id', $this->estudianteID)
+            ->where('periodo_id', $periodo)
+            ->first();
+            return $comentarios;
+        }else{
+            return null;
+        }
     }
 
     public function render($estudianteID = null)

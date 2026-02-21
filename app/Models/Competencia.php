@@ -29,5 +29,9 @@ class Competencia extends Model
     {
         return $this->belongsTo(Usuario::class);
     }
+    public function notasCompetencia()
+    {
+        return $this->hasMany(NotaFinalCompetencia::class);
+    }
 
 }

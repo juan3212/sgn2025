@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Session;
 
 Route::get("pruebaServicio", function () {
     $service = new App\Services\CambiarGradoUsuarioService();
-    $service->cambiarGradoUsuario(662, 7, 1, 7, 3, 1);
+    $service->changeGradeUser(953, 10, 3, 10, 2, 1);
 })->middleware(["auth", "verified", "role:Super-Admin"]);
 
 Route::get("/", [App\Http\Controllers\MateriasController::class, "render"])

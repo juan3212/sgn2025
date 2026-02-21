@@ -2,23 +2,30 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Knewave&display=swap" rel="stylesheet">
-<style>
 
-.story-script-regular {
-  font-family: "Knewave", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
+
+body{
+    font-family: "Sour Gummy", sans-serif !important;
+    font-weight: 300 !important;
+    font-style: normal !important;
+    font-size: 16px !important;
 }
 
-.nota{
-    font-family: "Knewave", system-ui !important;
+.feedback-preeschool{
+    font-family: "Sour Gummy", sans-serif !important;
     font-weight: 400 !important;
     font-style: normal !important;
+    font-size: 12px !important;
 }
 
+.text-comentario{
+    font-size: 12px !important;
+    font-family: "Sour Gummy", sans-serif !important;
+    font-weight: 300 !important;
+    font-style: normal !important;
+}
 
   .reportcard {
     background-color: #fff;
@@ -224,13 +231,14 @@
             </tr>
         </table>
 
+@if($comentario && $comentario->count() > 0)
         <table class="border border-black" id="comentarios" hidden>
             <tr>
                 <td class="text-center border border-black">Comentarios</td>
                 <td class="text-center border border-black">{{ $comentario->comentario }}</td>
             </tr>
         </table>
-  
+@endif  
         <table class="border border-black levels">
                 <tr class="border border-black">
                     
@@ -310,21 +318,21 @@
           let comments = document.getElementById('comentarios');
           averages.hidden = true;
           levels.forEach(level => level.hidden = true);
-          comments.hidden = false;
+          comments ? comments.hidden = false : null;
           let nota = element.textContent;
           if(nota > 8){
             element.innerHTML = `<table>
             <tr>
-            <td>Lo lograste</td>
-            <td><img src="{{ asset('img/icons/boletin/happy-face.png') }}" alt="Happy Emoji" style="width: 20px;"></td>
+            <td class="feedback-preeschool">Lo lograste</td>
+            <td><img src="{{ asset('img/icons/boletin/happy-face.png') }}" alt="Happy Emoji" style="width: 30px;"></td>
             </tr>
             </table>`;
           }
           else{
             element.innerHTML = `<table>
             <tr>
-            <td>En proceso</td>
-            <td><img src="{{ asset('img/icons/boletin/sad-face.png') }}" alt="Prejudice Emoji" style="width: 20px;"></td>
+            <td class="feedback-preeschool">En proceso</td>
+            <td><img src="{{ asset('img/icons/boletin/sad-face.png') }}" alt="Prejudice Emoji" style="width: 30px;"></td>
             </tr>
             </table>`;
           }
