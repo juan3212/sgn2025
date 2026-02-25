@@ -28,24 +28,25 @@ class ChangeGradeImport implements ToModel, WithHeadingRow
         $this->getPeriodoService = $getPeriodoService;
     }
 
-    public function model(array $row)
+    public function model(array $rows)
     {
         $grados = Grado::all();
         $grupos = Grupo::all();
         $periodo = $this->getPeriodoService->currentPeriod()->id;
 
-        foreach ($row as $key => $value) {
-            $grado = $row["grado"];
-            $grupo = $row["grupo"];
+            if($rows["nuip"] == null){
+                return null;
+            }
+            $grado = $rows["grado"];
+            $grupo = $rows["grupo"];
             $newGrado = $grados->where("grado", $grado)->first()->id;
             $newGrupo = $grupos->where("grupo", $grupo)->first()->id;
-            $nuip = $row["nuip"];
+            $nuip = $rows["nuip"];
             $usuario = Usuario::select("id")->where("nuip", $nuip)->first()->id;
             $usuarioGrado = UsuarioGrado::where(
                 "usuario_id",
                 $usuario,
             )->first();
             $this->cambiarGradoUsuarioService->changeGradeUser($usuario, $usuarioGrado->grado_id, $usuarioGrado->grupo_id, $newGrado, $newGrupo, $periodo);
-        }
     }
 }

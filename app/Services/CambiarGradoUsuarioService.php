@@ -68,6 +68,7 @@ class CambiarGradoUsuarioService
                     $competenciasNew = $materiaNew->competencias;
                     $competenciasCurrent = $materia->competencias;
                     $competenciasAreEqual = $competenciasCurrent->pluck('id')->diff($competenciasNew->pluck('id'))->isEmpty();
+                    
 
 
                     if($competenciasAreEqual){
@@ -77,57 +78,86 @@ class CambiarGradoUsuarioService
                         
                         dump($actividadesCurrent);
                         dump($actividadesNew);
-                        if($actividadesCurrent->isNotEmpty()){
-                            $notasCurrent = $actividadesCurrent->pluck('notas')->flatten();
-                        
-                            if($notasCurrent->isNotEmpty()){
-                                
-                                $newNotas = $notasCurrent->map(function($nota) use ($actividadesNew, $actividadesCurrent, $materiaNew){
-                                    $currentActivityName = $actividadesCurrent->firstWhere('id', $nota->actividad_id)->nombre;
-                                    $currentActivityDescripcion = $actividadesCurrent->firstWhere('id', $nota->actividad_id)->descripcion;
-                                    $currentActivityCompetencia = $actividadesCurrent->firstWhere('id', $nota->actividad_id)->competencia_id;
-                                    $actividadNewId = $actividadesNew->firstWhere('nombre', $currentActivityName)
-                                        ->where('descripcion', $currentActivityDescripcion)
-                                        ->where('competencia_id', $currentActivityCompetencia)
-                                        ->where('materia_id', $materiaNew->id)
-                                        ->first();
-                                    dump($actividadNewId);
-                                    if($actividadNewId){
-                                        $saveNota = Nota::updateOrCreate([
-                                            'estudiante_id' => $nota->estudiante_id,
-                                            'actividad_id' => $actividadNewId->id,
-                                        ], [
-                                            'valor' => $nota->valor,
-                                        ]);
-                                        return ["save"=> $saveNota, "new"=>[
-                                            'estudiante_id' => $nota->estudiante_id,
-                                            'actividad_id' => $actividadNewId->id,
-                                            'valor' => $nota->valor,
-                                        ]];
-                                    }
-                                });
+                        dump($materia);
+                        dump($actividadesAreEqual);
 
-                                $notaMateriaCurrent = $materia->notasMateria;
-                                $notaMateriaNew = NotaFinalMateria::updateOrCreate([
-                                    'estudiante_id' => $usuarioId,
-                                    'materia_id' => $materiaNew->id,
-                                    'periodo_id' => $periodo,
-                                ], [
-                                    'nota_final' => $notaMateriaCurrent->first()->nota_final,
-                                ]);
+                        if($actividadesAreEqual){
+                            
+                            if($actividadesCurrent->isNotEmpty()){
+                                $notasCurrent = $actividadesCurrent->pluck('notas')->flatten();
+                            
+                                if($notasCurrent->isNotEmpty()){
+                                    
+                                    $newNotas = $notasCurrent->map(function($nota) use ($actividadesNew, $actividadesCurrent, $materiaNew){
+                                        $currentActivityName = $actividadesCurrent->firstWhere('id', $nota->actividad_id)->nombre;
+                                        $currentActivityDescripcion = $actividadesCurrent->firstWhere('id', $nota->actividad_id)->descripcion;
+                                        $currentActivityCompetencia = $actividadesCurrent->firstWhere('id', $nota->actividad_id)->competencia_id;
+                                        $actividadNewId = $actividadesNew->firstWhere('nombre', $currentActivityName)
+                                            ->where('descripcion', $currentActivityDescripcion)
+                                            ->where('competencia_id', $currentActivityCompetencia)
+                                            ->where('materia_id', $materiaNew->id)
+                                            ->first();
+                                        dump($actividadNewId);
+                                        if($actividadNewId){
+                                            $saveNota = Nota::updateOrCreate([
+                                                'estudiante_id' => $nota->estudiante_id,
+                                                'actividad_id' => $actividadNewId->id,
+                                            ], [
+                                                'valor' => $nota->valor,
+                                            ]);
+                                            return ["save"=> $saveNota, "new"=>[
+                                                'estudiante_id' => $nota->estudiante_id,
+                                                'actividad_id' => $actividadNewId->id,
+                                                'valor' => $nota->valor,
+                                            ]];
+                                        }
+                                    });
 
-                                $notasCompetenciasCurrent = $materia->competencias->pluck('notasCompetencia')->flatten();
-                                foreach($notasCompetenciasCurrent as $notaCompetencia){
-                                    dump($notaCompetencia);
-                                    $notaCompetenciaNew = NotaFinalCompetencia::updateOrCreate([
+                                    $notaMateriaCurrent = $materia->notasMateria;
+                                    dump($notaMateriaCurrent);
+                                    $notaMateriaNew = NotaFinalMateria::updateOrCreate([
                                         'estudiante_id' => $usuarioId,
                                         'materia_id' => $materiaNew->id,
-                                        'competencia_id' => $notaCompetencia->competencia_id,
+                                        'periodo_id' => $periodo,
                                     ], [
-                                        'nota_final' => $notaCompetencia->nota_final,
+                                        'nota_final' => $notaMateriaCurrent->first()->nota_final,
                                     ]);
-                                }  
 
+                                    $notasCompetenciasCurrent = $materia->competencias->pluck('notasCompetencia')->flatten();
+                                    foreach($notasCompetenciasCurrent as $notaCompetencia){
+                                        dump($notaCompetencia);
+                                        $notaCompetenciaNew = NotaFinalCompetencia::updateOrCreate([
+                                            'estudiante_id' => $usuarioId,
+                                            'materia_id' => $materiaNew->id,
+                                            'competencia_id' => $notaCompetencia->competencia_id,
+                                        ], [
+                                            'nota_final' => $notaCompetencia->nota_final,
+                                        ]);
+                                    }  
+
+                                }
+                            }
+                        }else{
+                            if($actividadesCurrent->count() > $actividadesNew->count()){
+                                $notasCurrent = $actividadesCurrent->pluck('notas')->flatten();
+                                $actividadesCurrent->each(function($actividad) use ($actividadesNew, $materiaNew, $usuarioId){
+                                    $newActividad = Actividad::create([
+                                        'nombre' => $actividad->nombre,
+                                        'descripcion' => $actividad->descripcion,
+                                        'tipo_nota' => $actividad->tipo_nota,
+                                        'competencia_id' => $actividad->competencia_id,
+                                        'materia_id' => $materiaNew->id,
+                                        'periodo_id' => $actividad->periodo_id,
+                                        'porcentaje' => $actividad->porcentaje,
+                                    ]);
+                                    $nota = $actividad->notas->first();
+                                    dump($nota);
+                                    Nota::create([
+                                        'estudiante_id' => $usuarioId,
+                                        'actividad_id' => $newActividad->id,
+                                        'valor' => $nota->valor,
+                                    ]);
+                                });
                             }
                         }
                     
@@ -139,6 +169,7 @@ class CambiarGradoUsuarioService
                 'grado_id' => $nuevoGrado,
                 'grupo_id' => $nuevoCurso,
             ]);
+
 
             DB::commit();
          } catch (\Exception $e) {
