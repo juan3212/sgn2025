@@ -8,15 +8,15 @@
             <link  href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
 
            <x-botones-header :createRoute="'create-user'"/>
-            
+
         </div>
-       
+
     </x-slot>
 
     <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white shadow-sm sm:rounded-lg p-4">
-            
+
             <!-- Contenedor de filtros -->
             <div class="flex flex-wrap gap-4 justify-between items-end pt-2 mb-4">
                 <div class="flex flex-wrap gap-4">
@@ -71,7 +71,8 @@
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Nuip</th>
-                            <th>Correo</th>
+                            <th>Grado</th>
+                            <th>Grupo</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -82,7 +83,8 @@
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Nuip</th>
-                            <th>Correo</th>
+                            <th>Grado</th>
+                            <th>Grupo</th>
                             <th>Acciones</th>
                         </tr>
                     </tfoot>
@@ -94,7 +96,7 @@
 </div>
 
 
-    
+
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script type="module">
@@ -122,7 +124,8 @@
                     {data: 'nombre', name: 'nombre'},
                     {data: 'apellido', name: 'apellido'},
                     {data: 'nuip', name: 'nuip'},
-                    {data: 'correo', name: 'correo'},
+                    {data: 'grado', name: 'grado'},
+                    {data: 'grupo', name: 'grupo'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}, // Columna de acciones, no se puede ordenar ni buscar
                 ],
             });

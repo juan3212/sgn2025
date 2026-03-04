@@ -103,4 +103,8 @@ class Usuario extends Authenticatable
     {
         return $this->hasMany(ComentarioEstudiantePeriodo::class, 'estudiante_id', 'id');
     }
+    public function retirados()
+    {
+        return $this->hasOne(UsuarioRetirado::class, 'usuario_id');
+    }
 }

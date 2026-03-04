@@ -47,7 +47,7 @@ class PaymentStatus
             }
         }
 
-        // 2. Usamos el servicio para ver si DEBE ver el boletín (tu lógica original de 'si')
+        // 2. Usamos el servicio para ver si DEBE ver el boletín
         // Nota: Aquí podrías reutilizar el método hasPaid() del servicio si quieres limpiar más.
         $rutaActualEsPermitida = $request->routeIs('boletin') || $request->routeIs('matricula');
 
