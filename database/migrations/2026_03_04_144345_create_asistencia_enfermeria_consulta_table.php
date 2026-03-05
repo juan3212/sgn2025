@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,16 +12,24 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
-        Schema::create('asistencia_enfermeria_consulta', function (Blueprint $table) {
+        Schema::create("asistencia_enfermeria_consulta", function (
+            Blueprint $table,
+        ) {
             $table->id();
-            $table->bigInteger('datos_usuario_enfermeria_id');
-            $table->foreign('datos_usuario_enfermeria_id')->references('id')->on('asistencia_enfermeria_datos_usuario');
-            $table->dateTime('hora_ingreso');
-            $table->text('motivo_consulta');
-            $table->text('procedimiento');
-            $table->json('accion_tomada');
-            $table->dateTime('hora_accion');
-            $table->boolean('seguimiento');
+            $table->bigInteger("datos_usuario_enfermeria_id");
+            $table
+                ->foreign(
+                    "datos_usuario_enfermeria_id",
+                    "fk_asistencia_enfermeria_enfermeria_datos_id_foreign",
+                )
+                ->references("id")
+                ->on("asistencia_enfermeria_datos_usuario");
+            $table->dateTime("hora_ingreso");
+            $table->text("motivo_consulta");
+            $table->text("procedimiento");
+            $table->json("accion_tomada");
+            $table->dateTime("hora_accion");
+            $table->boolean("seguimiento");
         });
 
         Schema::enableForeignKeyConstraints();
@@ -33,6 +40,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('asistencia_enfermeria_consulta');
+        Schema::dropIfExists("asistencia_enfermeria_consulta");
     }
 };
