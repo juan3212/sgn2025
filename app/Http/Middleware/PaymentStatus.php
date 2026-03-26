@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PaymentStatus
 {
-
     protected $paymentService;
 
     // Inyección de dependencia vía Constructor
@@ -28,31 +27,46 @@ class PaymentStatus
         }
 
         $user = Auth::user();
-        if ($user->hasRole(['profesor', 'administrador', 'Super-Admin', 'docente'])) {
+        if (
+            $user->hasRole([
+                "profesor",
+                "administrador",
+                "Super-Admin",
+                "docente",
+            ])
+        ) {
             return $next($request);
         }
 
         // 1. Usamos el servicio para ver si DEBE ser expulsado
-        if (! $this->paymentService->canAccess($user)) {
-             Auth::logout();
-            return redirect()->route('home')->with('error', 'Regularice sus pagos.');
+        if (!$this->paymentService->canAccess($user)) {
+            Auth::logout();
+            return redirect()
+                ->route("home")
+                ->with("error", "Regularice sus pagos.");
         }
 
-        if ($request->routeIs('matricula')) {
-            if (! $this->paymentService->hasPaidMatricula($user)) {
+        if ($request->routeIs("matricula")) {
+            if (!$this->paymentService->hasPaidMatricula($user)) {
                 // Si no ha pagado matrícula, lo mandamos a otro lado (ej. dashboard o home)
                 return redirect()
-                        ->route('dashboard-estudiantes', $user->id)
-                        ->with('error', 'Para continuar, es necesario realizar el pago de la matrícula. Tu acceso se habilitará el siguiente día hábil a partir de las 8:00 a.m');
+                    ->route("dashboard-estudiantes")
+                    ->with(
+                        "error",
+                        "Para continuar, es necesario realizar el pago de la matrícula. Tu acceso se habilitará el siguiente día hábil a partir de las 8:00 a.m",
+                    );
             }
         }
 
         // 2. Usamos el servicio para ver si DEBE ver el boletín
         // Nota: Aquí podrías reutilizar el método hasPaid() del servicio si quieres limpiar más.
-        $rutaActualEsPermitida = $request->routeIs('boletin') || $request->routeIs('matricula');
+        $rutaActualEsPermitida =
+            $request->routeIs("boletin") ||
+            $request->routeIs("matricula") ||
+            $request->routeIs("dashboard");
 
         if ($this->paymentService->hasPaid($user) && !$rutaActualEsPermitida) {
-             return redirect()->route('dashboard-estudiantes', $user->id);
+            return redirect()->route("dashboard");
         }
 
         return $next($request);
