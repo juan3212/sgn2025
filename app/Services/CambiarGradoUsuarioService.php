@@ -26,7 +26,7 @@ class CambiarGradoUsuarioService
                 $query->with(['notasCompetencia'=> function($query) use ($periodo, $usuarioId){
                     $query->where('estudiante_id', $usuarioId);
                 }]);
-            }, 
+            },
             'notasMateria' => function ($query) use ($periodo, $usuarioId) {
                 $query->where('estudiante_id', $usuarioId);
                 $query->where('periodo_id', $periodo);
@@ -43,7 +43,7 @@ class CambiarGradoUsuarioService
                 $query->with(['notasCompetencia'=> function($query) use ($periodo, $usuarioId){
                     $query->where('estudiante_id', $usuarioId);
                 }]);
-            }, 
+            },
             'notasMateria' => function ($query) use ($periodo, $usuarioId) {
                 $query->where('estudiante_id', $usuarioId);
                 $query->where('periodo_id', $periodo);
@@ -68,48 +68,77 @@ class CambiarGradoUsuarioService
                     $competenciasNew = $materiaNew->competencias;
                     $competenciasCurrent = $materia->competencias;
                     $competenciasAreEqual = $competenciasCurrent->pluck('id')->diff($competenciasNew->pluck('id'))->isEmpty();
-                    
+
 
 
                     if($competenciasAreEqual){
                         $actividadesNew = $materiasNewGrade->firstWhere('materia_id', $materia->materia_id)->actividades;
                         $actividadesCurrent = $materia->actividades;
                         $actividadesAreEqual = $actividadesCurrent->pluck('competencia_id')->diff($actividadesNew->pluck('competencia_id'))->isEmpty();
-                        
+
                         dump($actividadesCurrent);
                         dump($actividadesNew);
                         dump($materia);
                         dump($actividadesAreEqual);
 
                         if($actividadesAreEqual){
-                            
+
                             if($actividadesCurrent->isNotEmpty()){
                                 $notasCurrent = $actividadesCurrent->pluck('notas')->flatten();
-                            
+
                                 if($notasCurrent->isNotEmpty()){
-                                    
-                                    $newNotas = $notasCurrent->map(function($nota) use ($actividadesNew, $actividadesCurrent, $materiaNew){
-                                        $currentActivityName = $actividadesCurrent->firstWhere('id', $nota->actividad_id)->nombre;
-                                        $currentActivityDescripcion = $actividadesCurrent->firstWhere('id', $nota->actividad_id)->descripcion;
-                                        $currentActivityCompetencia = $actividadesCurrent->firstWhere('id', $nota->actividad_id)->competencia_id;
-                                        $actividadNewId = $actividadesNew->firstWhere('nombre', $currentActivityName)
-                                            ->where('descripcion', $currentActivityDescripcion)
-                                            ->where('competencia_id', $currentActivityCompetencia)
+
+                                    $newNotas = $notasCurrent->map(function($nota) use ($actividadesNew, $actividadesCurrent, $materiaNew) {
+
+                                        $currentActivity = $actividadesCurrent->firstWhere('id', $nota->actividad_id);
+                                        $actividadNewId = null;
+
+                                        // 1. Intento de Búsqueda Exacta
+                                        $actividadNewId = $actividadesNew->where('nombre', $currentActivity->nombre)
+                                            ->where('competencia_id', $currentActivity->competencia_id)
                                             ->where('materia_id', $materiaNew->id)
                                             ->first();
-                                        dump($actividadNewId);
-                                        if($actividadNewId){
+
+
+                                        // 2. NUEVO Fallback 3: Mapeo posicional por orden de creación (Tu idea)
+                                        // Se ejecuta solo si todo lo anterior falló
+                                        if (!$actividadNewId) {
+                                            // Obtenemos las actividades de esa competencia específica y las ordenamos por ID
+                                            $oldActsInComp = $actividadesCurrent->where('competencia_id', $currentActivity->competencia_id)->sortBy('id')->values();
+                                            $newActsInComp = $actividadesNew->where('competencia_id', $currentActivity->competencia_id)->sortBy('id')->values();
+
+                                            // Validamos si tienen la misma cantidad de actividades
+                                            if ($oldActsInComp->count() > 0 && $oldActsInComp->count() === $newActsInComp->count()) {
+
+                                                // Buscamos qué posición (índice 0, 1, 2...) ocupa la actividad actual en el curso viejo
+                                                $index = $oldActsInComp->search(function ($item) use ($currentActivity) {
+                                                    return $item->id === $currentActivity->id;
+                                                });
+
+                                                // Si encontramos la posición, asignamos la actividad del curso nuevo que esté en esa misma posición
+                                                if ($index !== false) {
+                                                    $actividadNewId = $newActsInComp->get($index);
+                                                }
+                                            }
+                                        }
+
+                                        // Guardado de la nota si encontramos una equivalencia en cualquiera de los pasos
+                                        if ($actividadNewId) {
                                             $saveNota = Nota::updateOrCreate([
                                                 'estudiante_id' => $nota->estudiante_id,
                                                 'actividad_id' => $actividadNewId->id,
                                             ], [
                                                 'valor' => $nota->valor,
                                             ]);
-                                            return ["save"=> $saveNota, "new"=>[
-                                                'estudiante_id' => $nota->estudiante_id,
-                                                'actividad_id' => $actividadNewId->id,
-                                                'valor' => $nota->valor,
-                                            ]];
+
+                                            return [
+                                                "save" => $saveNota,
+                                                "new" => [
+                                                    'estudiante_id' => $nota->estudiante_id,
+                                                    'actividad_id' => $actividadNewId->id,
+                                                    'valor' => $nota->valor,
+                                                ]
+                                            ];
                                         }
                                     });
 
@@ -133,7 +162,7 @@ class CambiarGradoUsuarioService
                                         ], [
                                             'nota_final' => $notaCompetencia->nota_final,
                                         ]);
-                                    }  
+                                    }
 
                                 }
                             }
@@ -160,7 +189,7 @@ class CambiarGradoUsuarioService
                                 });
                             }
                         }
-                    
+
                     }
                 }
             }
@@ -177,7 +206,7 @@ class CambiarGradoUsuarioService
             throw $e;
         }
     }
-    
+
 
    /* public function cambiarGradoUsuario($usuarioId, $gradoActual, $cursoActual, $nuevoGrado, $nuevoCurso, $periodo)
     {
@@ -197,7 +226,7 @@ class CambiarGradoUsuarioService
                 $actividades = Actividad::where('materia_id', $newMateria->id)->get();
                 if(!$actividades->isEmpty()){
                     $newNotas = [];
-                    foreach($actividades as $actividad){  
+                    foreach($actividades as $actividad){
                         $newNotas[]=[
                             'estudiante'=>$usuarioId,
                             'actividad_id'=>$actividad->id,
@@ -219,7 +248,7 @@ class CambiarGradoUsuarioService
                         }
                     }
                 }
-            }   
+            }
         }
     }
 

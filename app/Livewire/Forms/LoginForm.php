@@ -14,14 +14,13 @@ use App\Services\PaymentService;
 
 class LoginForm extends Form
 {
+    #[Validate("required|string")]
+    public string $nuip = "";
 
-    #[Validate('required|string')]
-    public string $nuip = '';
+    #[Validate("required|string")]
+    public string $password = "";
 
-    #[Validate('required|string')]
-    public string $password = '';
-
-    #[Validate('boolean')]
+    #[Validate("boolean")]
     public bool $remember = false;
 
     /**
@@ -33,38 +32,42 @@ class LoginForm extends Form
     {
         $this->ensureIsNotRateLimited();
 
-        $usuario = Usuario::where('nuip', $this->nuip)
-        ->with('roles')
-        ->with('bloqueos')
-        ->first();
+        $usuario = Usuario::where("nuip", $this->nuip)
+            ->with("roles")
+            ->with("bloqueos")
+            ->first();
 
         if ($usuario->bloqueos()->exists()) {
             throw ValidationException::withMessages([
-                'form.nuip' => 'El usuario está bloqueado, por favor pongase en contacto con el colegio.',
+                "form.nuip" =>
+                    "El usuario está bloqueado, por favor pongase en contacto con el colegio.",
             ]);
         }
 
-
-        if (!$usuario || ! Auth::attempt($this->only(['nuip', 'password']), $this->remember)) {
+        if (
+            !$usuario ||
+            !Auth::attempt($this->only(["nuip", "password"]), $this->remember)
+        ) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'form.nuip' => trans('auth.failed'),
+                "form.nuip" => trans("auth.failed"),
             ]);
         }
-        
-        if (! $paymentService->canAccess(Auth::user())) {
-            
+
+        if (!$paymentService->canAccess(Auth::user())) {
             Auth::logout(); // Cerramos sesión inmediatamente
 
             throw ValidationException::withMessages([
-                'form.nuip' => 'Debe estar a paz y salvo para poder acceder al sistema.',
+                "form.nuip" =>
+                    "Debe estar a paz y salvo para poder acceder al sistema.",
             ]);
         }
 
         RateLimiter::clear($this->throttleKey());
 
         Auth::login($usuario, $this->remember);
+        session()->put("school_year", date("Y"));
     }
 
     /**
@@ -72,7 +75,7 @@ class LoginForm extends Form
      */
     protected function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -81,9 +84,9 @@ class LoginForm extends Form
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'form.nuip' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
+            "form.nuip" => trans("auth.throttle", [
+                "seconds" => $seconds,
+                "minutes" => ceil($seconds / 60),
             ]),
         ]);
     }
@@ -93,6 +96,8 @@ class LoginForm extends Form
      */
     protected function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->nuip).'|'.request()->ip());
+        return Str::transliterate(
+            Str::lower($this->nuip) . "|" . request()->ip(),
+        );
     }
 }

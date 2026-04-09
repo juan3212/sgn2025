@@ -124,8 +124,8 @@
                     {data: 'nombre', name: 'nombre'},
                     {data: 'apellido', name: 'apellido'},
                     {data: 'nuip', name: 'nuip'},
-                    {data: 'grado', name: 'grado'},
-                    {data: 'grupo', name: 'grupo'},
+                    {data: 'grado', name: 'grado', searchable: false},
+                    {data: 'grupo', name: 'grupo', searchable: false},
                     {data: 'action', name: 'action', orderable: false, searchable: false}, // Columna de acciones, no se puede ordenar ni buscar
                 ],
             });
