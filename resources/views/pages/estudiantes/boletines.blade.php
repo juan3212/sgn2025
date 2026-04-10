@@ -37,7 +37,7 @@ body{
       left: 25%;
       margin-bottom: 13px;
     }
-   
+
     .reportcard h1 {
       text-align: center;
       margin-bottom: 0px;
@@ -49,18 +49,18 @@ body{
       margin-right: auto;
       font-size: 11px;
     }
-   
+
   .space  td{
       border: 0;
     }
-  
 
-  
+
+
   .header3 table {
     font-size: 12px;
     margin-bottom: 5px;
   }
-   
+
   .header3 td {
     border: none;
     text-align: left;
@@ -69,7 +69,7 @@ body{
   .header3 td:first-child{
     width:fit-content;
   }
-  
+
   .header4 {
     background-color: #fff;
       text-align: center;
@@ -77,19 +77,19 @@ body{
       position: relative;
       left: 10%;
   }
-  
+
   .header4 table {
     font-size: 12px;
     margin-bottom: 15px;
-    
+
   }
-  
+
   .header4 td {
     border: none;
      text-align: center;
   }
-   
-  
+
+
   .footer table {
     margin-top: 7px;
     text-align: center;
@@ -98,7 +98,7 @@ body{
   .footer table:first-child {
     margin-top: 20px;
   }
-  
+
   .footer td {
     width: max-content;
   }
@@ -112,7 +112,7 @@ body{
     border-left: hidden;
     border-right: hidden;
   }
-  
+
   .nota {
     table:first-child{
       min-width: 100%;
@@ -148,7 +148,7 @@ body{
   .header4 table {
     font-size: 7px;
     margin-bottom: 15px;
-    
+
   }
 
   .no-print {
@@ -182,29 +182,29 @@ body{
 </div>
 
 <div class="reportcard" id="reportcard">
-  
+
       <img class="membrete" src="{{ asset('img/Membrete1-2.avif') }}" alt="">
-  
+
       <h1 class="font-bold text-3xl">Student Report Card</h1>
-  
+
       <div id="header2" class="header2 font-bold text-center text-xl">
           <h2 id="currentDate" class="font-size-12">{{ $date }}</h2>
           <h2 id="currenPeriod" class="font-size-12">TERM <span id="period">{{ $periodo }}</span></h2>
       </div>
-  
+
       <div class="w-3/4 md:w-3/4 mx-auto mb-2">
           <table class="info border border-black text-center font-bold">
               <tr class="p-2">
-                  <td class="text-right">Nombre:</td> 
+                  <td class="text-right">Nombre:</td>
                   <td>{{ $user['nombre'] . ' ' . $user['apellido'] }}</td>
                   <td class="text-right">ID:</td>
                   <td>{{ $user['nuip'] }}</td>
                   <td class="text-right">Grado:</td>
                   <td>{{ $user['grados'].' '.$user['grupos']}}</td>
               </tr>
-          </table>  
+          </table>
       </div>
-  
+
       <div class="w-3/4 md:w-3/4 mx-auto text-center mb-4" id="averages">
         <table class="border border-black">
             <tr>
@@ -225,7 +225,7 @@ body{
             <tr>
                 <td class="text-center border border-black">Note 1</td>
                 <td class="text-center border border-black">STRENGTHS AND WEAKNESSES</td>
-                <td class="text-center border border-black">El nivel de fortaleza que presenta el estudiante en cada asignatura está determinado por las siglas DS: "Desempeño Superior", 
+                <td class="text-center border border-black">El nivel de fortaleza que presenta el estudiante en cada asignatura está determinado por las siglas DS: "Desempeño Superior",
                     DA: "Desempeño Alto".  Y las dificultades están determinadas por las siglas DBs: "Desempeño Básico", DBj: "Desempeño Bajo".
                 </td>
             </tr>
@@ -238,10 +238,10 @@ body{
                 <td class="text-center border border-black">{{ $comentario->comentario }}</td>
             </tr>
         </table>
-@endif  
+@endif
         <table class="border border-black levels">
                 <tr class="border border-black">
-                    
+
                     <td rowspan="2" class="border border-black">LEVELS OF PERFORMANCE</td>
                     <td class="border border-black">LOW</td>
                     <td class="border border-black">BASIC</td>
@@ -255,7 +255,7 @@ body{
                     <td class="border border-black">DS (9,3 - 10,0)</td>
                 </tr>
         </table>
-  
+
         <div class="coments">
             <table class="border border-t-black border-b-black">
                 <tr class="items-center">
@@ -273,7 +273,7 @@ body{
             </table>
         </div>
       </div>
-  
+
     </div>
 
     @livewireScripts
@@ -293,16 +293,16 @@ body{
         const element = document.getElementById('reportcard');
         const width = window.innerWidth;
         const format = width > 768 ? 'a2' : 'a3';
-        
+
         const opt = {
-            margin:       0.1, 
+            margin:       0.1,
             filename:     'Boletin_{{ $user['nuip'] }}.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true }, 
-            jsPDF:        { unit: 'in', format: format, orientation: 'portrait' } 
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'in', format: format, orientation: 'portrait' }
         };
 
-  
+
         html2pdf()
             .set(opt)
             .from(element)
@@ -327,6 +327,9 @@ body{
             <td><img src="{{ asset('img/icons/boletin/happy-face.png') }}" alt="Happy Emoji" style="width: 30px;"></td>
             </tr>
             </table>`;
+          }
+          else if(nota == 'N/A'){
+
           }
           else{
             element.innerHTML = `<table>

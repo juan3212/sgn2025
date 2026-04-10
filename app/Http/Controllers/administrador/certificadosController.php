@@ -43,7 +43,7 @@ class certificadosController extends Controller
         ["name" => "CONVIVENCIA ESCOLAR", "type" => "environment"],
         ["name" => "EDUCACIÓN RELIGIOSA", "type" => "religion"],
         ["name" => "EDUCACIÓN ÉTICA Y EN VALORES HUMANOS", "type" => "ethics"],
-        ["name" => "Otras", "type" => "other"], // Categoría por defecto
+        ["name" => "DIMENSIONES", "type" => "other"], // Categoría por defecto
     ];
 
     protected $subjectsTree = [

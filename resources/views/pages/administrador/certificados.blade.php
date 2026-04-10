@@ -9,14 +9,14 @@
     font-weight: 200 700;
     font-style: normal;
   }
-  
+
 body {
     font-family: "Oswald";
     margin: 0;
     padding: 0;
     font-size: 18px;
   }
-  
+
   header {
     background-color: #fff;
     color: #000;
@@ -66,11 +66,11 @@ body {
     font-family: 'Oswald';
     font-size: 1em;
   }
-  
+
   h1 {
     font-size: 2em;
   }
-  
+
   main {
     width: 80%;
     margin: auto;
@@ -79,12 +79,12 @@ body {
       font-size: 1.2em;
     }
   }
-  
+
   table {
     width: 100%;
     border-collapse: collapse;
   }
-  
+
   th {
     background-color: #ccc;
     border: 1px solid #000;
@@ -126,7 +126,7 @@ body {
     width: 80%;
     margin: auto;
   }
-  
+
 
   .firmas {
     display: grid;
@@ -171,7 +171,7 @@ body {
       }
     }
 }
- 
+
   @media print {
     @page {
       margin-top: 35mm;
@@ -207,12 +207,12 @@ body {
             <article id="article-main">
                 @if($estudiante)
                     <p>
-                        Que el estudiante <strong>{{ $estudiante->nombre . ' ' . $estudiante->apellido }}</strong> 
+                        Que el estudiante <strong>{{ $estudiante->nombre . ' ' . $estudiante->apellido }}</strong>
                         identificado con NUIP N° <strong>{{ $estudiante->nuip ?? $estudiante->usuario }}</strong>
-                        cursó y aprobó los logros previstos en el Plan de Estudios correspondientes al grado 
+                        cursó y aprobó los logros previstos en el Plan de Estudios correspondientes al grado
                         <strong>{{ strtoupper($estudiante->grados[0]->grado ?? 'N/A') }}</strong>,
-                        durante el año lectivo <strong>{{ $year }}</strong>, en concordancia con los fines y objetivos de la 
-                        Ley General de Educación 115 de 1994, el Decreto 1860 de Agosto 3 de 1994 y los criterios de Evaluación y 
+                        durante el año lectivo <strong>{{ $year }}</strong>, en concordancia con los fines y objetivos de la
+                        Ley General de Educación 115 de 1994, el Decreto 1860 de Agosto 3 de 1994 y los criterios de Evaluación y
                         Promoción de la Institución, con las valoraciones e intensidad horaria que se relacionan a continuación:
                     </p>
                 @else
@@ -236,16 +236,16 @@ body {
                         <tbody>
                             @foreach($group['materias'] as $materia)
                                 <tr>
-                                    <td class="empty"></td> 
-                                    
-                                
+                                    <td class="empty"></td>
+
+
                                     <td>{{ $materia['nombre_es'] }}</td>
-                                    
-                                
+
+
                                     <td style="text-align: center;">{{ $materia['ih'] }}</td>
-                                    
-                                    
-                                    <td style="font-weight: bold; text-align: center;">{{ number_format($materia['promedio'], 1) }}</td>
+
+
+                                    <td style="font-weight: bold; text-align: center;" class="nota">{{ number_format($materia['promedio'], 1) }}</td>
                                     @php
                                     if($materia['promedio'] < 6) $materiasPerdidas++;
                                     @endphp
@@ -268,7 +268,7 @@ body {
                             $gradoNombre = strtoupper($estudiante->grados[0]->grado ?? '');
                             $esOnce = strpos($gradoNombre, 'UNDÉCIMO') !== false || strpos($gradoNombre, 'UNDECIMO') !== false;
                         @endphp
-                        
+
                         @if($esOnce)
                             EL ESTUDIANTE SE ENCUENTRA GRADUADO COMO BACHILLER BILINGÜE ACADÉMICO CON ÉNFASIS ARTÍSTICO.
                         @elseif($materiasPerdidas > 0)
@@ -294,7 +294,7 @@ body {
 
             <div class="info">
                 <small>
-                    Se expide en Bogotá, a los <span>{{ $fechaActual['dia'] }}</span> días del mes de 
+                    Se expide en Bogotá, a los <span>{{ $fechaActual['dia'] }}</span> días del mes de
                     <span>{{ $fechaActual['mes'] }}</span> de <span>{{ $fechaActual['anio'] }}</span>
                 </small>
                 <small>Nota: Es fiel copia de los archivos que reposan en el plantel</small>
@@ -302,3 +302,29 @@ body {
         </footer>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.nota').forEach(element => {
+            let grade = {{ $estudiante->grados[0]->id}};
+            if(grade < 4){
+            let nota = element.textContent;
+            console.log(nota);
+            if(nota > 8){
+                element.innerHTML = `
+                <td><img src="{{ asset('img/icons/boletin/happy-face.png') }}" alt="Happy Emoji" style="width: 30px;"></td>
+                `;
+                element.nextElementSibling.textContent = 'Lo lograste';
+            }
+            else if(nota == 'N/A'){
+
+            }
+            else{
+                element.innerHTML = `
+                <td><img src="{{ asset('img/icons/boletin/sad-face.png') }}" alt="Prejudice Emoji" style="width: 30px;"></td>
+                `;
+                element.nextElementSibling.textContent = 'En proceso';
+            }
+            }
+        });
+        });
+    </script>
