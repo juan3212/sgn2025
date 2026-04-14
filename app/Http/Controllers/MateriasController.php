@@ -24,7 +24,7 @@ class MateriasController extends Controller
     public $mostrarNotasService;
 
     public $d;
-    
+
 
     public function __construct()
     {
@@ -38,7 +38,7 @@ class MateriasController extends Controller
         $this->user = $user; // Almacenar el objeto usuario para usos potenciales
         $this->isAdmin = $user->hasRole('Super-Admin');
         $this->isTeacher = $user->hasRole('profesor');
-        
+
         if (!$this->isAdmin) {
             // Para usuarios no administradores, cargar su grado y grupo específicos
             $userData = Usuario::with('grados', 'grupos')->find($user->id);
@@ -48,7 +48,7 @@ class MateriasController extends Controller
             }
         }
     }
-    
+
 
     public function loadData()
     {
@@ -95,7 +95,7 @@ class MateriasController extends Controller
                         <button class="btn btn-xs btn-danger delete" data-id="'.$materia->id.'">Delete</button>';
             })
             ->addColumn('notas', function ($materia) {
-                $notas =  $this->mostrarNotasService->mostrarNotasMateria($this->user->id, $materia->id);
+                $notas =  $this->mostrarNotasService->mostrarNotasMateria($this->user->id, $materia->id, null, false);
                 $notas = number_format($notas, 2, '.');
                 $graficoNotasComponent = new progressBar(grade: $notas, maxGrade: 10.0);
                 return Blade::renderComponent($graficoNotasComponent);

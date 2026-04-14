@@ -8,71 +8,73 @@
         <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
         <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
         <script src="//cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.min.js"></script>
-        
+
 
         <style>
             /* Estilos personalizados para mejorar la apariencia */
             .dataTables_wrapper {
                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             }
-           
+
             /* Mejorar el header de la tabla */
             .dataTable thead th {
                 @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold text-sm;
                 padding: 12px 8px;
                 border: none;
             }
-           
+
             /* Mejorar las filas */
             .dataTable tbody td {
                 @apply border-b border-gray-200;
                 padding: 12px 8px;
                 vertical-align: middle;
             }
-           
+
             .dataTable tbody tr:hover {
                 @apply bg-gray-50 cursor-pointer;
             }
-           
+
             /* Mejorar controles de DataTables */
             .dataTables_length select,
             .dataTables_filter input {
                 @apply border border-gray-300 rounded-md px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200;
             }
-           
+
             /* Responsive breakpoints personalizados */
             @media (max-width: 768px) {
+
+
                 .dataTables_wrapper .dataTables_length,
                 .dataTables_wrapper .dataTables_filter {
                     float: none;
                     text-align: left;
                     margin-bottom: 10px;
                 }
-               
+
                 .dataTables_wrapper .dataTables_info,
                 .dataTables_wrapper .dataTables_paginate {
                     float: none;
                     text-align: center;
                     margin-top: 10px;
                 }
-               
+
             }
-           
+
             /* Estilo para los badges de porcentaje */
             .percentage-badge {
                 @apply bg-gradient-to-r from-green-500 to-green-600 text-white px-2 py-1 rounded-full text-xs font-semibold;
             }
-           
+
             /* Responsive details button */
             .dtr-details {
                 @apply bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600;
             }
-           
+
             /* Mejorar el aspecto del selector de período */
             .period-selector {
                 @apply bg-white border-2 border-gray-200 rounded-lg px-4 py-3 text-sm shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200;
             }
-            
+
             /* Estilo para la celda de descripción con ancho fijo */
             .description-cell {
                 white-space: nowrap;
@@ -83,58 +85,58 @@
                 max-width: 100%;
                 display: block;
             }
-            
+
             /* Asegurar que la columna descripción tenga ancho fijo */
             .description-column {
                 width: 40% !important;
                 max-width: 40% !important;
             }
-            
+
             /* Botón Ver Notas para modal responsive */
             .btn-ver-notas {
                 @apply bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 mt-3;
             }
-            
+
             /* Mejorar la apariencia del modal responsive */
             .dtr-modal {
                 background-color: rgba(0, 0, 0, 0.5);
             }
-            
+
             .dtr-modal-content {
                 @apply bg-white rounded-lg shadow-xl max-w-lg mx-auto mt-20;
             }
-            
+
             /* Estilo para el contenido del modal */
             .modal-details-content {
                 @apply p-6;
             }
-            
+
             /* Hover solo en desktop */
             @media (min-width: 769px) {
                 .dataTable tbody tr:hover {
                     @apply bg-gray-50 cursor-pointer;
                 }
-                
+
             }
-            
+
             /* Remover hover en móviles */
             @media (max-width: 768px) {
                 .dataTable tbody tr:hover {
                     @apply bg-transparent cursor-default;
                 }
                 .description-cell {
-                    max-width: 30vw; 
+                    max-width: 30vw;
                     max-height: 100px;
                 }
 
                 .td-description p{
-                    max-width: 80vw; 
+                    max-width: 80vw;
                     max-height: 100px;
                     white-space: normal;
                     word-wrap: break-word;
                 }
             }
-            
+
             /* Estilo para el contenido del modal */
             .modal-details-content {
                 @apply p-6;
@@ -152,18 +154,18 @@
                     </div>
                     @endcan
                     <div class="flex flex-col sm:flex-row gap-2">
-                        <label for="periodo" class="text-gray-700 sm:self-center font-semibold"> 
+                        <label for="periodo" class="text-gray-700 sm:self-center font-semibold">
                             *Período:
                         </label>
-                        <select name="periodo" 
-                            id="periodo" 
-                            required 
+                        <select name="periodo"
+                            id="periodo"
+                            required
                             @cannot('administrar competencias')
                             disabled
                             @endcannot
-                            class="period-selector @cannot('administrar competencias') bg-gray-200 @endcannot">    
+                            class="period-selector @cannot('administrar competencias') bg-gray-200 @endcannot">
                                 @foreach ($periodos as $periodo)
-                                    <option value="{{ $periodo->id }}" 
+                                    <option value="{{ $periodo->id }}"
                                         @if ($periodo->id == $periodoSelected) selected @endif>
                                         {{ $periodo->periodo }}
                                     </option>
@@ -247,7 +249,7 @@
         </div>
 
         <script type="module">
-            
+
             $(document).ready(function(){
                 // Función para detectar si es dispositivo móvil
                 function isMobile() {
@@ -272,7 +274,7 @@
                         { data: 'nota', name: 'nota', orderable: false, searchable: false },
                     ]
                 });
-                
+
                 //tabla de competencias
                 var table = $('#competenciasMaterias-table').DataTable({
                     processing: true,
@@ -294,15 +296,15 @@
                         {data: 'id', name: 'id'},
                         @endcan
                         {data: 'nombre', name: 'nombre'},
-                        { 
+                        {
                             data: 'descripcion',
                             name: 'descripcion',
                             render: function(data, type, row) {
                                 if (type === 'display' && data) {
-                       
+
                                     return `<p class="description-cell">${data}</p>`;
                                 }
-                                
+
                                 return data || '';
                             }
                         },
@@ -334,7 +336,7 @@
                                             '<td class="font-semibold text-gray-700 py-2 align-top">' + col.title + ':</td>' +
                                             '<td class="py-2 pl-4 description-cell-details">' + col.data + '</td>' +
                                         '</tr>';
-                                    } 
+                                    }
                                     return col ?
                                         '<tr>' +
                                             '<td class="font-semibold text-gray-700 py-2">' + col.title + ':</td>' +
@@ -342,11 +344,11 @@
                                         '</tr>' :
                                         '';
                                 }).join('');
-                                
+
                                 // Agregar botón "Ver Notas" al final del modal
                                 var rowData = api.row(rowIdx).data();
                                 var periodo = $('#periodo').val();
-                                
+
                                 if (data && rowData && rowData.id && periodo) {
                                     data += '<tr>' +
                                         '<td colspan="2" class="py-4 text-center">' +
@@ -356,7 +358,7 @@
                                         '</td>' +
                                     '</tr>';
                                 }
-                               
+
                                 return data ? $('<table class="w-full"/>').append(data) : false;
                             }
                         }
@@ -416,6 +418,26 @@
                         // Personalizar controles después de inicialización
                         $('.dataTables_length select').addClass('ml-2');
                         $('.dataTables_filter input').addClass('ml-2').attr('placeholder', 'Buscar...');
+
+                        let evalRows = document.querySelectorAll('.eval');
+                        evalRows.forEach(row => {
+                            row.remove();
+                            showEvalNotice();
+                        });
+
+                        function showEvalNotice() {
+                            let newRow = document.createElement('tr');
+                            newRow.classList.add('row-eval');
+                            newRow.innerHTML = `
+
+                                <td colspan="100%" class="text-center bg-gray-100">
+                                    <div class="text-lg font-semibold min-h-[10vh] p-4 text-wrap">
+                                    La nota de evaluación podrá ser visualizada únicamente en el informe valorativo. Esta nota corresponde al 30% de la nota definitiva de la asignatura.
+                                </div>
+                            </td>`;
+                            document.querySelector('table tbody').appendChild(newRow);
+                        }
+
                     }
                 });
 
@@ -424,7 +446,7 @@
                     table.ajax.reload();
                     tableEstudiantes.ajax.reload();
                     document.getElementById('estudiantes-table-button').disabled = false;
-                    
+
                 });
 
                 $('#competencias-table-button').on('click', function(){
@@ -451,15 +473,15 @@
                     if (isMobile()) {
                         return; // No hacer nada en móviles
                     }
-                    
+
                     // Evitar la redirección si se hizo clic en un checkbox o en un botón dentro de la fila
                     if ($(e.target).is('input:checkbox') || $(e.target).is('button') || $(e.target).closest('button').length) {
                         return;
                     }
-                    
+
                     var data = table.row(this).data();
                     var periodo = $('#periodo').val();
-                    
+
                     if (data && data.id && periodo) {
                         window.location.href = '/actividades/{{ $materia->id }}/'+ periodo +'/' + data.id;
                     }
@@ -470,12 +492,19 @@
                     var periodo = $('#periodo').val();
                     window.location.href = '/calificaciones/{{ $materia->id }}/'+ periodo;
                 });
-                
+
                 // Manejar cambios de tamaño de ventana
                 $(window).on('resize', function() {
                     table.columns.adjust().responsive.recalc();
                 });
+
+
+
+
+
             });
+
+
         </script>
     </div>
 </div>

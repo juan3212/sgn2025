@@ -24,7 +24,7 @@ class MateriasCompetenciasController extends Controller
         $this->mostrarNotasService = new MostrarNotasService();
         $this->getUserData();
     }
-    
+
     public function  getUserData()
     {
         $user = Auth::user();
@@ -46,7 +46,7 @@ class MateriasCompetenciasController extends Controller
     }
     public function getCompetencesFromSubjects($materiaId, $periodo)
     {
-        
+
         $materias = Materia::select('materias.*', 'c.*')
             ->join('materia_has_competencia as mc', 'materias.id', '=', 'mc.materia_id')
             ->leftJoin('competencias as c', 'mc.competencia_id', '=', 'c.id')
@@ -55,13 +55,27 @@ class MateriasCompetenciasController extends Controller
             ->get();
         return $materias;
     }
- 
+
     public function data(Request $request)
     {
         $this->materia = $request->materia;
         $competences = $this->getCompetencesFromSubjects($request->materia, $request->periodo);
+        $isEvaluation = false;
 
         return datatables()->of($competences)
+        ->setRowClass(function ($competence) {
+                $name = strtolower($competence->nombre);
+                $isEvaluation = (
+                    str_contains($name, 'assesment') ||
+                    str_contains($name, 'evaluation') ||
+                    str_contains($name, 'exam') ||
+                    str_starts_with($name, 'e') ||
+                    str_contains($name, 'sment') ||
+                    str_contains($name, 'evalua')
+                ) && !str_starts_with($name, 'c');
+
+                return $isEvaluation ? "eval": '';
+            })
             ->addColumn('checkbox', function ($competence) {
                 return '<input type="checkbox" class="select-checkbox form-checkbox h-5 w-5 text-blue-600" data-id="'. $competence->id. '">';
             })
