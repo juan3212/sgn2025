@@ -56,25 +56,29 @@ class MateriasCompetenciasController extends Controller
         return $materias;
     }
 
+    private function checkEvaluation($name)
+    {
+        $name = strtolower($name);
+        return (
+            str_contains($name, 'assesment') ||
+            str_contains($name, 'evaluation') ||
+            str_contains($name, 'exam') ||
+            str_starts_with($name, 'e') ||
+            str_contains($name, 'sment') ||
+            str_contains($name, 'evalua')
+        ) && !str_starts_with($name, 'c');
+    }
+
     public function data(Request $request)
     {
         $this->materia = $request->materia;
         $competences = $this->getCompetencesFromSubjects($request->materia, $request->periodo);
-        $isEvaluation = false;
-
+        $isStudent = $this->user->roles->contains('name', 'estudiante');
         return datatables()->of($competences)
-        ->setRowClass(function ($competence) {
-                $name = strtolower($competence->nombre);
-                $isEvaluation = (
-                    str_contains($name, 'assesment') ||
-                    str_contains($name, 'evaluation') ||
-                    str_contains($name, 'exam') ||
-                    str_starts_with($name, 'e') ||
-                    str_contains($name, 'sment') ||
-                    str_contains($name, 'evalua')
-                ) && !str_starts_with($name, 'c');
+        ->setRowClass(function ($competence) use ($isStudent) {
+                $isEvaluation = $this->checkEvaluation($competence->nombre);
 
-                return $isEvaluation ? "eval": '';
+                return ($isEvaluation && $isStudent) ? "eval": '';
             })
             ->addColumn('checkbox', function ($competence) {
                 return '<input type="checkbox" class="select-checkbox form-checkbox h-5 w-5 text-blue-600" data-id="'. $competence->id. '">';
@@ -83,7 +87,10 @@ class MateriasCompetenciasController extends Controller
                 return '<a class="btn btn-xs btn-primary edit" href="/edit/competencias/'.$competence->id.'">Edit</a>
                         <button class="btn btn-xs btn-danger delete" data-id="'.$competence->id.'">Delete</button>';
             })
-            ->addColumn('notas', function($competencia){
+            ->addColumn('notas', function($competencia) use ($isStudent) {
+                if ($isStudent && $this->checkEvaluation($competencia->nombre)) {
+                    return '--';
+                }
                 $notas = $this->mostrarNotasService->mostrarNotasCompetencia($this->user->id, $competencia->id, $this->materia);
                 $notas = number_format($notas, 1, '.');
                 $progressBar = new progressBar($notas, 10);

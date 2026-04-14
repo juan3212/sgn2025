@@ -425,11 +425,11 @@
                             showEvalNotice();
                         });
 
+
                         function showEvalNotice() {
                             let newRow = document.createElement('tr');
                             newRow.classList.add('row-eval');
                             newRow.innerHTML = `
-
                                 <td colspan="100%" class="text-center bg-gray-100">
                                     <div class="text-lg font-semibold min-h-[10vh] p-4 text-wrap">
                                     La nota de evaluación podrá ser visualizada únicamente en el informe valorativo. Esta nota corresponde al 30% de la nota definitiva de la asignatura.
