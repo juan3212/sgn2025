@@ -66,7 +66,8 @@ class MateriasCompetenciasController extends Controller
             str_starts_with($name, 'e') ||
             str_contains($name, 'sment') ||
             str_contains($name, 'evalua')
-        ) && !str_starts_with($name, 'ce');
+        ) && !str_starts_with($name, 'c') ||
+        str_starts_with($name, 'ce');
     }
 
     public function data(Request $request)
