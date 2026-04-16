@@ -7,17 +7,20 @@ use App\Models\Competencia;
 use App\Models\NotaFinalMateria;
 use App\Models\Periodo;
 use App\Services\getUserDataService;
+use App\Services\CheckIsEvaluationService;
 
 class MostrarNotasService
 {
     public $getUserDataService;
     public $isAdmin;
     public $isTeacher;
+    public $checkIsEvaluationService;
     public function __construct($forIndividual = true)
     {
         if ($forIndividual) {
             $this->getUserDataService = new getUserDataService;
             $userData = $this->getUserDataService->getUserDataFromAuth();
+            $this->checkIsEvaluationService = new CheckIsEvaluationService;
             $this->isAdmin = $userData['isAdmin'];
             $this->isTeacher = $userData['isTeacher'];
         }
@@ -67,16 +70,10 @@ class MostrarNotasService
 
     private function getEvaluationCompetencia($estudianteId, $materiaId)
     {
-        $competencias = Competencia::where(function ($query) {
-            $query->where('nombre', 'LIKE', '%assessment%')
-                  ->orWhere('nombre', 'LIKE', '%evaluation%')
-                  ->orWhere('nombre', '=', 'E')
-                  ->orWhere('nombre', 'LIKE', '%sment%')
-                  ->orWhere('nombre', 'LIKE', '%exam%');
-        })
-        ->join('materia_has_competencia', 'id', '=', 'materia_has_competencia.competencia_id')
-        ->where('nombre', 'NOT LIKE', '%C')
-        ->where('materia_has_competencia.materia_id', $materiaId)
+        $competencias = Competencia::query();
+        $competencias = $this->checkIsEvaluationService->filterEvaluationQuery($competencias)
+            ->join('materia_has_competencia', 'id', '=', 'materia_has_competencia.competencia_id')
+            ->where('materia_has_competencia.materia_id', $materiaId)
         ->get();
 
         if ($competencias->isEmpty()) {

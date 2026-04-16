@@ -8,6 +8,8 @@ use App\Models\Materia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use App\Services\MostrarNotasService;
+use App\Services\CheckIsEvaluationService;
+
 
 class MateriasCompetenciasController extends Controller
 {
@@ -18,10 +20,12 @@ class MateriasCompetenciasController extends Controller
     public $isAdmin;
     public $isTeacher;
     public $user;
+    public $checkIsEvaluationService;
 
     public function __construct()
     {
         $this->mostrarNotasService = new MostrarNotasService();
+        $this->checkIsEvaluationService = new CheckIsEvaluationService();
         $this->getUserData();
     }
 
@@ -56,20 +60,6 @@ class MateriasCompetenciasController extends Controller
         return $materias;
     }
 
-    private function checkEvaluation($name)
-    {
-        $name = strtolower($name);
-        return (
-            str_contains($name, 'assesment') ||
-            str_contains($name, 'evaluation') ||
-            str_contains($name, 'exam') ||
-            str_starts_with($name, 'e') ||
-            str_contains($name, 'sment') ||
-            str_contains($name, 'evalua')
-        ) && !str_starts_with($name, 'c') ||
-        str_starts_with($name, 'ce');
-    }
-
     public function data(Request $request)
     {
         $this->materia = $request->materia;
@@ -77,7 +67,7 @@ class MateriasCompetenciasController extends Controller
         $isStudent = $this->user->roles->contains('name', 'estudiante');
         return datatables()->of($competences)
         ->setRowClass(function ($competence) use ($isStudent) {
-                $isEvaluation = $this->checkEvaluation($competence->nombre);
+                $isEvaluation = $this->checkIsEvaluationService->checkEvaluation($competence->nombre);
 
                 return ($isEvaluation && $isStudent) ? "eval": '';
             })
@@ -89,7 +79,7 @@ class MateriasCompetenciasController extends Controller
                         <button class="btn btn-xs btn-danger delete" data-id="'.$competence->id.'">Delete</button>';
             })
             ->addColumn('notas', function($competencia) use ($isStudent) {
-                if ($isStudent && $this->checkEvaluation($competencia->nombre)) {
+                if ($isStudent && $this->checkIsEvaluationService->checkEvaluation($competencia->nombre)) {
                     return '--';
                 }
                 $notas = $this->mostrarNotasService->mostrarNotasCompetencia($this->user->id, $competencia->id, $this->materia);
