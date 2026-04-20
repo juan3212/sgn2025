@@ -61,10 +61,15 @@ class MostrarNotasService
         ->where('periodo_id', $periodoId??$this->calcularPeriodo())
         ->first();
 
+        if (!$nota) {
+            return 0;
+        }
+
         if($withEvaluation || $this->isAdmin || $this->isTeacher) {
             return $nota->nota_final ?? 0;
         }
         $evaluation = $this->getEvaluationCompetencia($estudianteId, $materiaId);
+
         return $nota->nota_final - $evaluation ?? 0;
     }
 
@@ -89,6 +94,6 @@ class MostrarNotasService
                 $nota += $evaluationNota->nota_final;
             }
         }
-        return $nota;
+        return $nota ?? 0;
     }
 }
