@@ -66,7 +66,7 @@ class PaymentStatus
             $request->routeIs("dashboard");
 
         if ($this->paymentService->hasPaid($user) && !$rutaActualEsPermitida) {
-            return redirect()->route("dashboard");
+            return redirect()->route("boletin");
         }
 
         return $next($request);

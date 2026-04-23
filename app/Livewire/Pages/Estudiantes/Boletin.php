@@ -95,7 +95,7 @@ class Boletin extends Component
             $this->periodoId = 4;
         } elseif (date("n") >= "11") {
             $this->periodoId = $periodo->id;
-        } elseif (date("n") <= "4") {
+        } elseif (date("n") < "4") {
             $this->periodoId = $periodo->id;
         } else {
             $this->periodoId = $periodo->id - 1;
