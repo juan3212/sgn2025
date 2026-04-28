@@ -87,10 +87,12 @@ class MostrarNotasService
         $nota = 0;
         foreach ($competencias as $competencia) {
             $evaluationNota = NotaFinalCompetencia::where('estudiante_id', $estudianteId)
+                ->join('competencias', 'competencias.id', '=', 'notas_finales_competencias.competencia_id')
                 ->where('competencia_id', $competencia->id)
                 ->where('materia_id', $materiaId)
+                ->where('competencias.periodo_id', $this->calcularPeriodo())
                 ->first();
-            if ($evaluationNota) {
+            if ($evaluationNota && $evaluationNota->nota_final > 0) {
                 $nota += $evaluationNota->nota_final;
             }
         }

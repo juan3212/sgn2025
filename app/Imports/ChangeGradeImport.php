@@ -47,6 +47,8 @@ class ChangeGradeImport implements ToModel, WithHeadingRow
                 "usuario_id",
                 $usuario,
             )->first();
+            $this->cambiarGradoUsuarioService->changeGradeUserAllPeriods($usuario, $usuarioGrado->grado_id, $usuarioGrado->grupo_id, $newGrado, $newGrupo, $periodo);
             $this->cambiarGradoUsuarioService->changeGradeUser($usuario, $usuarioGrado->grado_id, $usuarioGrado->grupo_id, $newGrado, $newGrupo, $periodo);
+
     }
 }
