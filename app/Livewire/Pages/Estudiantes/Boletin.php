@@ -123,10 +123,15 @@ class Boletin extends Component
             ->get();
 
         $notasCompetencias->each(function ($nota) {
-            $nota->nota_final = number_format(
-                $nota->nota_final / ($nota->porcentaje / 100),
-                2,
-            );
+            if ($nota->nota_final !== null && $nota->porcentaje > 0) {
+                $nota->nota_final = number_format(
+                    $nota->nota_final / ($nota->porcentaje / 100),
+                    2,
+                );
+            }
+            else {
+                $nota->nota_final = 1;
+            }
         });
         return $notasCompetencias;
     }

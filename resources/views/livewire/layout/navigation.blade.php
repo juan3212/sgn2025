@@ -19,8 +19,8 @@ new class extends Component {
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            
-            <div class="flex @role('estudiante') hidden @endrole">
+
+            <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" wire:navigate>
@@ -35,7 +35,7 @@ new class extends Component {
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     @endcan
-                    @can('administrar usuarios')
+                    @can('administrar usuarios', 'ver usuarios')
                     <x-nav-link :href="route('usuarios')" :active="request()->routeIs('usuarios')" wire:navigate>
                         {{ __('Usuarios') }}
                     </x-nav-link>
@@ -57,7 +57,7 @@ new class extends Component {
                     <x-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>
                         {{ __('Boletines') }}
                     </x-nav-link>
-                    
+
                     <x-nav-link :href="route('informes')" :active="request()->routeIs('informes')" wire:navigate>
                         {{ __('Informes') }}
                     </x-nav-link>
@@ -115,7 +115,7 @@ new class extends Component {
                     </x-slot>
 
                     <x-slot name="content">
-                        @can('administrar usuarios')
+                        @can('administrar usuarios', 'ver usuarios')
                         <x-dropdown-link :href="route('profile')" wire:navigate>
                             {{ __('Profile') }}
                         </x-dropdown-link>
@@ -145,8 +145,8 @@ new class extends Component {
 
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        
-        <div class="pt-2 pb-3 space-y-1 @role('estudiante') hidden @endrole">
+
+        <div class="pt-2 pb-3 space-y-1">
             @can('administracion general')
             <x-responsive-nav-link :href="route('dashboard-administrador')" :active="request()->routeIs('dashboard-administrador')" wire:navigate>
                 {{ __('Dashboard') }}
@@ -165,6 +165,11 @@ new class extends Component {
                 {{ __('Competencias') }}
             </x-responsive-nav-link>
             @endcan
+            @role('estudiante')
+            <x-responsive-nav-link :href="route('boletin')" :active="request()->routeIs('boletin')" wire:navigate>
+                {{ __('Boletines') }}
+            </x-responsive-nav-link>
+            @endrole
             @can('administrar materias')
                 <x-responsive-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>
                     {{ __('Boletines') }}
@@ -173,12 +178,12 @@ new class extends Component {
                     {{ __('Informes') }}
                 </x-responsive-nav-link>
             @endcan
-            
+
         </div>
-    
+
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
-        
+
             <div class="mt-3 space-y-1">
                 @can('administrar usuarios')
                 <x-responsive-nav-link :href="route('profile')" wire:navigate>
