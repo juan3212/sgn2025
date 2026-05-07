@@ -8,6 +8,7 @@ use App\Models\Actividad;
 use App\Models\Nota;
 use App\Models\NotaFinalCompetencia;
 use App\Models\UsuarioGrado;
+use App\Models\NotaRecuperacion;
 use Illuminate\Support\Facades\DB;
 
 class CambiarGradoUsuarioService
@@ -45,6 +46,10 @@ class CambiarGradoUsuarioService
                 }]);
             },
             'notasMateria' => function ($query) use ($periodo, $usuarioId) {
+                $query->where('estudiante_id', $usuarioId);
+                $query->where('periodo_id', $periodo);
+            },
+            'recuperaciones' => function ($query) use ($periodo, $usuarioId) {
                 $query->where('estudiante_id', $usuarioId);
                 $query->where('periodo_id', $periodo);
             },
@@ -143,14 +148,16 @@ class CambiarGradoUsuarioService
                                     });
 
                                     $notaMateriaCurrent = $materia->notasMateria;
-                                    dump($notaMateriaCurrent);
-                                    $notaMateriaNew = NotaFinalMateria::updateOrCreate([
-                                        'estudiante_id' => $usuarioId,
-                                        'materia_id' => $materiaNew->id,
-                                        'periodo_id' => $periodo,
-                                    ], [
-                                        'nota_final' => $notaMateriaCurrent->first()->nota_final?? 0,
-                                    ]);
+                                    if (!$notaMateriaCurrent->isEmpty()) {
+                                        dump($notaMateriaCurrent);
+                                        $notaMateriaNew = NotaFinalMateria::updateOrCreate([
+                                            'estudiante_id' => $usuarioId,
+                                            'materia_id' => $materiaNew->id,
+                                            'periodo_id' => $periodo,
+                                        ], [
+                                            'nota_final' => $notaMateriaCurrent->first()->nota_final?? 0,
+                                        ]);
+                                    }
 
                                     $notasCompetenciasCurrent = $materia->competencias->pluck('notasCompetencia')->flatten();
                                     foreach($notasCompetenciasCurrent as $notaCompetencia){
@@ -163,6 +170,16 @@ class CambiarGradoUsuarioService
                                             'nota_final' => $notaCompetencia->nota_final,
                                         ]);
                                     }
+
+                                    $recuperacionesCurrent = $materia->recuperaciones;
+                                    dump($recuperacionesCurrent);
+                                    $recuperacionesNew = NotaRecuperacion::updateOrCreate([
+                                        'estudiante_id' => $usuarioId,
+                                        'materia_id' => $materiaNew->id,
+                                        'periodo_id' => $periodo,
+                                    ], [
+                                        'nota_recuperacion' => $recuperacionesCurrent->first()->nota_final ?? 0,
+                                    ]);
 
                                 }
                             }
@@ -211,6 +228,8 @@ class CambiarGradoUsuarioService
     public function changeGradeUserAllPeriods($usuarioId, $gradoActual, $cursoActual, $nuevoGrado, $nuevoCurso, $periodo)
     {
         $isTheSameGrade = $gradoActual == $nuevoGrado;
+        $update = $isTheSameGrade;
+        dump($update);
         $materiasNewGrade = Materia::where('grado_id', $nuevoGrado)->where('grupo_id', $nuevoCurso)->get();
 
         $materias = Materia::where('grado_id', $gradoActual)->where('grupo_id', $cursoActual)->get();
@@ -218,29 +237,84 @@ class CambiarGradoUsuarioService
         dump($materias);
         dump($materiasNewGrade);
 
+
         DB::beginTransaction();
         try {
             foreach ($materias as $materia) {
                 dump($materia->materia_id);
-                $newMateriaId = $materiasNewGrade->where('materia_id', $materia->materia_id)->first()->id;
+                $newMateriaId = $materiasNewGrade->where('materia_id', $materia->materia_id)->first()->id ?? null;
+                if ($newMateriaId === null) {
+                    continue;
+                }
+
 
                 dump($newMateriaId, $materia->id);
                 $notasCompetencias = NotaFinalCompetencia::where('estudiante_id', $usuarioId)
                     ->join('competencias', 'competencias.id', '=', 'notas_finales_competencias.competencia_id')
                     ->where('notas_finales_competencias.materia_id', $materia->id)
                     ->where('competencias.periodo_id', '<', $periodo)
-                    ->update(['materia_id' => $newMateriaId]);
+                    ->select('notas_finales_competencias.*');
+
+                $notasCompetencias->each(function ($query) use ($newMateriaId, $update, $periodo, $usuarioId) {
+                    if ($update) {
+                        $query->update(['materia_id' => $newMateriaId]);
+                    } else {
+                        dump($query->nota_final);
+
+                        NotaFinalCompetencia::create([
+                            'estudiante_id' => $usuarioId,
+                            'competencia_id' => $query->competencia_id,
+                            'materia_id' => $newMateriaId,
+                            'periodo_id' => $periodo,
+                            'nota_final' => $query->nota_final,
+                        ]);
+                    }
+                });
 
 
                 $notaFinalMateria = NotaFinalMateria::where('estudiante_id', $usuarioId)
                     ->where('periodo_id', '<', $periodo)
                     ->where('materia_id', $materia->id)
-                    ->update(['materia_id' => $newMateriaId]);
+                    ->select('notas_finales_materias.*');
+
+                $notaFinalMateria->each(function ($query) use ($newMateriaId, $update, $usuarioId) {
+                    if ($update) {
+                        $query->update(['materia_id' => $newMateriaId]);
+                    } else {
+                        dump($query->nota_final);
+
+                        NotaFinalMateria::create([
+                            'estudiante_id' => $usuarioId,
+                            'materia_id' => $newMateriaId,
+                            'periodo_id' => $query->periodo_id,
+                            'nota_final' => $query->nota_final,
+                        ]);
+                    }
+                });
+
+                $notaRecuperacion = NotaRecuperacion::where('estudiante_id', $usuarioId)
+                    ->where('periodo_id', '<', $periodo)
+                    ->where('materia_id', $materia->id)
+                    ->select('notas_recuperaciones.*');
+                $notaRecuperacion->each(function ($query) use ($newMateriaId, $usuarioId, $update) {
+                    if ($update) {
+                        $query->update(['materia_id' => $newMateriaId]);
+                    } else {
+                        dump($query->nota_final);
+                        NotaRecuperacion::create([
+                            'estudiante_id' => $usuarioId,
+                            'materia_id' => $newMateriaId,
+                            'periodo_id' => $query->periodo_id,
+                            'nota_recuperacion' => $query->nota_final,
+                        ]);
+                    }
+                });
 
                 dump($notaFinalMateria);
 
             }
             DB::commit();
+
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
