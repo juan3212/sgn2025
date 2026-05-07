@@ -43,7 +43,7 @@ class Materia extends Model
     public function competencias()
     {
         return $this->belongsToMany(Competencia::class, 'materia_has_competencia', 'materia_id', 'competencia_id');
-                    
+
     }
 
     public function actividades()
@@ -54,5 +54,9 @@ class Materia extends Model
     public function notasMateria()
     {
         return $this->hasMany(NotaFinalMateria::class);
+    }
+    public function recuperaciones()
+    {
+        return $this->hasMany(NotaRecuperacion::class);
     }
 }
