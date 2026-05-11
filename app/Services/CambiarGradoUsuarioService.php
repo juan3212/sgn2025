@@ -9,7 +9,10 @@ use App\Models\Nota;
 use App\Models\NotaFinalCompetencia;
 use App\Models\UsuarioGrado;
 use App\Models\NotaRecuperacion;
+use App\Http\Controllers\notasActividadesController;
 use Illuminate\Support\Facades\DB;
+
+use function Pest\Laravel\json;
 
 class CambiarGradoUsuarioService
 {
@@ -62,6 +65,10 @@ class CambiarGradoUsuarioService
         dump($materiasCurrent);
         dump($materiasNewGrade);
 
+        if(!$isTheSameGrade){
+            return $this->changeGradePromotedUser($usuarioId, $materiasNewGrade, $materiasCurrent, $periodo, $nuevoGrado, $nuevoCurso);
+
+        }
         $materiasAreEqual = $materiasCurrent->pluck('materia_id')->diff($materiasNewGrade->pluck('materia_id'))->isEmpty();
         dump($materiasAreEqual);
 
@@ -211,10 +218,7 @@ class CambiarGradoUsuarioService
                 }
             }
 
-            UsuarioGrado::where('usuario_id', $usuarioId)->update([
-                'grado_id' => $nuevoGrado,
-                'grupo_id' => $nuevoCurso,
-            ]);
+            $this->changeGrade($usuarioId, $nuevoGrado, $nuevoCurso);
 
 
             DB::commit();
@@ -319,6 +323,64 @@ class CambiarGradoUsuarioService
             DB::rollBack();
             throw $e;
         }
+    }
+
+    public function changeGradePromotedUser($usuarioId, $materiasNew, $materiasCurrent, $periodo, $nuevoGrado, $nuevoCurso)
+    {
+
+
+
+        $materiasNew->each(function($materiaNew) use ($usuarioId, $periodo, $materiasCurrent) {
+            $materia = $materiasCurrent->firstWhere('materia_id', $materiaNew->materia_id);
+            if ($materia) {
+                $competencias = $materia->competencias->where('periodo_id', $periodo)->sortBy('competencia_id')->values()->toArray();
+                $competenciasNew = $materiaNew->competencias->where('periodo_id', $periodo)->sortBy('competencia_id')->values()->toArray();
+                dump($competencias);
+                dump($competenciasNew);
+                dump(count($competencias), count($competenciasNew));
+                $sameCompetencias = count($competencias) == count($competenciasNew);
+                if ($sameCompetencias) {
+                    foreach ($competencias as $index => $cOld) {
+                        $cNew = $competenciasNew[$index];
+                        dump('COMPETENCIA'.$index, $cOld, $cNew);
+                        $actividades = $materia->actividades->where('competencia_id', $cOld['id']);
+                        $actividadesNew = $materiaNew->actividades->where('competencia_id', $cNew['id']);
+                        $sameActividades = count($actividades) == count($actividadesNew);
+                        dump(count($actividades), count($actividadesNew), $sameActividades);
+
+                        if ($sameActividades) {
+                            dump('actividades', $actividades->pluck('notas')->values()->flatten()->toArray(), $actividadesNew);
+                            $notas = $actividades->pluck('notas')->values()->flatten()->toArray();
+                            $notasPush = array_map(function ($nota, $index) use ($actividadesNew) {
+                                $notaObject = [];
+                                $notaObject['actividad_id'] = $actividadesNew[$index]->id;
+                                $notaObject['estudiante_id'] = $nota['estudiante_id'];
+                                $notaObject['valor'] = $nota['valor'];
+                                return $notaObject;
+                            }, $notas, array_keys($notas));
+                            dump('notasPush', $notasPush);
+                            if($notas) {
+                                $notasOb = ['notas' => $notasPush];
+                                $notasOb = new \Illuminate\Http\Request($notasOb);
+                                $notasController = new notasActividadesController();
+                                $notasController->saveNotasActividades($notasOb);
+                            }
+                        }
+                    }
+
+                }
+            }
+        });
+
+        $this->changeGrade($usuarioId, $nuevoGrado, $nuevoCurso);
+    }
+
+    private function changeGrade($usuarioId, $nuevoGrado, $nuevoCurso)
+    {
+        UsuarioGrado::where('usuario_id', $usuarioId)->update([
+            'grado_id' => $nuevoGrado,
+            'grupo_id' => $nuevoCurso,
+        ]);
     }
 
    /* public function cambiarGradoUsuario($usuarioId, $gradoActual, $cursoActual, $nuevoGrado, $nuevoCurso, $periodo)
