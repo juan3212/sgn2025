@@ -269,7 +269,7 @@
                 if (textVal === '') return;
 
                 const valor = parseFloatCell(textVal);
-                const notAllowed = textVal !== 'NA' && (isNaN(valor) || valor < 0.1 || valor > 10);
+                const notAllowed = textVal.toLowerCase() !== 'na' && (isNaN(valor) || valor < 0.1 || valor > 10);
 
                 if (notAllowed) {
                     cell.classList.add('bg-red-200', 'text-red-800', 'outRange');
@@ -292,7 +292,7 @@
                 cells.forEach(cell => {
                     const valorRaw = cell.innerText.trim();
                     let comment = null;
-                    if (valorRaw === 'NA') {
+                    if (valorRaw.toLowerCase() === 'na') {
                         comment = 'NA'
                     }
 
