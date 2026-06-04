@@ -120,6 +120,7 @@ class notasActividadesController extends Controller
             "notas.*.estudiante_id" => "required|integer",
             "notas.*.actividad_id" => "required|integer",
             "notas.*.valor" => "required|numeric|between:0,10",
+            "notas.*.observacion" => "nullable|string",
         ]);
 
         if ($validator->fails()) {
@@ -147,6 +148,7 @@ class notasActividadesController extends Controller
                     ],
                     [
                         "valor" => $nota["valor"],
+                        "observacion" => $nota["observacion"],
                     ],
                 );
 

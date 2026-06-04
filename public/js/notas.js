@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
 function moveToCell() {
     let table = document.querySelector('.dataTable');
 
+    this.addComments();
+
     table.addEventListener('click', function(event) {
         const cell = event.target;
 
@@ -15,6 +17,7 @@ function moveToCell() {
             selectText(cell);
         }
     });
+
 
     table.addEventListener('keydown', function(event) {
         const cell = event.target;
@@ -98,6 +101,19 @@ function handlePaste() {
                 }
             }
         }
+
+    });
+}
+
+function addComments() {
+    let table = document.querySelector('.dataTable');
+    let availableComments = ['NA']
+    table.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+        const targetCell = event.target;
+        if (targetCell.nodeName == 'SPAN') {
+            targetCell.textContent = availableComments[0];
+        };
 
     });
 }

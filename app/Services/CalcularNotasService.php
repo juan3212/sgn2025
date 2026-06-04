@@ -32,7 +32,7 @@ class CalcularNotasService
 
     public function calcularNotasCompetencia(Array $data)
     {
-        
+
         $estudiante = $data['estudiante'];
         $competencia = $data['competencia'];
         $materia = $data['materia'];
@@ -43,6 +43,7 @@ class CalcularNotasService
         ->where('actividades.materia_id', $materia)
         ->where('actividades.competencia_id', $competencia)
         ->where('notas.estudiante_id', $estudiante)
+        ->where('notas.observacion', null)
         ->get();
         $notas = $notas->toArray();
         if(!$notas){
@@ -91,6 +92,6 @@ class CalcularNotasService
         $notas = array_column($notas, 'nota_final');
         $notaFinal = array_sum($notas);
         return $notaFinal;
-    
+
     }
 }

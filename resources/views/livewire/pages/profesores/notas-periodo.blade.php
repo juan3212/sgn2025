@@ -43,7 +43,7 @@
                     <span class="sr-only">Cerrar modal</span>
                 </button>
 
-                <div class="p-4">
+                <div class="p-4 max-h-[95vh] overflow-y-auto my-2">
                     <livewire:forms.competencias-form wire:key="competencia-form{{ count($competencias).count($actividades) }}"/>
                 </div>
             </div>
@@ -202,7 +202,7 @@
                                         class="editable-cell block w-full rounded border border-transparent hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none px-2 py-1 transition-all cursor-text"
                                         data-estudiante_id="{{ $estudiante->id }}"
                                         data-actividad_id="{{ $actividad->id }}">
-                                        {{ $estudiante->notas->firstWhere('actividad_id', $actividad->id)?->valor }}
+                                        {{ $estudiante->notas->firstWhere('actividad_id', $actividad->id)?->observacion ?? $estudiante->notas->firstWhere('actividad_id', $actividad->id)?->valor }}
                                     </span>
                                 </td>
                             @endif
@@ -269,10 +269,11 @@
                 if (textVal === '') return;
 
                 const valor = parseFloatCell(textVal);
+                const notAllowed = textVal !== 'NA' && (isNaN(valor) || valor < 0.1 || valor > 10);
 
-                if (isNaN(valor) || valor < 0.1 || valor > 10) {
+                if (notAllowed) {
                     cell.classList.add('bg-red-200', 'text-red-800', 'outRange');
-                    messageContent.textContent = 'La nota debe ser un número entre 0.1 y 10';
+                    messageContent.textContent = 'La nota debe ser un número entre 0.1 y 10 o NA';
                     saveButton.disabled = true;
                     saveButton.classList.add('opacity-50', 'cursor-not-allowed');
                 } else {
@@ -290,12 +291,17 @@
 
                 cells.forEach(cell => {
                     const valorRaw = cell.innerText.trim();
+                    let comment = null;
+                    if (valorRaw === 'NA') {
+                        comment = 'NA'
+                    }
 
                     if (valorRaw !== '' && !cell.classList.contains('outRange')) {
                         notasParaGuardar.push({
                             estudiante_id: cell.dataset.estudiante_id,
                             actividad_id: cell.dataset.actividad_id,
-                            valor: parseFloatCell(valorRaw)
+                            valor: comment != null ? 0 : parseFloatCell(valorRaw),
+                            observacion: comment
                         });
                     }
                 });
@@ -343,7 +349,7 @@
                 overlay.classList.remove('hidden');
 
 
-                
+
                 saveComentarios();
                 fetch('/notas/saveNotasActividades', {
                         method: 'POST',
@@ -424,7 +430,7 @@
 
             const debouncedHandleInput = debounce(handleInput, 300);
             document.addEventListener('input', debouncedHandleInput);
-            
+
             document.addEventListener('paste', handlePaste, true);
 
             if (saveButton) {
@@ -435,12 +441,12 @@
         Livewire.on('actividad-competencia-guardada', () => {
             window.location.reload();
         });
-       
+
     </script>
-        
+
         <script src="{{ asset('js/notas.js') }}"></script>
     </div>
 
-    
+
 
 </div>
