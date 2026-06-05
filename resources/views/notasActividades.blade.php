@@ -19,10 +19,10 @@
     <div class="py-12 bg-gray-50 min-h-screen">
     <div class="max-w-full mx-auto sm:px-6 lg:px-8">
         <div class="bg-white shadow-lg sm:rounded-lg p-6">
-            
+
             <div class="flex flex-col space-y-4">
                 <!-- Mensaje de alerta -->
-                <p id="messageContent" 
+                <p id="messageContent"
                    class="hidden px-4 py-2 text-red-700 bg-red-100 border border-red-400 rounded">
                 </p>
 
@@ -46,11 +46,11 @@
                                     <td class="px-4 py-2">{{ $estudiante['apellido'] }}</td>
                                     @foreach ($estudiante['actividades'] as $actividad)
                                         <td class="px-4 py-2">
-                                            <span contenteditable="true" 
+                                            <span contenteditable="true"
                                                   class="editable-cell border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
                                                   data-estudiante_id="{{ $estudiante['estudiante_id'] }}"
                                                   data-id="{{ $actividad['actividad_id'] }}">
-                                                {{ $actividad['valor'] }}
+                                                {{ $actividad['comment'] ?? $actividad['valor'] }}
                                             </span>
                                         </td>
                                     @endforeach
@@ -63,7 +63,7 @@
 
                 <!-- Botón -->
                 <div class="grid mt-2 p-2">
-                    <button id="saveNotas" 
+                    <button id="saveNotas"
                             class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
                         Guardar
                     </button>
@@ -106,12 +106,13 @@
                             return valor;
                         }
 
-                        function updateNota(actividad_id, estudiante_id, valor) {
+                        function updateNota(actividad_id, estudiante_id, valor, observacion) {
                             let notaExistente = notas.find((nota) => nota.actividad_id === actividad_id && nota.estudiante_id === estudiante_id);
                             if (notaExistente) {
                                 notaExistente.valor = valor;
+                                notaExistente.observacion = observacion;
                             } else {
-                                notas.push({ actividad_id, estudiante_id, valor });
+                                notas.push({ actividad_id, estudiante_id, valor, observacion});
                             }
                         }
 
@@ -119,10 +120,16 @@
                             let notasCell = document.getElementsByClassName('editable-cell');
 
                             for (let i = 0; i < notasCell.length; i++) {
+                                const valorRaw = notasCell[i].innerText.trim();
+                                let comment = null;
+                                if (valorRaw.toLowerCase() === 'na') {
+                                    comment = 'NA'
+                                }
                                 const actividad_id = notasCell[i].dataset.id;
                                 const estudiante_id = notasCell[i].dataset.estudiante_id;
-                                const valor = parseFloatCell(notasCell[i].textContent);
-                                updateNota(actividad_id, estudiante_id, valor);
+                                const valor = comment != null ? 0 : parseFloatCell(valorRaw);
+                                const observacion = comment;
+                                updateNota(actividad_id, estudiante_id, valor, observacion);
                             }
                             console.log(notas);
                         }

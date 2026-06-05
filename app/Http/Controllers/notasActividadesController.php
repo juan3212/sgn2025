@@ -57,6 +57,7 @@ class notasActividadesController extends Controller
                     "actividad_id" => $actividad->id,
                     "actividad" => $actividad->nombre,
                     "valor" => $nota->valor ?? 0,
+                    "comment" => $nota->observacion
                 ]);
             }
             $promedio = $actividadesEstudiante->avg("valor");
