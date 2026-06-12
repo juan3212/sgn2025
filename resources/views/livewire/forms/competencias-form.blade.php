@@ -16,12 +16,20 @@
             @endif
             <div class="space-y-2">
                 <label for="competenceName" class="block text-sm font-medium text-gray-700">Nombre</label>
-                <input type="text"
-                    id="competenceName"
-                    name="competenceName"
-                    wire:model="competenceName"
-                    required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select
+            id="competenceName"
+            name="competenceName"
+            wire:model="competenceName"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="C1">C1</option>
+                <option value="C2">C2</option>
+                <option value="C3">C3</option>
+                <option value="C4">C4</option>
+                <option value="C5">C5</option>
+                <option value="C6">C6</option>
+                <option value="ASSESSMENT">ASSESSMENT</option>
+            </select>
             </div>
             <div class="space-y-2">
                 <label for="competenceDescription" class="block text-sm font-medium text-gray-700">Descripcion</label>
