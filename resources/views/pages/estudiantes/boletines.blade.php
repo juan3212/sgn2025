@@ -324,7 +324,7 @@ body{
             element.innerHTML = `<table>
             <tr>
             <td class="feedback-preeschool">Lo lograste</td>
-            <td><img src="{{ asset('img/icons/boletin/happy-face.png') }}?v=1.0" alt="Happy Emoji" style="width: 30px;"></td>
+            <td><img src="{{ asset('img/icons/boletin/happy-face.png') }}?v=1.01" alt="Happy Emoji" style="width: 30px;"></td>
             </tr>
             </table>`;
           }
@@ -335,7 +335,7 @@ body{
             element.innerHTML = `<table>
             <tr>
             <td class="feedback-preeschool">En proceso</td>
-            <td><img src="{{ asset('img/icons/boletin/sad-face.png') }}?v=1.0" alt="Prejudice Emoji" style="width: 30px;"></td>
+            <td><img src="{{ asset('img/icons/boletin/sad-face.png') }}?v=1.01" alt="Prejudice Emoji" style="width: 30px;"></td>
             </tr>
             </table>`;
           }
