@@ -49,9 +49,9 @@ new class extends Component {
                     </x-nav-link>
                     @endcan
                     @role('estudiante')
-                   <!-- <x-nav-link :href="route('boletin')" :active="request()->routeIs('boletin')" wire:navigate>
+                   <x-nav-link :href="route('boletin')" :active="request()->routeIs('boletin')" wire:navigate>
                         {{ __('Boletines') }}
-                    </x-nav-link> -->
+                    </x-nav-link>
                     @endrole
                     @can('administrar materias')
                     <x-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>
@@ -166,9 +166,9 @@ new class extends Component {
             </x-responsive-nav-link>
             @endcan
             @role('estudiante')
-            <!--<x-responsive-nav-link :href="route('boletin')" :active="request()->routeIs('boletin')" wire:navigate>
+            <x-responsive-nav-link :href="route('boletin')" :active="request()->routeIs('boletin')" wire:navigate>
                 {{ __('Boletines') }}
-            </x-responsive-nav-link> -->
+            </x-responsive-nav-link>
             @endrole
             @can('administrar materias')
                 <x-responsive-nav-link :href="route('buscar-boletin')" :active="request()->routeIs('buscar-boletin')" wire:navigate>

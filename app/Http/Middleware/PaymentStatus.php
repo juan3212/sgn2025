@@ -61,9 +61,9 @@ class PaymentStatus
         // 2. Usamos el servicio para ver si DEBE ver el boletín
         // Nota: Aquí podrías reutilizar el método hasPaid() del servicio si quieres limpiar más.
         $rutaActualEsPermitida =
-           $request->routeIs("boletin"); //||
-            //$request->routeIs("matricula") ||
-            //$request->routeIs("dashboard");
+            $request->routeIs("boletin") ||
+            //$request->routeIs("matricula")
+            $request->routeIs("dashboard");
 
         if ($this->paymentService->hasPaid($user) && !$rutaActualEsPermitida) {
             return redirect()->route("boletin");
