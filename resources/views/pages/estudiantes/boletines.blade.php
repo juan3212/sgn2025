@@ -4,17 +4,17 @@
 
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Teachers:ital,wght@0,400..800;1,400..800&display=swap');
 
 body{
-    font-family: "Sour Gummy", sans-serif !important;
+    font-family: "Teachers", sans-serif !important;
     font-weight: 300 !important;
     font-style: normal !important;
     font-size: 16px !important;
 }
 
 .feedback-preeschool{
-    font-family: "Sour Gummy", sans-serif !important;
+    font-family: "Teachers", sans-serif !important;
     font-weight: 400 !important;
     font-style: normal !important;
     font-size: 12px !important;
@@ -22,7 +22,7 @@ body{
 
 .text-comentario{
     font-size: 12px !important;
-    font-family: "Sour Gummy", sans-serif !important;
+    font-family: "Teachers", sans-serif !important;
     font-weight: 300 !important;
     font-style: normal !important;
 }
