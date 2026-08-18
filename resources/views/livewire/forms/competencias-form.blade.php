@@ -29,6 +29,10 @@
                 <option value="C4">C4</option>
                 <option value="C5">C5</option>
                 <option value="C6">C6</option>
+                <option value="C7">C7</option>
+                <option value="C8">C8</option>
+                <option value="C9">C9</option>
+
                 <option value="ASSESSMENT">ASSESSMENT</option>
             </select>
             </div>
