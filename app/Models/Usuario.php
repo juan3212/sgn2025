@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Builder;
 
 
 class Usuario extends Authenticatable
@@ -18,10 +19,10 @@ class Usuario extends Authenticatable
     protected $table = 'usuarios';
 
     protected $fillable = [
-        'nombre', 
-        'apellido', 
-        'nuip', 
-        'correo', 
+        'nombre',
+        'apellido',
+        'nuip',
+        'correo',
         'password_hash'
     ];
 
@@ -106,5 +107,12 @@ class Usuario extends Authenticatable
     public function retirados()
     {
         return $this->hasOne(UsuarioRetirado::class, 'usuario_id');
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope("usuarioRetirado", function (Builder $builder) {
+            $builder->whereDoesntHave('retirados');
+        });
     }
 }

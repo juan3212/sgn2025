@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
 use App\Services\PaymentService;
 use Livewire\Volt\Component;
+use App\Services\CheckRoleRestrictionService;
 
 new #[Layout('layouts.guest')] class extends Component
 {
@@ -13,11 +14,11 @@ new #[Layout('layouts.guest')] class extends Component
     /**
      * Handle an incoming authentication request.
      */
-    public function login(PaymentService $paymentService): void
+    public function login(PaymentService $paymentService, CheckRoleRestrictionService $checkRoleRestrictionService): void
     {
         $this->validate();
 
-        $this->form->authenticate($paymentService);
+        $this->form->authenticate($paymentService, $checkRoleRestrictionService);
 
         Session::regenerate();
 

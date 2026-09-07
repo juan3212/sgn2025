@@ -24,7 +24,7 @@ class RolesyPermisosService
         try {
             Role::create([
                 "name" => $request["name"],
-            ])->givePermissionTo($request["permissions"]);
+            ])->syncPermissions($request["permissions"]);
 
             return response()->json([
                 "success" => true,

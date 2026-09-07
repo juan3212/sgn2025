@@ -11,6 +11,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Form;
 use App\Models\Usuario;
 use App\Services\PaymentService;
+use App\Services\CheckRoleRestrictionService;
 
 class LoginForm extends Form
 {
@@ -28,21 +29,15 @@ class LoginForm extends Form
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function authenticate(PaymentService $paymentService): void
+    public function authenticate(PaymentService $paymentService, CheckRoleRestrictionService $checkRoleRestrictionService): void
     {
         $this->ensureIsNotRateLimited();
 
-        $usuario = Usuario::where("nuip", $this->nuip)
+        $usuario = Usuario::withoutGlobalScope("usuarioRetirado")
+            ->where("nuip", $this->nuip)
             ->with("roles")
             ->with("bloqueos")
             ->first();
-
-        if ($usuario->bloqueos()->exists()) {
-            throw ValidationException::withMessages([
-                "form.nuip" =>
-                    "El usuario está bloqueado, por favor pongase en contacto con el colegio.",
-            ]);
-        }
 
         if (
             !$usuario ||
@@ -52,6 +47,20 @@ class LoginForm extends Form
 
             throw ValidationException::withMessages([
                 "form.nuip" => trans("auth.failed"),
+            ]);
+        }
+
+        if ($usuario->bloqueos()->exists()) {
+            throw ValidationException::withMessages([
+                "form.nuip" =>
+                    "El usuario está bloqueado, por favor pongase en contacto con el colegio.",
+            ]);
+        }
+
+        if ($checkRoleRestrictionService->isRoleBlocked($usuario->roles()->first()->id)) {
+            throw ValidationException::withMessages([
+                "form.nuip" =>
+                    "Actualmente estamos cargando las notas del tercer periodo.",
             ]);
         }
 
