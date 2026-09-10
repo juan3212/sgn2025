@@ -51,6 +51,7 @@ class LoginForm extends Form
         }
 
         if ($usuario->bloqueos()->exists()) {
+            Auth::logout();
             throw ValidationException::withMessages([
                 "form.nuip" =>
                     "El usuario está bloqueado, por favor pongase en contacto con el colegio.",
@@ -58,6 +59,8 @@ class LoginForm extends Form
         }
 
         if ($checkRoleRestrictionService->isRoleBlocked($usuario->roles()->first()->id)) {
+            Auth::logout();
+
             throw ValidationException::withMessages([
                 "form.nuip" =>
                     "Actualmente estamos cargando las notas del tercer periodo.",
