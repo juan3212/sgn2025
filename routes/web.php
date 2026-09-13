@@ -45,7 +45,7 @@ Route::get("usuarios", [
     App\Http\Controllers\UsuariosController::class,
     "render",
 ])
-    ->middleware(["auth", "permission:administrar usuarios"])
+    ->middleware(["auth", "permission:administrar usuarios", "permission:ver usuarios"])
     ->name("usuarios");
 
 Route::get("competencias", [
@@ -194,6 +194,15 @@ Route::post("notas/saveComentarios", [
     App\Http\Controllers\Notas\ComentariosController::class,
     "saveComentarios",
 ])->middleware(["auth", "permission:administrar notas"]);
+
+#edit usuarios
+Route::get("edit-user/{userId?}", function ($userId = null) {
+    return view("form-template", [
+        "formComponent" => "forms.usuario-form",
+        "formTitle" => "Editar usuarios",
+        "params" => ["usuarioId" => $userId],
+    ]);
+});
 
 #edit competencias
 Route::get("tablaCompetenciasEdit/{id}", [
@@ -420,7 +429,7 @@ Route::get("users/template", [
     ->name("users.template");
 
 Route::get(
-    "informes/generarInforme/{grado}/{grupo}/{materia?}/{tipoInforme?}",
+    "informes/generarInforme/{grado?}/{grupo?}/{materia?}/{tipoInforme?}",
     [
         App\Http\Controllers\administrador\informesController::class,
         "generarInforme",
@@ -428,6 +437,16 @@ Route::get(
 )
     ->middleware(["auth"])
     ->name("informes.generarInforme");
+
+Route::get(
+    "informes/exportar/{grado?}/{grupo?}/{materia?}/{periodo?}",
+    [
+        App\Http\Controllers\administrador\informesController::class,
+        "exportarInforme",
+    ],
+)
+    ->middleware(["auth"])
+    ->name("informes.exportar");
 
 Route::get("informes/facturacion-electronica/export", [
     App\Http\Controllers\administrador\informesController::class,

@@ -14,6 +14,7 @@ use App\Models\Usuario;
 use Illuminate\Support\Facades\DB;
 use App\Services\getUserDataService;
 use App\Exports\FacturacionExport;
+use App\Exports\InformeMateriasReprobadasExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class informesController extends Controller
@@ -26,7 +27,7 @@ class informesController extends Controller
     public $tipoInformeAllowed = ['reprobados', 'materias'];
     public $materiasParaInforme = 1; //cantidad de materias perdidas con las que reprueba o genera informe
 
-    public function generarInforme($grado, $grupo, $materia=null, $periodoId=null, $tipoInforme='reprobados')
+    public function generarInforme($grado = null, $grupo = null, $materia = null, $periodoId = null, $tipoInforme = 'reprobados')
     {
         $this->grado = $grado;
         $this->grupo = $grupo;
@@ -41,17 +42,21 @@ class informesController extends Controller
         // 1. Obtener el Periodo (1 Consulta)
         if(!$this->periodoId) {
             $periodo = Periodo::where('fecha_fin', '>', now())->first();
-            $periodoId = $periodo->id - 1;
-            if(date("j-n") >= "19-11"){
-                $periodoId = $periodo->id;
+            if ($periodo) {
+                $periodoId = $periodo->id - 1;
+                if(date("j-n") >= "19-11"){
+                    $periodoId = $periodo->id;
+                }
+            } else {
+                $periodo = Periodo::orderBy('id', 'desc')->first();
+                $periodoId = $periodo ? $periodo->id : null;
             }
         }
 
 
         // Manejar si no hay periodo activo
         if (!$periodoId) {
-            return view('pages.administrador.informe', ['reprobados' => []]);
-
+            return [];
         }
 
 
@@ -77,27 +82,34 @@ class informesController extends Controller
             })
             ->get();
 
-        // 3. Obtener TODAS las materias, agrupadas por grado y grupo (1 Consulta)
-        $materiasPorGradoGrupo = Materia::select('materias.id', 'base_materia.nombre_materia', 'materias.grado_id', 'materias.grupo_id')
+        // 3. Obtener TODAS las materias que coincidan con el filtro
+        $materiasColeccion = Materia::select('materias.id', 'base_materia.nombre_materia', 'materias.grado_id', 'materias.grupo_id')
             ->join('base_materia', 'base_materia.id', '=', 'materias.materia_id')
-           ->where(function ($query) {
-                  if($this->grado){
-                        $query->where('materias.grado_id', $this->grado);
-                    }
-                    if($this->grupo){
-                        $query->where('materias.grupo_id', $this->grupo);
-                    }
-                    if($this->materia){
-                        $query->where('base_materia.id', $this->materia);
-                    }
+            ->where(function ($query) {
+                if ($this->grado) {
+                    $query->where('materias.grado_id', $this->grado);
+                }
+                if ($this->grupo) {
+                    $query->where('materias.grupo_id', $this->grupo);
+                }
+                if ($this->materia) {
+                    $query->where('base_materia.id', $this->materia);
+                }
             })
-            ->get()
-            ->groupBy(function ($materia) {
-                // Creamos una clave compuesta "gradoID-grupoID" para búsqueda rápida
-                return $materia->grado_id . '-' . $materia->grupo_id;
-            });
-            // Obtener las IDs de las materias para el filtro
-        $materiaIds = $materiasPorGradoGrupo->get($this->grado . '-' . $this->grupo)->pluck('id')->toArray();
+            ->get();
+
+        // Obtener las IDs de las materias para el filtro
+        $materiaIds = $materiasColeccion->pluck('id')->toArray();
+
+        // Si no hay materias o no hay estudiantes, retornamos vacío
+        if (empty($materiaIds) || $estudiantes->isEmpty()) {
+            return [];
+        }
+
+        // Agrupar materias por "gradoID-grupoID" para búsqueda rápida por estudiante
+        $materiasPorGradoGrupo = $materiasColeccion->groupBy(function ($materia) {
+            return $materia->grado_id . '-' . $materia->grupo_id;
+        });
 
         // 4. Obtener TODAS las notas finales
         //    Agrupadas por estudiante y luego por materia para búsqueda rápida
@@ -119,6 +131,7 @@ class informesController extends Controller
         // 5. Obtener TODAS las notas de recuperación
         //    Agrupadas por estudiante, materia y finalmente por periodo_id
         $notasRecuperacion = NotaRecuperacion::select('nota_final', 'periodo_id', 'materia_id', 'estudiante_id')
+            ->whereIn('materia_id', $materiaIds)
             ->get()
             ->groupBy('estudiante_id') // Agrupa por estudiante
             ->map(function ($notasEstudiante) {
@@ -227,5 +240,25 @@ class informesController extends Controller
     {
         $query = $this->getFacturacionQuery();
         return Excel::download(new FacturacionExport($query), 'facturacion_electronica.xlsx');
+    }
+
+    public function exportarInforme(Request $request, $grado = null, $grupo = null, $materia = null, $periodoId = null)
+    {
+        $formato = strtolower($request->query('formato', 'xlsx'));
+        $informe = $this->generarInforme($grado, $grupo, $materia, $periodoId, 'materia');
+
+        if (empty($informe)) {
+            return back()->with('error', 'No hay datos disponibles para exportar con los filtros seleccionados.');
+        }
+
+        $timestamp = date('Ymd_His');
+        $writerType = $formato === 'csv' ? \Maatwebsite\Excel\Excel::CSV : \Maatwebsite\Excel\Excel::XLSX;
+        $extension = $formato === 'csv' ? 'csv' : 'xlsx';
+
+        return Excel::download(
+            new InformeMateriasReprobadasExport($informe),
+            "informe_materias_reprobadas_{$timestamp}.{$extension}",
+            $writerType
+        );
     }
 }
