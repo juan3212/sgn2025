@@ -22,34 +22,40 @@ class informesController extends Controller
     public $grado;
     public $grupo;
     public $materia;
+    public $periodoId;
     public $tipoInformeAllowed = ['reprobados', 'materias'];
     public $materiasParaInforme = 1; //cantidad de materias perdidas con las que reprueba o genera informe
 
-    public function generarInforme($grado, $grupo, $materia=null, $tipoInforme='reprobados')
+    public function generarInforme($grado, $grupo, $materia=null, $periodoId=null, $tipoInforme='reprobados')
     {
         $this->grado = $grado;
         $this->grupo = $grupo;
         $this->materia = $materia;
-       
+        $this->periodoId = $periodoId;
+
 
         if($tipoInforme == 'reprobados'){
             $this->materiasParaInforme = 3;
         }
 
         // 1. Obtener el Periodo (1 Consulta)
-        $periodo = Periodo::where('fecha_fin', '>', now())->first();
+        if(!$this->periodoId) {
+            $periodo = Periodo::where('fecha_fin', '>', now())->first();
+            $periodoId = $periodo->id - 1;
+            if(date("j-n") >= "19-11"){
+                $periodoId = $periodo->id;
+            }
+        }
+
 
         // Manejar si no hay periodo activo
-        if (!$periodo) {
+        if (!$periodoId) {
             return view('pages.administrador.informe', ['reprobados' => []]);
-                   
-        }
-        $periodoId = $periodo->id - 1;
-        if(date("j-n") >= "19-11"){
-            $periodoId = $periodo->id;
+
         }
 
-        
+
+
         $estudiantes = Usuario::select(
                 'usuarios.id', 'usuarios.nombre', 'usuarios.apellido',
                 'grados.id as gradoID', 'grados.grado',
@@ -92,11 +98,17 @@ class informesController extends Controller
             });
             // Obtener las IDs de las materias para el filtro
         $materiaIds = $materiasPorGradoGrupo->get($this->grado . '-' . $this->grupo)->pluck('id')->toArray();
-        
+
         // 4. Obtener TODAS las notas finales
         //    Agrupadas por estudiante y luego por materia para búsqueda rápida
         $notasFinales = NotaFinalMateria::select('nota_final', 'periodo_id', 'materia_id', 'estudiante_id')
-            ->where('periodo_id', '<=', $periodoId)
+            ->where(function ($query) use ($periodoId) {
+                if(!$this->periodoId) {
+                    $query->where('periodo_id', '<=', $periodoId);
+                } else {
+                    $query->where('periodo_id', '=', $this->periodoId);
+                }
+            })
             ->whereIn('materia_id', $materiaIds)
             ->get()
             ->groupBy('estudiante_id') // Agrupa por estudiante
@@ -133,10 +145,10 @@ class informesController extends Controller
 
             // Bucle 2: Iterar sobre las materias
             foreach ($materiasEstudiante as $materia) {
-                
+
                 // Obtener notas de esta materia (búsqueda en memoria)
                 $notas = $notasPorMateria->get($materia->id, collect())->sortBy('periodo_id');
-                
+
                 // Obtener recuperaciones (búsqueda en memoria)
                 $recuperacion = $recuperacionesPorMateria->get($materia->id, collect());
 
@@ -147,10 +159,10 @@ class informesController extends Controller
                 // --- Lógica de 'promedioFinal' integrada ---
                 // lo cual es un error. Esta versión usa los números reales y formatea solo el resultado final.
                 $sumaPromedio = 0;
-                
+
                 foreach ($notas as $nota) {
                     $notaRecuperacion = $recuperacion->get($nota->periodo_id); // Búsqueda O(1)
-                    
+
                     $notaFinalPeriodo = $nota->nota_final; // Es un número (float/int)
 
                     if ($notaRecuperacion) {
@@ -159,7 +171,7 @@ class informesController extends Controller
                         $sumaPromedio += $notaFinalPeriodo;
                     }
                 }
-                
+
                 $promedioFinal = 0;
                 if ($sumaPromedio > 0) {
                     $promedioFinal = $sumaPromedio / $notas->count();
@@ -172,7 +184,7 @@ class informesController extends Controller
                         'promedio' => round($promedioFinal, 2) // Redondeamos el promedio final
                     ];
                 }
-            } 
+            }
 
             if (count($materiasPerdidas) >= $this->materiasParaInforme) {
                 $informe[] = [
@@ -183,7 +195,7 @@ class informesController extends Controller
                     'materias' => $materiasPerdidas
                 ];
             }
-        } 
+        }
 
         // 6. Retornar la vista (Total de 5 consultas)
         return $informe;
@@ -205,13 +217,13 @@ class informesController extends Controller
             ->leftJoin('usuario_contacto as contacto', function ($join) {
                 $join->on('contacto.id', '=', DB::raw('(SELECT id FROM usuario_contacto WHERE usuario_id = usuarios.id ORDER BY id ASC LIMIT 1)'));
             })
-            ->select('info.estudiante_id', 'info.updated_at as fecha_facturacion', 'fact.*', 
+            ->select('info.estudiante_id', 'info.updated_at as fecha_facturacion', 'fact.*',
             'usuarios.nombre as nombre_acudiente', 'usuarios.apellido as apellido_acudiente', 'usuarios.nuip as nuip_acudiente',
             'estudiantes.*', 'usuario_grado.*', 'grados.*', 'contacto.*')
             ->orderBy('info.estudiante_id');
     }
 
-    public function exportarFacturacion() 
+    public function exportarFacturacion()
     {
         $query = $this->getFacturacionQuery();
         return Excel::download(new FacturacionExport($query), 'facturacion_electronica.xlsx');

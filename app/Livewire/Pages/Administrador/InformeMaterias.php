@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Grado;
 use App\Models\Grupo;
 use App\Models\Materia;
+use App\Models\Periodo;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\administrador\informesController;
 
@@ -18,6 +19,8 @@ class InformeMaterias extends Component
     public $materias = [];
     public $materiaSelected;
     public $informe = [];
+    public $periodos;
+    public $periodoSelected;
     public $informeMessage = 'Seleccione un grado, grupo para generar el informe.';
 
     public function mount()
@@ -28,13 +31,14 @@ class InformeMaterias extends Component
     {
         $this->grados = Grado::all();
         $this->grupos = Grupo::all();
+        $this->periodos = Periodo::all();
     }
 
     public function updatedGradoSelected()
     {
         $this->getMaterias($this->gradoSelected);
     }
-  
+
     public function getMaterias($grado)
     {
         $this->materias = Materia::select('base_materia.id as id', 'base_materia.nombre_materia as nombre')
@@ -55,10 +59,11 @@ class InformeMaterias extends Component
             $validated['gradoSelected'],
             $validated['grupoSelected'],
             $this->materiaSelected,
+            $this->periodoSelected,
             'materia',
         );
 
-        $this->reset(['gradoSelected', 'grupoSelected', 'materiaSelected']);
+        $this->reset(['gradoSelected', 'grupoSelected', 'materiaSelected', 'periodoSelected']);
         if(empty($this->informe)){
             $this->informeMessage = 'No hay información disponible para este grado, grupo y materia.';
         }
