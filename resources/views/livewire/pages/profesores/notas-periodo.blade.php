@@ -112,7 +112,7 @@
             <button type="button" wire:click="exportarPlanilla"
                 x-bind:disabled="{{ $actividades->isEmpty() }}"
                 class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 shadow transition"
-                title="Descargar toda la planilla en Excel para ingresar notas sin conexión y pegarlas después">
+                title="Descargar toda la planilla en Excel">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
@@ -140,7 +140,7 @@
                 <svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span><strong>Trabajo sin conexión:</strong> Puede descargar la planilla con el botón <strong>"Exportar a Excel"</strong>, calificar tranquilamente en su hoja de cálculo, y luego copiar las notas (<code>Ctrl + C</code>) y pegarlas (<code>Ctrl + V</code>) en esta tabla antes de presionar <strong>"Guardar Notas"</strong>.</span>
+                <span>Puede descargar la planilla con el botón <strong>"Exportar a Excel"</strong> y luego copiar las notas (<code>Ctrl + C</code>) y pegarlas (<code>Ctrl + V</code>).</span>
             </div>
         </div>
     @endif
