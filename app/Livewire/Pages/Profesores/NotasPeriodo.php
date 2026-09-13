@@ -8,6 +8,8 @@ use App\Models\Materia;
 use App\Models\Usuario;
 use App\Models\Actividad;
 use Livewire\Attributes\On;
+use App\Exports\PlanillaNotasPeriodoExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class NotasPeriodo extends Component
 {
@@ -29,6 +31,7 @@ class NotasPeriodo extends Component
         $this->materia_id = $materiaId;
         $this->getData();
     }
+
     public function getData()
     {
         $this->getMateriaInfo();
@@ -40,29 +43,45 @@ class NotasPeriodo extends Component
 
     public function getCompetencias()
     {
-        $competencias = Competencia::with([
-            "actividades" => function ($query) {
-                $query->where("materia_id", $this->materia_id);
-            },
-        ])
-            ->join(
-                "materia_has_competencia",
-                "competencias.id",
-                "=",
-                "materia_has_competencia.competencia_id",
-            )
-            ->where("materia_has_competencia.materia_id", $this->materia_id)
+        $competencias = Competencia::select("competencias.*")
+            ->distinct()
+            ->with([
+                "actividades" => function ($query) {
+                    $query->where("materia_id", $this->materia_id)
+                          ->where("periodo_id", $this->periodo_id);
+                },
+            ])
+            ->whereHas("materias", function ($query) {
+                $query->where("materias.id", $this->materia_id);
+            })
             ->where("competencias.periodo_id", $this->periodo_id)
             ->get();
 
-        if (!empty($competencias)) {
+        if ($competencias->isNotEmpty()) {
+            $competencias = $competencias->unique('id');
+
+            foreach ($competencias as $comp) {
+                if ($comp->actividades) {
+                    $filtradas = $comp->actividades
+                        ->filter(function ($act) {
+                            return (int) $act->materia_id === (int) $this->materia_id
+                                && (int) $act->periodo_id === (int) $this->periodo_id;
+                        })
+                        ->unique('id')
+                        ->values();
+                    $comp->setRelation('actividades', $filtradas);
+                }
+            }
+
             $this->competencias = $competencias;
             $this->actividades = $this->competencias
                 ->pluck("actividades")
-                ->collapse();
+                ->collapse()
+                ->unique('id')
+                ->values();
         } else {
-            $this->competencias = [];
-            $this->actividades = [];
+            $this->competencias = collect();
+            $this->actividades = collect();
         }
     }
 
@@ -118,6 +137,8 @@ class NotasPeriodo extends Component
             ->whereHas("roles", function ($query) {
                 $query->where("role_id", 2);
             })
+            ->orderBy("apellido", "asc")
+            ->orderBy("nombre", "asc")
             ->get();
     }
 
@@ -129,6 +150,35 @@ class NotasPeriodo extends Component
             ->get();
     }
 
+    public function exportarPlanilla()
+    {
+        $this->getData();
+
+        if (empty($this->actividades) || $this->actividades->isEmpty()) {
+            return;
+        }
+
+        $materiaSlug = preg_replace('/[^A-Za-z0-9_-]/', '_', $this->nombre_materia);
+        $gradoSlug = preg_replace('/[^A-Za-z0-9_-]/', '_', $this->grado_nombre);
+        $grupoSlug = preg_replace('/[^A-Za-z0-9_-]/', '_', $this->grupo_nombre);
+        $timestamp = date('Ymd_His');
+
+        $fileName = "Planilla_{$materiaSlug}_{$gradoSlug}_{$grupoSlug}_P{$this->periodo_id}_{$timestamp}.xlsx";
+
+        return Excel::download(
+            new PlanillaNotasPeriodoExport(
+                $this->materia_id,
+                $this->nombre_materia,
+                $this->grado_nombre,
+                $this->grupo_nombre,
+                $this->periodo_id,
+                $this->competencias,
+                $this->estudiantes
+            ),
+            $fileName
+        );
+    }
+
     #[On("actividad-competencia-guardada")]
     public function actividadGuardada()
     {
@@ -137,6 +187,8 @@ class NotasPeriodo extends Component
 
     public function render()
     {
+        $this->getData();
+
         return view("livewire.pages.profesores.notas-periodo");
     }
 }

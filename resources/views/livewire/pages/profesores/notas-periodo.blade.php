@@ -96,25 +96,54 @@
     <div class="flex justify-between items-center mb-4 mx-auto my-8 w-[95%]">
         <h2 class="text-2xl font-bold">{{ $nombre_materia }} {{ $grado_nombre }} {{ $grupo_nombre }} - PERIODO {{ $periodo_id }}</h2>
 
-        <div>
+        <div class="flex flex-wrap items-center gap-2">
             <button type="button" x-on:click="competenciaForm = true"
-                class="bg-sky-300 hover:bg-sky-400 text-blue-600 font-bold border border-blue-600 py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                class="bg-sky-100 hover:bg-sky-200 text-blue-800 font-bold border border-blue-400 py-2 px-4 rounded focus:outline-none focus:shadow-outline transition">
                 Agregar Competencia
             </button>
 
             <button type="button" x-on:click="open = true"
                 x-bind:disabled="{{ $competencias->isEmpty() }}"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed">
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed transition">
                 Agregar Actividad
+            </button>
+
+            <!-- Botón Exportar Planilla a Excel -->
+            <button type="button" wire:click="exportarPlanilla"
+                x-bind:disabled="{{ $actividades->isEmpty() }}"
+                class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 shadow transition"
+                title="Descargar toda la planilla en Excel para ingresar notas sin conexión y pegarlas después">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span wire:loading.remove wire:target="exportarPlanilla">Exportar a Excel</span>
+                <span wire:loading wire:target="exportarPlanilla" class="inline-flex items-center gap-1">
+                    <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    Descargando...
+                </span>
             </button>
 
             <button id="saveNotas" type="button"
                 x-bind:disabled="{{ $actividades->isEmpty() }}"
-                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed">
+                class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed transition">
                 Guardar Notas
             </button>
         </div>
     </div>
+
+    @if(!$actividades->isEmpty())
+        <div class="w-[95%] mx-auto mb-4 p-3 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-900 text-xs rounded-r-lg shadow-sm flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span><strong>Trabajo sin conexión:</strong> Puede descargar la planilla con el botón <strong>"Exportar a Excel"</strong>, calificar tranquilamente en su hoja de cálculo, y luego copiar las notas (<code>Ctrl + C</code>) y pegarlas (<code>Ctrl + V</code>) en esta tabla antes de presionar <strong>"Guardar Notas"</strong>.</span>
+            </div>
+        </div>
+    @endif
 
     <div id="loading-overlay"
         class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden">
@@ -151,13 +180,18 @@
                     </th>
 
                     @foreach ($competencias as $competencia)
-                    @if($competencia->actividades->count() > 0)
-                        <th class="text-center px-4 py-2 border-b border-l border-gray-300 bg-gray-200 whitespace-nowrap"
-                            colspan="{{ $competencia->actividades->count() }}"
-                            title="{{ $competencia->descripcion }}">
-                            {{ $competencia->nombre . ' - ' . substr($competencia->descripcion, 0, 30) . '...' }}
-                        </th>
-                    @endif
+                        @php
+                            $actividadesComp = $competencia->actividades ? $competencia->actividades->filter(function($act) use ($materia_id, $periodo_id) {
+                                return (int)$act->materia_id === (int)$materia_id && (int)$act->periodo_id === (int)$periodo_id;
+                            })->unique('id')->values() : collect();
+                        @endphp
+                        @if($actividadesComp->count() > 0)
+                            <th class="text-center px-4 py-2 border-b border-l border-gray-300 bg-gray-200 whitespace-nowrap"
+                                colspan="{{ $actividadesComp->count() }}"
+                                title="{{ $competencia->descripcion }}">
+                                {{ $competencia->nombre . ' - ' . substr($competencia->descripcion, 0, 30) . '...' }}
+                            </th>
+                        @endif
                     @endforeach
                     @if($nombre_materia == "SCHOOL BEHAVIOR")
                     <th rowspan="2" class="sticky left-[600px] z-20 bg-gray-200 px-4 py-3 border-b border-gray-300 shadow-sm min-w-[100px] max-sm:left-0 max-sm:z-10">
@@ -168,7 +202,12 @@
                 </tr>
                 <tr>
                     @foreach ($competencias as $competencia)
-                        @foreach ($competencia->actividades as $index => $actividad)
+                        @php
+                            $actividadesComp = $competencia->actividades ? $competencia->actividades->filter(function($act) use ($materia_id, $periodo_id) {
+                                return (int)$act->materia_id === (int)$materia_id && (int)$act->periodo_id === (int)$periodo_id;
+                            })->unique('id')->values() : collect();
+                        @endphp
+                        @foreach ($actividadesComp as $index => $actividad)
                             <th title="{{ $actividad->descripcion }}"
                                 class="px-4 py-2 border-b border-l border-gray-300 bg-gray-50 whitespace-nowrap min-w-[100px] text-center">
                                 Actividad {{ $index + 1 }}
@@ -195,8 +234,12 @@
                         </td>
 
                         @foreach ($competencias as $competencia)
-                            @foreach ($competencia->actividades as $actividad)
-                            @if($competencia->actividades->count() > 0)
+                            @php
+                                $actividadesComp = $competencia->actividades ? $competencia->actividades->filter(function($act) use ($materia_id, $periodo_id) {
+                                    return (int)$act->materia_id === (int)$materia_id && (int)$act->periodo_id === (int)$periodo_id;
+                                })->unique('id')->values() : collect();
+                            @endphp
+                            @foreach ($actividadesComp as $actividad)
                                 <td class="px-2 py-2 border border-gray-200 text-gray-900 text-center align-middle">
                                     <span contenteditable="true"
                                         class="editable-cell block w-full rounded border border-transparent hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none px-2 py-1 transition-all cursor-text"
@@ -205,7 +248,6 @@
                                         {{ $estudiante->notas->firstWhere('actividad_id', $actividad->id)?->observacion ?? $estudiante->notas->firstWhere('actividad_id', $actividad->id)?->valor }}
                                     </span>
                                 </td>
-                            @endif
                             @endforeach
                         @endforeach
                         @if($nombre_materia == 'SCHOOL BEHAVIOR')
@@ -237,6 +279,7 @@
                 info: false,
                 searching: false,
                 ordering: true,
+                order: [[1, 'asc'], [0, 'asc']],
             });
 
             const messageContent = document.getElementById('messageContent');
