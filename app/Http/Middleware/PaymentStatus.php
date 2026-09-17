@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\UsuarioEstadoPago;
 use Illuminate\Support\Facades\Auth;
 use App\Services\PaymentService;
+use App\Services\CheckRoleRestrictionService;
 
 use Symfony\Component\HttpFoundation\Response;
 
 class PaymentStatus
 {
     protected $paymentService;
+
 
     // Inyección de dependencia vía Constructor
     public function __construct(PaymentService $paymentService)
@@ -46,6 +48,7 @@ class PaymentStatus
                 ->with("error", "Regularice sus pagos.");
         }
 
+
         if ($request->routeIs("matricula")) {
             if (!$this->paymentService->hasPaidMatricula($user)) {
                 // Si no ha pagado matrícula, lo mandamos a otro lado (ej. dashboard o home)
@@ -66,7 +69,7 @@ class PaymentStatus
             $request->routeIs("dashboard");
 
         if ($this->paymentService->hasPaid($user) && !$rutaActualEsPermitida) {
-            return redirect()->route("dashboard");
+            return redirect()->route("boletin");
         }
 
         return $next($request);
