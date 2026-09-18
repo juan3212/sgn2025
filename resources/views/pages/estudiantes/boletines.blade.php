@@ -280,14 +280,9 @@ body{
     <script>
       Livewire.on('directorCursoNombre', (nombre) => {
           console.log('Recibido desde Livewire:', nombre);
-          document.getElementById('teacherName').textContent = nombre;
+          const teacherEl = document.getElementById('teacherName');
+          if (teacherEl) teacherEl.textContent = nombre;
       });
-
-      document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('termAverageValue').textContent = termAverage;
-      document.getElementById('finalAverageValue').textContent = finalAverage;
-      });
-
 
       function generatePDF() {
         const element = document.getElementById('reportcard');
@@ -302,47 +297,74 @@ body{
             jsPDF:        { unit: 'in', format: format, orientation: 'portrait' }
         };
 
-
         html2pdf()
             .set(opt)
             .from(element)
             .save();
-    }
+      }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('.nota').forEach(element => {
-        let grade = {{ $user['gradoID']}};
-        if(grade < 4){
-          let averages = document.getElementById('averages');
-          let levels = document.querySelectorAll('.levels');
-          let comments = document.getElementById('comentarios');
-          averages.hidden = true;
+      function procesarNotasPreescolar() {
+          const grade = {{ $user['gradoID'] }};
+          if (grade >= 4) return;
+
+          const averages = document.getElementById('averages');
+          if (averages) averages.hidden = true;
+
+          const levels = document.querySelectorAll('.levels');
           levels.forEach(level => level.hidden = true);
-          comments ? comments.hidden = false : null;
-          let nota = element.textContent;
-          if(nota > 8){
-            element.innerHTML = `<table>
-            <tr>
-            <td class="feedback-preeschool">Lo lograste</td>
-            <td><img src="{{ asset('img/icons/boletin/happy-face.png') }}?v=1.01" alt="Happy Emoji" style="width: 30px;"></td>
-            </tr>
-            </table>`;
-          }
-          else if(nota == 'N/A'){
 
-          }
-          else{
-            element.innerHTML = `<table>
-            <tr>
-            <td class="feedback-preeschool">En proceso</td>
-            <td><img src="{{ asset('img/icons/boletin/sad-face.png') }}?v=1.01" alt="Prejudice Emoji" style="width: 30px;"></td>
-            </tr>
-            </table>`;
-          }
-        }
-      });
-    });
+          const comments = document.getElementById('comentarios');
+          if (comments) comments.hidden = false;
 
+          document.querySelectorAll('.nota').forEach(element => {
+              // Evitar procesar celdas que ya tienen imagen (idempotencia)
+              if (element.querySelector('img')) return;
+
+              const textoNota = element.textContent.trim();
+              if (textoNota === 'N/A' || textoNota === '') {
+                  return;
+              }
+
+              const notaNum = parseFloat(textoNota);
+              if (isNaN(notaNum)) return;
+
+              if (notaNum > 8) {
+                  element.innerHTML = `<table>
+                  <tr>
+                  <td class="feedback-preeschool">Lo lograste</td>
+                  <td><img src="{{ asset('img/icons/boletin/happy-face.png') }}?v=1.01" alt="Happy Emoji" style="width: 30px;"></td>
+                  </tr>
+                  </table>`;
+              } else {
+                  element.innerHTML = `<table>
+                  <tr>
+                  <td class="feedback-preeschool">En proceso</td>
+                  <td><img src="{{ asset('img/icons/boletin/sad-face.png') }}?v=1.01" alt="Prejudice Emoji" style="width: 30px;"></td>
+                  </tr>
+                  </table>`;
+              }
+          });
+      }
+
+      function inicializarBoletin() {
+          if (typeof window.termAverage !== 'undefined') {
+              const termEl = document.getElementById('termAverageValue');
+              if (termEl) termEl.textContent = window.termAverage;
+          }
+          if (typeof window.finalAverage !== 'undefined') {
+              const finalEl = document.getElementById('finalAverageValue');
+              if (finalEl) finalEl.textContent = window.finalAverage;
+          }
+
+          procesarNotasPreescolar();
+      }
+
+      if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', inicializarBoletin);
+      } else {
+          inicializarBoletin();
+      }
+      document.addEventListener('livewire:navigated', inicializarBoletin);
     </script>
 
 

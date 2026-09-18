@@ -43,27 +43,68 @@
 @endforeach
 
 <script>
-    let finalAverage = 0;
-    let termAverage = 0;
-    document.addEventListener('DOMContentLoaded', function() {
+    function calcularPromediosYFormato() {
+        let finalSum = 0;
+        let termSum = 0;
+
         const finalAverageElements = document.querySelectorAll('#finalAverage');
-        finalAverageElements.forEach(element => {
-            finalAverage += parseFloat(element.textContent);
-        });
-        finalAverage = (finalAverage / finalAverageElements.length).toFixed(2);
+        if (finalAverageElements.length > 0) {
+            let validFinalCount = 0;
+            finalAverageElements.forEach(element => {
+                const val = parseFloat(element.textContent);
+                if (!isNaN(val)) {
+                    finalSum += val;
+                    validFinalCount++;
+                }
+            });
+            window.finalAverage = validFinalCount > 0 ? (finalSum / validFinalCount).toFixed(2) : '0.00';
+        } else {
+            window.finalAverage = '0.00';
+        }
 
         const termAverageElements = document.querySelectorAll('#termAverage');
-        termAverageElements.forEach(element => {
-            termAverage += parseFloat(element.textContent);
-        });
-        termAverage = (termAverage / termAverageElements.length).toFixed(2);
+        if (termAverageElements.length > 0) {
+            let validTermCount = 0;
+            termAverageElements.forEach(element => {
+                const val = parseFloat(element.textContent);
+                if (!isNaN(val)) {
+                    termSum += val;
+                    validTermCount++;
+                }
+            });
+            window.termAverage = validTermCount > 0 ? (termSum / validTermCount).toFixed(2) : '0.00';
+        } else {
+            window.termAverage = '0.00';
+        }
+
+        const termEl = document.getElementById('termAverageValue');
+        if (termEl && typeof window.termAverage !== 'undefined') {
+            termEl.textContent = window.termAverage;
+        }
+
+        const finalEl = document.getElementById('finalAverageValue');
+        if (finalEl && typeof window.finalAverage !== 'undefined') {
+            finalEl.textContent = window.finalAverage;
+        }
 
         const notas = document.querySelectorAll('.notaf');
         notas.forEach(nota => {
-            if (parseFloat(nota.textContent) < 6) {
+            const valor = parseFloat(nota.textContent);
+            if (!isNaN(valor) && valor < 6) {
                 nota.classList.add('bg-red-500');
             }
         });
-    });
+
+        if (typeof inicializarBoletin === 'function') {
+            inicializarBoletin();
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', calcularPromediosYFormato);
+    } else {
+        calcularPromediosYFormato();
+    }
+    document.addEventListener('livewire:navigated', calcularPromediosYFormato);
 </script>
 </div>
