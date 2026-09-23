@@ -75,8 +75,7 @@ class MateriasCompetenciasController extends Controller
                 return '<input type="checkbox" class="select-checkbox form-checkbox h-5 w-5 text-blue-600" data-id="'. $competence->id. '">';
             })
             ->addColumn('actions', function ($competence) {
-                return '<a class="btn btn-xs btn-primary edit" href="/edit/competencias/'.$competence->id.'">Edit</a>
-                        <button class="btn btn-xs btn-danger delete" data-id="'.$competence->id.'">Delete</button>';
+                return '<a class="btn btn-xs btn-primary edit" href="/edit/competencias/'.$competence->id.'">Edit</a>';
             })
             ->addColumn('notas', function($competencia) use ($isStudent) {
                 if ($isStudent && $this->checkIsEvaluationService->checkEvaluation($competencia->nombre)) {

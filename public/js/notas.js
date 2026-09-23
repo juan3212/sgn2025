@@ -68,41 +68,89 @@ function moveToCell() {
     }
 }
 
-function handlePaste() {
+function handlePaste(event) {
     let table = document.querySelector('.dataTable');
+    if (!table) return;
 
-    table.addEventListener('paste', function(event) {
-        event.preventDefault();
+    if (event && event.type === 'paste') {
+        processPasteEvent(event, table);
+        return;
+    }
 
-        const clipboardData = event.clipboardData || window.clipboardData;
-        const pastedText = clipboardData.getData('text/plain');
+    if (table.dataset.pasteListener) return;
+    table.dataset.pasteListener = 'true';
 
-        const rows = pastedText.split('\n').filter(row => row.trim() !== '');
-        const cells = rows.map(row => row.split('\t'));
+    table.addEventListener('paste', function(e) {
+        processPasteEvent(e, table);
+    });
+}
 
-        const targetCell = event.target.closest('td');
-        if (!targetCell) return;
+function processPasteEvent(event, table) {
+    event.preventDefault();
 
-        const startRowIndex = targetCell.parentNode.rowIndex;
-        const startColIndex = targetCell.cellIndex;
+    const clipboardData = event.clipboardData || window.clipboardData;
+    const pastedText = clipboardData ? clipboardData.getData('text/plain') : '';
+    if (!pastedText) return;
 
+    const rows = pastedText.split(/\r\n|\n|\r/).filter(row => row.trim() !== '');
+    if (rows.length === 0) return;
 
-        for (let i = 0; i < cells.length; i++) {
-            for (let j = 0; j < cells[i].length; j++) {
-                const currentRow = table.rows[startRowIndex + i];
-                if (!currentRow) continue;
+    const cells = rows.map(row => row.split('\t').map(c => c.trim()));
 
-                const currentCell = currentRow.cells[startColIndex + j];
-                if (!currentCell) continue;
+    const targetCell = event.target.closest('td');
+    if (!targetCell) return;
 
-                const span = currentCell.querySelector('span');
-                if (span) {
-                    span.textContent = cells[i][j];
-                }
+    const targetRow = targetCell.closest('tr');
+    if (!targetRow || !targetRow.parentNode) return;
+
+    // Trabajar directamente con las filas del tbody para evitar desfases con thead
+    const tbody = table.querySelector('tbody') || targetRow.parentNode;
+    const tbodyRows = Array.from(tbody.querySelectorAll('tr'));
+    const startTbodyRowIndex = tbodyRows.indexOf(targetRow);
+    if (startTbodyRowIndex === -1) return;
+
+    // Spans editables de la fila seleccionada
+    const rowEditableSpans = Array.from(targetRow.querySelectorAll('.editable-cell, .comentario-periodo'));
+    if (rowEditableSpans.length === 0) return;
+
+    // Identificar en cuál span específico se hizo clic o foco
+    const clickedSpan = event.target.closest('span.editable-cell, span.comentario-periodo');
+    let startSpanIndex = clickedSpan ? rowEditableSpans.indexOf(clickedSpan) : -1;
+
+    // Verificar si la primera columna pegada es una nota (número o NA o vacío)
+    const firstVal = cells[0][0] ? cells[0][0].toLowerCase() : '';
+    const isFirstColGrade = firstVal === '' || firstVal === 'na' || !isNaN(parseFloat(firstVal.replace(',', '.')));
+
+    let colOffset = 0;
+    // Si el usuario copió desde Excel incluyendo las columnas de Nombre y Apellido (texto al inicio)
+    if (!isFirstColGrade && cells[0].length > rowEditableSpans.length) {
+        colOffset = 2; // Omitir las dos primeras columnas (Nombre y Apellido)
+        if (startSpanIndex === -1) {
+            startSpanIndex = 0;
+        }
+    } else if (startSpanIndex === -1) {
+        // El usuario hizo clic en la fila pero no en un span editable (ej. en el nombre)
+        startSpanIndex = 0;
+    }
+
+    for (let i = 0; i < cells.length; i++) {
+        const currentRow = tbodyRows[startTbodyRowIndex + i];
+        if (!currentRow) break;
+
+        const currentSpans = Array.from(currentRow.querySelectorAll('.editable-cell, .comentario-periodo'));
+
+        for (let j = colOffset; j < cells[i].length; j++) {
+            const targetSpanIndex = startSpanIndex + (j - colOffset);
+            if (targetSpanIndex >= currentSpans.length) break;
+
+            const span = currentSpans[targetSpanIndex];
+            if (span) {
+                span.textContent = cells[i][j];
+                // Disparar evento input para que se ejecute la validación de rangos y habilitación de guardado
+                span.dispatchEvent(new Event('input', { bubbles: true }));
             }
         }
-
-    });
+    }
 }
 
 function addComments() {

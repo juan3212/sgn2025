@@ -33,6 +33,19 @@ class DeleteController extends Controller
         if (!in_array($controllerName, $allowedControllers)) {
             return response()->json(['error' => 'Controlador no autorizado'], 403);
         }
+
+        // Lista blanca de funciones de eliminación permitidas
+        $allowedFunctions = [
+            'delete',
+            'destroy',
+            'deleteRole',
+            'deletePermission',
+            'eliminar',
+        ];
+
+        if (!in_array($functionName, $allowedFunctions, true)) {
+            return response()->json(['error' => 'Función no autorizada'], 403);
+        }
         
         if($isService){
             $controllerClass = 'App\\Services\\' . $controllerName . 'Service';

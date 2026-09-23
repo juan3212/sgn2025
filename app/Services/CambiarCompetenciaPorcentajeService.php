@@ -9,28 +9,28 @@ use Illuminate\Support\Facades\DB;
 
 class CambiarCompetenciaPorcentajeService
 {
-    public function __construct()
+    private $calcularNotas;
+    public function __construct(CalcularNotasService $calcularNotas)
     {
-        //
+        $this->calcularNotas = $calcularNotas;
     }
 
     public function changeCompetenciaPorcentaje($competenciaId, $porcentaje, $materias, $periodo)
     {
-        $calcularNotas = new CalcularNotasService(); 
-        $competencias = NotaFinalCompetencia::select('notas_finales_competencias.*', 'competencias.porcentaje')
+        NotaFinalCompetencia::select('notas_finales_competencias.*', 'competencias.porcentaje')
         ->join('competencias', 'notas_finales_competencias.competencia_id', '=', 'competencias.id')
         ->where('notas_finales_competencias.competencia_id', $competenciaId)
-        ->get()
-        ->toArray();
-        foreach ($competencias as $competencia) {
-            $porcentajeCompetencia = floatval($competencia['porcentaje'] / 100);
-            $porcentajeNuevo = floatval($porcentaje / 100);
-            $newNotaCompetencia = (floatval($competencia['nota_final']) / $porcentajeCompetencia) * $porcentajeNuevo;
-            $notaCompetencia = round($newNotaCompetencia, 2);
-            $competenciaSave = NotaFinalCompetencia::find($competencia['id']);
-            $competenciaSave->nota_final =  $notaCompetencia;
-            $competenciaSave->save();
-        }
+        ->chunkById(100, function ($competencias) use ($porcentaje) {
+            foreach ($competencias as $competencia) {
+                $porcentajeCompetencia = floatval($competencia['porcentaje'] / 100);
+                $porcentajeNuevo = floatval($porcentaje / 100);
+                $newNotaCompetencia = (floatval($competencia['nota_final']) / $porcentajeCompetencia) * $porcentajeNuevo;
+                $notaCompetencia = round($newNotaCompetencia, 2);
+                $competenciaSave = NotaFinalCompetencia::find($competencia['id']);
+                $competenciaSave->nota_final =  $notaCompetencia;
+                $competenciaSave->save();
+            }
+        });
 
         $notaMaterias = [];
         foreach ($materias as $materia) {
@@ -42,16 +42,16 @@ class CambiarCompetenciaPorcentajeService
         }
 
         foreach ($notaMaterias as $notaMateria) {
-           $nota = $calcularNotas->calcularNotasMateriaPeriodo([
+           $nota = $this->calcularNotas->calcularNotasMateriaPeriodo([
             'materia' => $notaMateria['materia_id'],
             'estudiante' => $notaMateria['estudiante_id'],
             'periodo' => $notaMateria['periodo_id']
-            ]); 
+            ]);
             $notaFinalMateria = NotaFinalMateria::findOrFail($notaMateria['id']);
             $notaFinalMateria->nota_final = $nota;
             $notaFinalMateria->save();
         };
-        
+
         return true;
 
     }

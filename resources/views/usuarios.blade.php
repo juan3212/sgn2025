@@ -22,7 +22,7 @@
                 <div class="flex flex-wrap gap-4">
                 <div class="w-full sm:w-auto">
                     <label for="grado" class="block text-gray-700 font-medium mb-1">Grado:</label>
-                    <select name="grado" id="grado" class="border border-gray-300 rounded-md px-3 py-2 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="grado" id="grado" class="filter border border-gray-300 rounded-md px-3 py-2 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Todos</option>
                         @foreach ($grados as $grado)
                             <option value="{{ $grado->id }}">{{ $grado->grado }}</option>
@@ -32,7 +32,7 @@
 
                 <div class="w-full sm:w-auto">
                     <label for="grupo" class="block text-gray-700 font-medium mb-1">Grupo:</label>
-                    <select name="grupo" id="grupo" class="border border-gray-300 rounded-md px-3 py-2 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="grupo" id="grupo" class="filter border border-gray-300 rounded-md px-3 py-2 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Todos</option>
                         @foreach ($grupos as $grupo)
                             <option value="{{ $grupo->id }}">{{ $grupo->grupo }}</option>
@@ -42,7 +42,7 @@
 
                 <div class="w-full sm:w-auto">
                     <label for="role" class="block text-gray-700 font-medium mb-1">Rol:</label>
-                    <select name="role" id="role" class="border border-gray-300 rounded-md px-3 py-2 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="role" id="role" class="filter border border-gray-300 rounded-md px-3 py-2 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Todos</option>
                         @foreach ($roles as $role)
                             <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -51,6 +51,9 @@
                 </div>
                 </div>
                 <div class="w-full sm:w-auto flex gap-2">
+                    <button type="button" id="exportar" class="flex-1 sm:flex-none bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200">
+                        Exportar a Excel
+                    </button>
                     <button type="button" id="buscar" class="flex-1 sm:flex-none bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200">
                         Buscar
                     </button>
@@ -118,6 +121,7 @@
                         d.role = $('#role').val();
                     }
                 }, // URL de la ruta que devuelve los datos JSON
+
                 columns: [ // Define las columnas de la tabla, deben coincidir con las columnas seleccionadas en el controlador
                     {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
                     {data: 'id', name: 'id'},
@@ -147,15 +151,32 @@
             });
         });
 
-        $('#buscar').click(function () {
-            $('#users-table').DataTable().ajax.reload();
+        $(document).ready(function () {
+            $('.filter').on('change', function () {
+                $('#exportar').prop('disabled', true);
+            });
+
+            $('#exportar').click(function () {
+                const params = $.param({
+                    action: 'export',
+                    grado: $('#grado').val(),
+                    grupo: $('#grupo').val(),
+                    role: $('#role').val()
+                });
+                window.location.href = "{{ route('user.data') }}?" + params;
+            });
+            $('#buscar').click(function () {
+                $('#users-table').DataTable().ajax.reload();
+                $('#exportar').prop('disabled', false);
+            });
+
+            $('#limpiar').click(function () {
+                $('#grado').val('');
+                $('#grupo').val('');
+                $('#role').val('');
+                $('#users-table').DataTable().ajax.reload();
+            });
         });
 
-        $('#limpiar').click(function () {
-            $('#grado').val('');
-            $('#grupo').val('');
-            $('#role').val('');
-            $('#users-table').DataTable().ajax.reload();
-        });
     </script>
 </x-app-layout>

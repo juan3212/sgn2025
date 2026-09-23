@@ -40,7 +40,7 @@ class FacturacionExport implements FromQuery, WithHeadings, WithMapping, ShouldA
 
     public function map($row): array
     {
-   
+
         return [
             $row->fecha_facturacion ?? '',
             $row->nombre ?? '',

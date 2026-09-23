@@ -15,18 +15,26 @@ use App\Services\getPeriodoService;
 use App\Models\Grado;
 use App\Models\Grupo;
 use Spatie\Permission\Models\Role;
+use App\Exports\UsersExport;
 
 class UsuariosController extends Controller
 {
     //
-
+    protected $usersExport = UsersExport::class;
+    private $user;
     public $grados;
     public $grupos;
     public $roles;
 
+    public function __construct()
+    {
+        $this->user = auth()->user();
+    }
+
     public function getUserData()
     {
-        $usersQuery = Usuario::select(
+        $usersQuery = Usuario::withoutGlobalScope("usuarioRetirado")
+            ->select(
             "usuarios.id as id",
             "usuarios.nombre as nombre",
             "usuarios.apellido as apellido",
@@ -67,6 +75,12 @@ class UsuariosController extends Controller
         if ($request->role) {
             $usuarios = $usuarios->where("roles.id", $request->role);
         }
+        if ($request->action == 'export') {
+            return $this->exportUsers($usuarios);
+        }
+        if($this->user->hasRole('profesor')) {
+            $usuarios = $usuarios->where("roles.id", 2);
+        }
         $datatables = new DataTables();
         return $datatables
             ->eloquent($usuarios)
@@ -83,6 +97,11 @@ class UsuariosController extends Controller
             })
             ->rawColumns(["action", "checkbox"])
             ->toJson();
+    }
+
+    private function exportUsers($usuarios)
+    {
+        return Excel::download(new UsersExport($usuarios), 'usuarios.xlsx');
     }
 
     public function delete($id)
@@ -102,7 +121,7 @@ class UsuariosController extends Controller
         set_time_limit(300); // Aumenta el limite a 5 minutos
         ini_set("memory_limit", "512M");
         $request->validate([
-            "file" => "required|mimes:xlsx,csv",
+            "file" => "required|file|mimes:xlsx,csv|max:10240",
         ]);
 
         Excel::import(new UsersImport(), $request->file("file"));
@@ -117,7 +136,7 @@ class UsuariosController extends Controller
         set_time_limit(300);
         ini_set("memory_limit", "512M");
         $request->validate([
-            "file" => "required|mimes:xlsx,csv",
+            "file" => "required|file|mimes:xlsx,csv|max:10240",
         ]);
 
         Excel::import(new UsersImportTeachers(), $request->file("file"));
@@ -148,7 +167,7 @@ class UsuariosController extends Controller
         set_time_limit(300);
         ini_set("memory_limit", "512M");
         $request->validate([
-            "file" => "required|mimes:xlsx,csv",
+            "file" => "required|file|mimes:xlsx,csv|max:10240",
         ]);
 
         Excel::import(
@@ -169,7 +188,7 @@ class UsuariosController extends Controller
         set_time_limit(300);
         ini_set("memory_limit", "512M");
         $request->validate([
-            "file" => "required|mimes:xlsx,csv",
+            "file" => "required|file|mimes:xlsx,csv|max:10240",
         ]);
 
         Excel::import(new ChangePasswordImport(), $request->file("file"));
