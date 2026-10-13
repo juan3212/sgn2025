@@ -474,7 +474,11 @@
             const debouncedHandleInput = debounce(handleInput, 300);
             document.addEventListener('input', debouncedHandleInput);
 
-            document.addEventListener('paste', handlePaste, true);
+            document.addEventListener('paste', (e) => {
+                if (e.target.closest('.dataTable')) {
+                    handlePaste(e);
+                }
+            });
 
             if (saveButton) {
                 saveButton.addEventListener('click', saveNotas);

@@ -167,7 +167,7 @@ class Competencias extends Component
             $materiasArray[] = $materia;
         }
 
-        $cambiarCompetenciaPorcentajeService = new CambiarCompetenciaPorcentajeService();
+        $cambiarCompetenciaPorcentajeService = app(CambiarCompetenciaPorcentajeService::class);
         $cambiarCompetenciaPorcentajeService->changeCompetenciaPorcentaje($this->competenceId, $this->porcentaje, $materiasArray, $this->periodoSelected);
         return $competencia;
     }

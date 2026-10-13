@@ -86,6 +86,21 @@ function handlePaste(event) {
 }
 
 function processPasteEvent(event, table) {
+    if (event.defaultPrevented) return;
+
+    // Si el evento ocurrió dentro de un campo de formulario (input, textarea, select), permitir pegado nativo
+    if (event.target.closest('input, textarea, select')) {
+        return;
+    }
+
+    // Si el evento ocurrió en un elemento contenteditable fuera de la tabla, permitir pegado nativo
+    if (event.target.isContentEditable && !table.contains(event.target)) {
+        return;
+    }
+
+    const targetCell = event.target.closest('td');
+    if (!targetCell || !table.contains(targetCell)) return;
+
     event.preventDefault();
 
     const clipboardData = event.clipboardData || window.clipboardData;
@@ -96,9 +111,6 @@ function processPasteEvent(event, table) {
     if (rows.length === 0) return;
 
     const cells = rows.map(row => row.split('\t').map(c => c.trim()));
-
-    const targetCell = event.target.closest('td');
-    if (!targetCell) return;
 
     const targetRow = targetCell.closest('tr');
     if (!targetRow || !targetRow.parentNode) return;

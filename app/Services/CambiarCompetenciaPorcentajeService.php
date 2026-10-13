@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\DB;
 class CambiarCompetenciaPorcentajeService
 {
     private $calcularNotas;
-    public function __construct(CalcularNotasService $calcularNotas)
+    public function __construct(?CalcularNotasService $calcularNotas = null)
     {
-        $this->calcularNotas = $calcularNotas;
+        $this->calcularNotas = $calcularNotas ?? app(CalcularNotasService::class);
     }
 
     public function changeCompetenciaPorcentaje($competenciaId, $porcentaje, $materias, $periodo)
