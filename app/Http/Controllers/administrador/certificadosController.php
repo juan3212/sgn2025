@@ -411,12 +411,26 @@ class certificadosController extends Controller
         $year = session()->get("school_year");
         $this->start($usuarioId);
         $estudiante = $this->estudiante($usuarioId);
+        $promedioGeneral = collect($this->groupedMaterias)
+            ->pluck('materias.*.promedio')
+            ->flatten()
+            ->avg();
+        $this->groupedMaterias['promedio'] = [
+            'name' => 'PROMEDIO GENERAL',
+            'materias' => [[
+                "nombre_original" => "PROMEDIO GENERAL",
+                "nombre_es" => "PROMEDIO GENERAL",
+                "ih" => 0,
+                "promedio" => round($promedioGeneral, 2),
+            ]]
+        ];
 
         return view("pages.administrador.certificados", [
             "fechaActual" => $fechaActual,
             "year" => $year,
             "groupedMaterias" => $this->groupedMaterias,
             "estudiante" => $estudiante,
+            "promedioGeneral" => $promedioGeneral,
         ]);
     }
 
