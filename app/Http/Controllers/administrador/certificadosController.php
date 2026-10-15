@@ -415,15 +415,6 @@ class certificadosController extends Controller
             ->pluck('materias.*.promedio')
             ->flatten()
             ->avg();
-        $this->groupedMaterias['promedio'] = [
-            'name' => 'PROMEDIO GENERAL',
-            'materias' => [[
-                "nombre_original" => "PROMEDIO GENERAL",
-                "nombre_es" => "PROMEDIO GENERAL",
-                "ih" => 0,
-                "promedio" => round($promedioGeneral, 2),
-            ]]
-        ];
 
         return view("pages.administrador.certificados", [
             "fechaActual" => $fechaActual,

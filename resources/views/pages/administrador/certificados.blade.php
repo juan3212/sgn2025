@@ -256,6 +256,17 @@ body {
                     </table>
                 @endif
             @endforeach
+            <table id="subject-{{ $groupType }}">
+                <thead>
+                    <tr>
+                        <th colspan="3" style="text-align: left; border: 1px solid black; border-bottom: 1px solid black;">
+                            PROMEDIO GENERAL
+                        </th>
+                        <th>{{ round($promedioGeneral, 2) }}</th>
+                        <th>{{ getDesempeno($promedioGeneral) }}</th>
+                    </tr>
+                </thead>
+            </table>
 
         </main>
 
