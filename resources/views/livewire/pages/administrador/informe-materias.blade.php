@@ -5,7 +5,7 @@
     </div>
 
     <!-- Filtros Flexibles -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         <div>
             <label for="grado" class="block text-sm font-semibold text-gray-700 mb-1">
                 Grado <span class="text-xs text-gray-400 font-normal">(Opcional)</span>
@@ -51,6 +51,16 @@
                 @foreach($periodos as $periodo)
                     <option value="{{ $periodo->id }}">Periodo {{ $periodo->id }}</option>
                 @endforeach
+            </select>
+        </div>
+
+        <div>
+            <label for="incluirPeriodoActual" class="block text-sm font-semibold text-gray-700 mb-1">
+                Cálculo Acumulado
+            </label>
+            <select wire:model="incluirPeriodoActual" id="incluirPeriodoActual" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="1">Incluir periodo actual</option>
+                <option value="0">Sin incluir periodo actual</option>
             </select>
         </div>
     </div>

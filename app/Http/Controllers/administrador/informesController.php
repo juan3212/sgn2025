@@ -27,7 +27,7 @@ class informesController extends Controller
     public $tipoInformeAllowed = ['reprobados', 'materias'];
     public $materiasParaInforme = 1; //cantidad de materias perdidas con las que reprueba o genera informe
 
-    public function generarInforme($grado = null, $grupo = null, $materia = null, $periodoId = null, $tipoInforme = 'reprobados')
+    public function generarInforme($grado = null, $grupo = null, $materia = null, $periodoId = null, $tipoInforme = 'reprobados', $incluirPeriodoActual = true)
     {
         $this->grado = $grado;
         $this->grupo = $grupo;
@@ -43,19 +43,16 @@ class informesController extends Controller
         if(!$this->periodoId) {
             $periodo = Periodo::where('fecha_fin', '>', now())->first();
             if ($periodo) {
-                $periodoId = $periodo->id - 1;
-                if(date("j-n") >= "19-11"){
-                    $periodoId = $periodo->id;
-                }
+                $periodoId = $incluirPeriodoActual ? $periodo->id : ($periodo->id - 1);
             } else {
                 $periodo = Periodo::orderBy('id', 'desc')->first();
-                $periodoId = $periodo ? $periodo->id : null;
+                $periodoId = $periodo ? ($incluirPeriodoActual ? $periodo->id : ($periodo->id - 1)) : null;
             }
         }
 
 
         // Manejar si no hay periodo activo
-        if (!$periodoId) {
+        if (!$periodoId || $periodoId <= 0) {
             return [];
         }
 

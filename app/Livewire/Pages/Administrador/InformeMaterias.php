@@ -23,6 +23,7 @@ class InformeMaterias extends Component
     public $informe = [];
     public $periodos = [];
     public $periodoSelected = '';
+    public $incluirPeriodoActual = '1';
     public $informeMessage = 'Haga clic en "Generar Informe" para consultar todos los estudiantes o aplique los filtros deseados.';
 
     public function mount()
@@ -66,7 +67,8 @@ class InformeMaterias extends Component
             $this->grupoSelected ?: null,
             $this->materiaSelected ?: null,
             $this->periodoSelected ?: null,
-            'materia'
+            'materia',
+            (bool) $this->incluirPeriodoActual
         );
 
         if (empty($this->informe)) {
@@ -76,9 +78,7 @@ class InformeMaterias extends Component
 
     public function exportar($formato = 'xlsx')
     {
-        if (empty($this->informe)) {
-            $this->getInforme();
-        }
+        $this->getInforme();
 
         if (empty($this->informe)) {
             $this->informeMessage = 'No hay información disponible para exportar con los filtros seleccionados.';
