@@ -30,7 +30,7 @@ class CambiarCompetenciaPorcentajeService
                 $competenciaSave->nota_final =  $notaCompetencia;
                 $competenciaSave->save();
             }
-        });
+        }, "notas_finales_competencias.id", "id");
 
         $notaMaterias = [];
         foreach ($materias as $materia) {
