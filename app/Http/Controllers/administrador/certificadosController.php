@@ -17,6 +17,8 @@ class certificadosController extends Controller
     //
     public $usuarioId;
     public $user;
+    public $periodoId;
+    public $directorCurso;
     public $groupedMaterias = [];
 
     // Definimos las estructuras como propiedades protegidas
@@ -204,18 +206,17 @@ class certificadosController extends Controller
 
     public function Periodos()
     {
-        /*$periodo = Periodo::where('fecha_fin', '>', now())
-            ->first();
-        $year = session()->get('school_year');
-        if($year != date('Y') ){
+        $periodo = Periodo::where("fecha_fin", ">", now())->first();
+        $year = session()->get("school_year");
+        if ($year != date("Y")) {
             $this->periodoId = 4;
-        }else{
-            $this->periodoId = $periodo->id -1;
+        } elseif (date("n") >= "11") {
+            $this->periodoId = $periodo ? $periodo->id : 4;
+        } elseif (date("n") < "4") {
+            $this->periodoId = $periodo ? $periodo->id : 1;
+        } else {
+            $this->periodoId = $periodo ? $periodo->id - 1 : 4;
         }
-        if(date("n") >= "11"){
-            $this->periodoId = $periodo->id;
-        }*/
-        $this->periodoId = 2;
     }
 
     public function NotasCompetencias($materiaId)
