@@ -65,6 +65,7 @@ class ListaServicios extends Component
             }
         }
 
+        $this->cargarServicios();
         $this->dispatch('showAlert', ['type' => 'success', 'message' => 'Servicios actualizados correctamente']);
     }
 

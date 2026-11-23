@@ -6,6 +6,7 @@
             {{-- CABECERA --}}
             {{-- Usamos wire:click para llamar a la función del backend --}}
             <button 
+                type="button"
                 wire:click="toggleServicio({{ $servicio->id }})"
                 class="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200 focus:outline-none
                 @if(in_array($servicio->id, $serviciosSeleccionados)) focus:ring-blue-500 border-blue-500 border-2 @endif"
@@ -86,7 +87,7 @@
     @endforeach
 
     <div class="mt-6 text-right">
-        <button wire:click="inscribir" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow transition">
+        <button type="button" wire:click="inscribir" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow transition">
             Guardar Inscripción
         </button>
     </div>

@@ -2,12 +2,12 @@
 
 namespace App\Livewire\Matriculas\Components;
 
-use Livewire\Component;
-use Livewire\Attributes\Modelable;
-use Illuminate\Support\Facades\Http;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class InfoBasicaUsuario extends Component
 {
@@ -29,6 +29,7 @@ class InfoBasicaUsuario extends Component
     {
         $this->searchUser();
     }
+
     #[On('ubicacion-changed')]
     public function actualizarUbicacion($data)
     {
@@ -47,14 +48,25 @@ class InfoBasicaUsuario extends Component
         }
     }
 
-
     public function searchUser()
     {
-        $usuario = Usuario::select('nombre', 'apellido', 'nuip', 'tipo_documento', 'departamento_expedicion', 'municipio_expedicion', 'fecha_nacimiento', 'departamento_nacimiento', 'municipio_nacimiento', 'sexo')
-            ->leftjoin('usuario_informacion', 'usuario_informacion.usuario_id', '=', 'usuarios.id')
-            ->leftjoin('usuario_info_documento', 'usuario_info_documento.usuario_id', '=', 'usuarios.id')    
+        $usuario = Usuario::select(
+            'nombre',
+            'apellido',
+            'nuip',
+            'tipo_documento',
+            'departamento_expedicion',
+            'municipio_expedicion',
+            'fecha_nacimiento',
+            'departamento_nacimiento',
+            'municipio_nacimiento',
+            'sexo'
+        )
+            ->leftJoin('usuario_informacion', 'usuario_informacion.usuario_id', '=', 'usuarios.id')
+            ->leftJoin('usuario_info_documento', 'usuario_info_documento.usuario_id', '=', 'usuarios.id')
             ->where('usuarios.id', $this->estudianteId)
             ->first();
+
         if ($usuario) {
             $this->nombre = $usuario->nombre;
             $this->apellido = $usuario->apellido;
@@ -70,68 +82,116 @@ class InfoBasicaUsuario extends Component
             $this->valueUbicacionExpedicion['municipio'] = $usuario->municipio_expedicion;
             $this->valueUbicacionNacimiento['departamento'] = $usuario->departamento_nacimiento;
             $this->valueUbicacionNacimiento['municipio'] = $usuario->municipio_nacimiento;
-
         }
     }
-    #[On("saveData")]
+
+    #[On('saveData')]
     public function saveUsuario()
     {
-        
-        // Verificar si tenemos datos para guardar
+        try {
+            $this->validate([
+                'nombre' => 'required|string|max:255',
+                'apellido' => 'required|string|max:255',
+                'documentoTipo' => 'required|in:CC,TI,RC',
+                'numeroDocumento' => [
+                    'required',
+                    'numeric',
+                    Rule::unique('usuario_info_documento', 'numero_documento')->ignore($this->estudianteId, 'usuario_id'),
+                ],
+                'valueUbicacionExpedicion.departamento' => 'required',
+                'valueUbicacionExpedicion.municipio' => 'required',
+                'fechaNacimiento' => 'required|date',
+                'valueUbicacionNacimiento.departamento' => 'required',
+                'valueUbicacionNacimiento.municipio' => 'required',
+                'sexo' => 'required|in:Masculino,Femenino',
+            ], [
+                'nombre.required' => 'El nombre del estudiante es obligatorio.',
+                'apellido.required' => 'El apellido del estudiante es obligatorio.',
+                'documentoTipo.required' => 'El tipo de documento es obligatorio.',
+                'documentoTipo.in' => 'Seleccione un tipo de documento válido.',
+                'numeroDocumento.required' => 'El número de documento es obligatorio.',
+                'numeroDocumento.numeric' => 'El número de documento debe ser numérico.',
+                'numeroDocumento.unique' => 'Este número de documento ya está registrado para otro usuario.',
+                'valueUbicacionExpedicion.departamento.required' => 'El departamento de expedición es obligatorio.',
+                'valueUbicacionExpedicion.municipio.required' => 'El municipio de expedición es obligatorio.',
+                'fechaNacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+                'fechaNacimiento.date' => 'La fecha de nacimiento no es válida.',
+                'valueUbicacionNacimiento.departamento.required' => 'El departamento de nacimiento es obligatorio.',
+                'valueUbicacionNacimiento.municipio.required' => 'El municipio de nacimiento es obligatorio.',
+                'sexo.required' => 'El sexo del estudiante es obligatorio.',
+                'sexo.in' => 'Seleccione una opción válida para sexo.',
+            ]);
+        } catch (ValidationException $e) {
+            $this->setErrorBag($e->validator->errors());
+            $this->dispatch('estudiante-paso-validado', [
+                'componente' => 'info_basica',
+                'valido' => false,
+                'errores' => $e->validator->errors()->all(),
+            ]);
+
+            return;
+        }
+
+        $this->resetValidation();
+
         DB::beginTransaction();
         try {
-            DB::table("usuarios")
-            ->updateOrInsert(
-            [
-                "id" => $this->estudianteId,
-            ],
-            [
-                "nombre" => $this->nombre ?? '',
-                "apellido" => $this->apellido ?? '',
-                "nuip" => $this->numeroDocumento ?? '',
-            ]
-            );
-            
-            // Guardar información del documento
-            DB::table("usuario_info_documento")
+            DB::table('usuarios')
                 ->updateOrInsert(
-                [
-                    "usuario_id" => $this->estudianteId,
-                ],
-                [
-                    "tipo_documento" => $this->documentoTipo ?? '',
-                    "numero_documento" => $this->numeroDocumento ?? '',
-                    "departamento_expedicion" => $this->valueUbicacionExpedicion['departamento'] ?? '',
-                    "municipio_expedicion" => $this->valueUbicacionExpedicion['municipio'] ?? '',
-                ]
-            );
-            
-            // Guardar información personal
-            DB::table("usuario_informacion")
+                    [
+                        'id' => $this->estudianteId,
+                    ],
+                    [
+                        'nombre' => trim((string) $this->nombre),
+                        'apellido' => trim((string) $this->apellido),
+                        'nuip' => trim((string) $this->numeroDocumento),
+                    ]
+                );
+
+            DB::table('usuario_info_documento')
                 ->updateOrInsert(
-                [
-                    "usuario_id" => $this->estudianteId,
-                ],
-                [
-                    "fecha_nacimiento" => $this->fechaNacimiento ?? null,
-                    "departamento_nacimiento" => $this->valueUbicacionNacimiento['departamento'] ?? '',
-                    "municipio_nacimiento" => $this->valueUbicacionNacimiento['municipio'] ?? '',
-                    "sexo" => $this->sexo ?? '',
-                ]
-            );
-            
+                    [
+                        'usuario_id' => $this->estudianteId,
+                    ],
+                    [
+                        'tipo_documento' => $this->documentoTipo,
+                        'numero_documento' => trim((string) $this->numeroDocumento),
+                        'departamento_expedicion' => $this->valueUbicacionExpedicion['departamento'],
+                        'municipio_expedicion' => $this->valueUbicacionExpedicion['municipio'],
+                    ]
+                );
+
+            DB::table('usuario_informacion')
+                ->updateOrInsert(
+                    [
+                        'usuario_id' => $this->estudianteId,
+                    ],
+                    [
+                        'fecha_nacimiento' => $this->fechaNacimiento,
+                        'departamento_nacimiento' => $this->valueUbicacionNacimiento['departamento'],
+                        'municipio_nacimiento' => $this->valueUbicacionNacimiento['municipio'],
+                        'sexo' => $this->sexo,
+                    ]
+                );
+
             DB::commit();
-            $this->dispatch('estudiante-guardado', ["estado" => true]);
-            $this->dispatch('upload-document', ["usuario" => "estudiante"]);
-        }
-        catch (\Exception $e) {
+            $this->dispatch('estudiante-paso-validado', [
+                'componente' => 'info_basica',
+                'valido' => true,
+                'errores' => [],
+            ]);
+        } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            $this->dispatch('estudiante-paso-validado', [
+                'componente' => 'info_basica',
+                'valido' => false,
+                'errores' => ['Ocurrió un error al guardar la información básica del estudiante.'],
+            ]);
         }
     }
 
     public function render()
     {
-        return view("livewire.matriculas.components.info-basica-usuario");
+        return view('livewire.matriculas.components.info-basica-usuario');
     }
 }

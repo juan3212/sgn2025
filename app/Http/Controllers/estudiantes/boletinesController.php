@@ -39,7 +39,7 @@ class boletinesController extends Controller
         if($schoolYear < date("Y")){
             $periodo->id = 4;
         }else if(date("n") >= "11"){
-            $periodo->id += 1;
+            $periodo->id += 0;
         }
         else if(date("n") <= "4"){
             $periodo->id = 1;
@@ -47,7 +47,7 @@ class boletinesController extends Controller
         else{
             $periodo->id -= 1;
         }
-        
+
         switch (true){
             case $periodo->id == 1:
                 return ['id' => 1, 'nombre' => 'I'];
@@ -89,7 +89,7 @@ class boletinesController extends Controller
         if($estudianteID != $usuarioActual->id && !$usuarioActual->hasRole(['administrador', 'profesor', 'Super-Admin'])){
             return redirect()->route('dashboard-estudiantes');
         }
-        $this->estudianteID = $estudianteID; 
+        $this->estudianteID = $estudianteID;
         $user = $this->getStudentData();
         $date = $this->getDate();
         $periodo = $this->getPeriodo();

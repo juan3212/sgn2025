@@ -13,7 +13,7 @@
                 <div class="text-sm text-red-500">@error('email') {{ $message }} @enderror</div>
             </div>
             <div class="col-span-2">
-                <label for="direccion" class="block text-sm font-medium text-gray-700">Dirección de Residencia</label>
+                <label for="direccion" class="block text-sm font-medium text-gray-700">Dirección de Residencia <span class="text-red-500">*</span></label>
                 <input type="text" name="direccion" id="direccion" wire:model="direccion" @if(!$contacto) required @endif class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <div class="text-sm text-red-500">@error('direccion') {{ $message }} @enderror</div>
             </div>

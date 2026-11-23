@@ -40,9 +40,11 @@ new class extends Component {
                         {{ __('Usuarios') }}
                     </x-nav-link>
                     @endcan
+                    @can('administrar materias')
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Materias') }}
                     </x-nav-link>
+                    @endcan
                     @can('administrar competencias')
                     <x-nav-link :href="route('competencias')" :active="request()->routeIs('competencias')" wire:navigate>
                         {{ __('Competencias') }}
@@ -82,6 +84,9 @@ new class extends Component {
                     </x-slot>
 
                     <x-slot name="content">
+                        <x-dropdown-link :href="route('change-year', '2027')">
+                            {{__('2027 (Futuro)')}}
+                        </x-dropdown-link>
                         <x-dropdown-link :href="route('change-year', '2026')">
                             {{ __('2026 (Actual)') }}
                         </x-dropdown-link>
@@ -157,9 +162,11 @@ new class extends Component {
                 {{ __('Usuarios') }}
             </x-responsive-nav-link>
             @endcan
+            @can('administrar materias')
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Materias') }}
             </x-responsive-nav-link>
+            @endcan
             @can('administrar competencias')
             <x-responsive-nav-link :href="route('competencias')" :active="request()->routeIs('competencias')" wire:navigate>
                 {{ __('Competencias') }}
