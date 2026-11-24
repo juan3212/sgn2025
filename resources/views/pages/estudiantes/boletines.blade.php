@@ -368,7 +368,7 @@ body{
 
           const conceptoComiteEl = document.getElementById('conceptoComite');
           if (conceptoComiteEl) {
-              conceptoComiteEl.hidden = !(typeof window.materiasPerdidas !== 'undefined' && window.materiasPerdidas >= 2);
+              conceptoComiteEl.hidden = !(typeof window.materiasPerdidas !== 'undefined' && window.materiasPerdidas > 2);
           }
 
           procesarNotasPreescolar();
