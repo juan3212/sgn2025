@@ -48,6 +48,7 @@
         let termSum = 0;
 
         const finalAverageElements = document.querySelectorAll('#finalAverage');
+        let materiasPerdidas = 0;
         if (finalAverageElements.length > 0) {
             let validFinalCount = 0;
             finalAverageElements.forEach(element => {
@@ -55,12 +56,16 @@
                 if (!isNaN(val)) {
                     finalSum += val;
                     validFinalCount++;
+                    if (val < 6) {
+                        materiasPerdidas++;
+                    }
                 }
             });
             window.finalAverage = validFinalCount > 0 ? (finalSum / validFinalCount).toFixed(2) : '0.00';
         } else {
             window.finalAverage = '0.00';
         }
+        window.materiasPerdidas = materiasPerdidas;
 
         const termAverageElements = document.querySelectorAll('#termAverage');
         if (termAverageElements.length > 0) {
