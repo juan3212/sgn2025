@@ -244,7 +244,7 @@ body{
             <tr>
                 <td class="text-center border border-black">CONCEPTO DEL COMITÉ DE EVALUACIÓN Y PROMOCIÓN</td>
                 <td class="text-center border border-black font-bold" style="font-weight: 700 !important;">
-                    <strong>EL ESTUDIANTE NO SE PROMUEVE AL SIGUIENTE GRADO</strong>
+                    <strong>EL ESTUDIANTE NO ES PROMOVIDO AL SIGUIENTE GRADO</strong>
                 </td>
             </tr>
         </table>
@@ -368,7 +368,7 @@ body{
 
           const conceptoComiteEl = document.getElementById('conceptoComite');
           if (conceptoComiteEl) {
-              conceptoComiteEl.hidden = !(typeof window.materiasPerdidas !== 'undefined' && window.materiasPerdidas >= 1);
+              conceptoComiteEl.hidden = !(typeof window.materiasPerdidas !== 'undefined' && window.materiasPerdidas >= 2);
           }
 
           procesarNotasPreescolar();
