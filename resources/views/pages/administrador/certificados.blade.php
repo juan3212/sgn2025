@@ -1,5 +1,16 @@
 @php
   $materiasPerdidas = 0;
+  if (!empty($groupedMaterias)) {
+      foreach ($groupedMaterias as $group) {
+          if (!empty($group['materias'])) {
+              foreach ($group['materias'] as $materia) {
+                  if ($materia['promedio'] < 6) {
+                      $materiasPerdidas++;
+                  }
+              }
+          }
+      }
+  }
 @endphp
    <style>
 
@@ -209,7 +220,7 @@ body {
                     <p>
                         Que el estudiante <strong>{{ $estudiante->nombre . ' ' . $estudiante->apellido }}</strong>
                         identificado con NUIP N° <strong>{{ $estudiante->nuip ?? $estudiante->usuario }}</strong>
-                        cursó <span id='aprobado'>y aprobó</span> los logros previstos en el Plan de Estudios correspondientes al grado
+                        cursó @if($materiasPerdidas == 0)y aprobó @endif los logros previstos en el Plan de Estudios correspondientes al grado
                         <strong>{{ strtoupper($estudiante->grados[0]->grado ?? 'N/A') }}</strong>,
                         durante el año lectivo <strong>{{ $year }}</strong>, en concordancia con los fines y objetivos de la
                         Ley General de Educación 115 de 1994, el Decreto 1860 de Agosto 3 de 1994 y los criterios de Evaluación y
@@ -246,9 +257,7 @@ body {
 
 
                                     <td style="font-weight: bold; text-align: center;" class="nota">{{ number_format($materia['promedio'], 1) }}</td>
-                                    @php
-                                    if($materia['promedio'] < 6) $materiasPerdidas++;
-                                    @endphp
+
                                     <td style="text-align: center;">{{ getDesempeno($materia['promedio']) }}</td>
                                 </tr>
                             @endforeach
@@ -316,7 +325,7 @@ body {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            
+
         document.querySelectorAll('.nota').forEach(element => {
             let grade = {{ $estudiante->grados[0]->id}};
             if(grade < 4){
