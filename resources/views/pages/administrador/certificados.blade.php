@@ -209,7 +209,7 @@ body {
                     <p>
                         Que el estudiante <strong>{{ $estudiante->nombre . ' ' . $estudiante->apellido }}</strong>
                         identificado con NUIP N° <strong>{{ $estudiante->nuip ?? $estudiante->usuario }}</strong>
-                        cursó y aprobó los logros previstos en el Plan de Estudios correspondientes al grado
+                        cursó <span id='aprobado'>y aprobó</span> los logros previstos en el Plan de Estudios correspondientes al grado
                         <strong>{{ strtoupper($estudiante->grados[0]->grado ?? 'N/A') }}</strong>,
                         durante el año lectivo <strong>{{ $year }}</strong>, en concordancia con los fines y objetivos de la
                         Ley General de Educación 115 de 1994, el Decreto 1860 de Agosto 3 de 1994 y los criterios de Evaluación y
@@ -315,6 +315,8 @@ body {
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
+            
         document.querySelectorAll('.nota').forEach(element => {
             let grade = {{ $estudiante->grados[0]->id}};
             if(grade < 4){

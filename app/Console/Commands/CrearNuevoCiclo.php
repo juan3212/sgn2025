@@ -50,11 +50,11 @@ class CrearNuevoCiclo extends Command
         $usuario = env('DB_USERNAME');
         $password = env('DB_PASSWORD');
         $host = env('DB_HOST');
-        
+
         // Comando para clonar (Exportar | Importar en una sola línea)
         // Usamos --routines para copiar procedimientos almacenados si tienes
         $cmd = "mysqldump -h $host -u $usuario " . ($password ? "-p$password" : "") . " --routines $dbOrigen | mysql -h $host -u $usuario " . ($password ? "-p$password" : "") . " $dbDestino";
-        
+
         $this->info("Clonando tablas y datos (esto puede tardar unos segundos)...");
         // Ejecutar comando en terminal del sistema
         exec($cmd, $output, $returnVar);
@@ -68,7 +68,7 @@ class CrearNuevoCiclo extends Command
 
         // 4. Conectarse a la NUEVA base de datos para limpiar
         $this->info("Limpiando datos antiguos en $dbDestino...");
-        
+
         // Cambiar conexión en caliente
         Config::set('database.connections.mysql.database', $dbDestino);
         DB::purge('mysql');
@@ -84,13 +84,16 @@ class CrearNuevoCiclo extends Command
             'notas_finales_competencias',
             'notas_recuperaciones',
             'actividades',
-            'competencias',    
-            'materias',    
-            'materia_has_competencia',        
+            'competencias',
+            'materias',
+            'materia_has_competencia',
             'pago_matricula',
             'usuario_estado_pago',
             'usuarios_promovidos',
-            'usuario_bloqueado'
+            'usuario_bloqueado',
+            'matricula_completada_info',
+            'comentarios_estudiante_periodo',
+            'usuario_facturacion'
             // Agrega aquí cualquier otra tabla que deba empezar vacía
         ];
 
@@ -125,7 +128,7 @@ class CrearNuevoCiclo extends Command
         // 2. Listado de excepciones (Repitentes o Promoción Anticipada)
         // Clave: usuario_id, Valor: grado_destino
         $excepciones = DB::table('usuarios_promovidos')->pluck('grado_destino', 'usuario_id');
-        
+
         // 3. Todos los estudiantes matriculados (Copia exacta del 2025)
         $matriculas = DB::table('usuario_grado')->get();
 
@@ -138,13 +141,13 @@ class CrearNuevoCiclo extends Command
             if (isset($excepciones[$matricula->usuario_id])) {
                 $nuevoGrado = $excepciones[$matricula->usuario_id];
                 $countExcepcion++;
-            } 
+            }
             // --- CASO B: PROMOCIÓN NORMAL ---
             // Si NO es el último grado, pasa al siguiente
             elseif ($matricula->grado_id < $maxGradoId) {
                 $nuevoGrado = $matricula->grado_id + 1;
                 $countGeneral++;
-            } 
+            }
             // --- CASO C: GRADUADOS (Grado 11 que NO repite) ---
             else {
                 $esGraduado = true;

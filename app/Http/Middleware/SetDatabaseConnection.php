@@ -22,16 +22,16 @@ class SetDatabaseConnection
     {
         // 1. Obtener el año deseado (Por defecto el actual + 1 si estamos a fin de año, o manual)
         // Intentamos obtener el año de la base de datos configurada en el .env
-        $defaultDatabase = env('DB_DATABASE', 'sgn' . date('Y'));
+        $defaultDatabase = env('DB_DATABASE', 'sgn' . date('Y')+1);
         $defaultYear = date('Y');
-        
+
         if (preg_match('/sgn(\d{4})/', $defaultDatabase, $matches)) {
             $defaultYear = $matches[1];
         }
 
         $anio = session()->get('school_year', $defaultYear);
-       
-       
+
+
 
         // Validar que el año sea numérico para evitar inyecciones raras
         if (!is_numeric($anio) || strlen($anio) != 4) {
